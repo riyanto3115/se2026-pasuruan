@@ -2,224 +2,221 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>SE2026 — BPS Kab. Pasuruan</title>
-<script src="data.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0a0e17; --s1:#0f1623; --s2:#141d2e; --s3:#1c2840; --s4:#243350;
-  --bdr:#1e2d45; --bdr2:#2a3d5a;
-  --tx:#dce8f8; --tx2:#7a9bbf; --tx3:#4a6a8a;
-  --gr:#00e5a0; --gr2:#00b87a; --gr-bg:rgba(0,229,160,.08); --gr-bdr:rgba(0,229,160,.2);
-  --am:#ffb830; --am2:#d4901a; --am-bg:rgba(255,184,48,.08); --am-bdr:rgba(255,184,48,.2);
-  --rd:#ff4d6a; --rd2:#cc2444; --rd-bg:rgba(255,77,106,.08); --rd-bdr:rgba(255,77,106,.2);
-  --bl:#3d9eff; --bl2:#1a6fd4; --bl-bg:rgba(61,158,255,.08); --bl-bdr:rgba(61,158,255,.2);
-  --pu:#b06dff; --pu-bg:rgba(176,109,255,.08);
-  --r4:4px; --r8:8px; --r12:12px; --r16:16px;
-  --fnt:'Plus Jakarta Sans',sans-serif; --mono:'DM Mono',monospace;
+:root{
+  --bg:#07090f;--s1:#0c1018;--s2:#111620;--s3:#171e2c;--s4:#1e2a3d;
+  --bdr:#1b2638;--bdr2:#263549;
+  --tx:#d8e8f8;--tx2:#7090b0;--tx3:#405878;
+  --gr:#00e5a0;--gr2:#00b87a;--gr-bg:rgba(0,229,160,.07);--gr-bdr:rgba(0,229,160,.18);
+  --am:#ffb830;--am-bg:rgba(255,184,48,.07);--am-bdr:rgba(255,184,48,.18);
+  --rd:#ff4060;--rd-bg:rgba(255,64,96,.07);--rd-bdr:rgba(255,64,96,.18);
+  --bl:#3d9eff;--bl-bg:rgba(61,158,255,.07);--bl-bdr:rgba(61,158,255,.18);
+  --pu:#a855f7;--pu-bg:rgba(168,85,247,.07);--pu-bdr:rgba(168,85,247,.18);
+  --cy:#22d3ee;--cy-bg:rgba(34,211,238,.07);
+  --r6:6px;--r10:10px;--r14:14px;
+  --fnt:'Plus Jakarta Sans',sans-serif;--mono:'DM Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--tx);font-family:var(--fnt);font-size:13px;min-height:100vh}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--s1)}
-::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px}
+body{background:var(--bg);color:var(--tx);font-family:var(--fnt);font-size:13px;min-height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s4);border-radius:4px}
 
-/* LAYOUT */
-.shell{display:grid;grid-template-columns:230px 1fr;grid-template-rows:52px 1fr;height:100vh;overflow:hidden}
-header{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 1.25rem;gap:12px;z-index:200;position:relative}
-.sidebar{background:var(--s1);border-right:1px solid var(--bdr);overflow-y:auto;padding:.75rem 0}
-.content{overflow-y:auto;padding:1.25rem;background:var(--bg)}
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:50px 1fr;height:100vh}
+header{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 1rem;gap:10px;z-index:200;position:relative}
+.sidebar{background:var(--s1);border-right:1px solid var(--bdr);overflow-y:auto;display:flex;flex-direction:column}
+.content{overflow-y:auto;padding:1rem;background:var(--bg)}
 
-/* HEADER */
-.hdr-logo{display:flex;align-items:center;gap:10px}
-.hdr-emblem{width:32px;height:32px;background:linear-gradient(135deg,var(--bl),var(--pu));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;letter-spacing:-.5px;flex-shrink:0}
-.hdr-title{font-size:14px;font-weight:700;letter-spacing:-.3px}
-.hdr-sub{font-size:10px;color:var(--tx2);margin-top:1px}
-.hdr-space{flex:1}
-.hdr-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:11px;background:var(--gr-bg);border:1px solid var(--gr-bdr);color:var(--gr);cursor:default}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:blink 1.6s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-.hdr-btn{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-size:11px;font-family:var(--fnt);font-weight:500;border:1px solid var(--bdr);background:var(--s2);color:var(--tx2);cursor:pointer;transition:.15s}
-.hdr-btn:hover{border-color:var(--bdr2);color:var(--tx)}
-.notif-wrap{position:relative}
-.notif-ico{width:30px;height:30px;border-radius:6px;border:1px solid var(--bdr);background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);font-size:14px;transition:.15s}
-.notif-ico:hover{border-color:var(--am-bdr);color:var(--am)}
-.nbadge{position:absolute;top:-5px;right:-5px;background:var(--rd);color:#fff;font-size:9px;min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0 3px}
+/* ── HEADER ── */
+.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--bl),var(--pu));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.hd-title{font-size:13px;font-weight:700;letter-spacing:-.3px}
+.hd-sub{font-size:10px;color:var(--tx2);margin-top:1px}
+.hspace{flex:1}
+.upd-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;background:var(--gr-bg);border:1px solid var(--gr-bdr);font-size:10px;color:var(--gr);font-family:var(--mono)}
+.upd-dot{width:5px;height:5px;border-radius:50%;background:var(--gr);animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hbtn{padding:4px 10px;border-radius:var(--r6);font-size:11px;font-family:var(--fnt);font-weight:600;border:1px solid var(--bdr);background:var(--s2);color:var(--tx2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:5px}
+.hbtn:hover{color:var(--tx);border-color:var(--bdr2)}
+.hbtn.act{background:var(--bl-bg);border-color:var(--bl-bdr);color:var(--bl)}
 
-/* SIDEBAR */
-.sb-sect{margin-bottom:.25rem}
-.sb-lbl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;padding:.625rem .875rem .25rem}
-.sb-item{display:flex;align-items:center;gap:8px;padding:7px 10px;margin:1px .5rem;border-radius:var(--r8);cursor:pointer;color:var(--tx2);font-size:12px;font-weight:500;border:1px solid transparent;transition:.15s}
-.sb-item:hover{background:var(--s2);color:var(--tx)}
-.sb-item.on{background:var(--bl-bg);border-color:var(--bl-bdr);color:var(--bl)}
-.sb-item svg{width:15px;height:15px;flex-shrink:0;opacity:.8}
-.sb-item.on svg{opacity:1}
-.sb-chip{margin-left:auto;font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:4px;background:var(--s3);color:var(--tx3)}
-.sb-item.on .sb-chip{background:var(--bl-bg);color:var(--bl)}
-.sb-notif-chip{background:var(--rd-bg);color:var(--rd)}
-.sb-div{height:1px;background:var(--bdr);margin:.5rem .875rem}
-.sb-meta{padding:.5rem .875rem;font-family:var(--mono);font-size:10px;color:var(--tx3);line-height:1.6}
+/* ── SIDEBAR ── */
+.sb-top{padding:.75rem .5rem .5rem}
+.sb-lbl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;padding:.5rem .75rem .2rem}
+.nav{display:flex;align-items:center;gap:7px;padding:6px 10px;margin:1px .25rem;border-radius:var(--r6);cursor:pointer;color:var(--tx2);font-size:12px;font-weight:500;border:1px solid transparent;transition:.12s;white-space:nowrap}
+.nav:hover{background:var(--s2);color:var(--tx)}
+.nav.on{background:var(--bl-bg);border-color:var(--bl-bdr);color:var(--bl)}
+.nav svg{width:14px;height:14px;flex-shrink:0;opacity:.75}
+.nav.on svg{opacity:1}
+.chip{margin-left:auto;font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;background:var(--s3);color:var(--tx3)}
+.nav.on .chip{background:var(--bl-bg);color:var(--bl)}
+.chip-rd{background:var(--rd-bg)!important;color:var(--rd)!important}
+.sb-div{height:1px;background:var(--bdr);margin:.4rem .75rem}
+.sb-meta{padding:.5rem .75rem;font-family:var(--mono);font-size:10px;color:var(--tx3);line-height:1.8;margin-top:auto;border-top:1px solid var(--bdr)}
+.sb-meta span{color:var(--tx2)}
 
-/* METRICS */
-.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:1rem}
-@media(max-width:1200px){.metrics{grid-template-columns:repeat(3,1fr)}}
-.mc{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r12);padding:.875rem 1rem;position:relative;overflow:hidden;cursor:default;transition:border-color .2s}
+/* ── METRICS ── */
+.metrics{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:1rem}
+.mc{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r10);padding:.75rem .875rem;position:relative;overflow:hidden;transition:border-color .2s;cursor:default}
 .mc:hover{border-color:var(--bdr2)}
-.mc-glow{position:absolute;top:-20px;left:-20px;width:80px;height:80px;border-radius:50%;opacity:.12;filter:blur(20px);pointer-events:none}
-.mc-lbl{font-size:10px;color:var(--tx2);font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.4px}
-.mc-val{font-family:var(--mono);font-size:24px;font-weight:500;line-height:1}
-.mc-sub{font-size:10px;color:var(--tx3);margin-top:5px}
+.mc-glow{position:absolute;top:-16px;left:-16px;width:70px;height:70px;border-radius:50%;opacity:.1;filter:blur(18px);pointer-events:none}
+.mc-lbl{font-size:10px;color:var(--tx2);font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.mc-val{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1}
+.mc-sub{font-size:10px;color:var(--tx3);margin-top:4px}
+.c-bl .mc-val{color:var(--bl)} .c-bl .mc-glow{background:var(--bl)}
 .c-gr .mc-val{color:var(--gr)} .c-gr .mc-glow{background:var(--gr)}
 .c-am .mc-val{color:var(--am)} .c-am .mc-glow{background:var(--am)}
 .c-rd .mc-val{color:var(--rd)} .c-rd .mc-glow{background:var(--rd)}
-.c-bl .mc-val{color:var(--bl)} .c-bl .mc-glow{background:var(--bl)}
 .c-pu .mc-val{color:var(--pu)} .c-pu .mc-glow{background:var(--pu)}
+.c-cy .mc-val{color:var(--cy)} .c-cy .mc-glow{background:var(--cy)}
 
-/* TABS */
-.tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--bdr);margin-bottom:1rem;position:sticky;top:0;background:var(--bg);z-index:100;padding-bottom:0}
-.tb{padding:7px 16px;font-size:12px;font-weight:500;font-family:var(--fnt);background:none;border:none;border-bottom:2px solid transparent;color:var(--tx2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px}
+/* ── TABS ── */
+.tab-bar{display:flex;gap:1px;border-bottom:1px solid var(--bdr);margin-bottom:1rem;background:var(--bg);position:sticky;top:0;z-index:100}
+.tb{padding:6px 14px;font-size:12px;font-weight:500;font-family:var(--fnt);background:none;border:none;border-bottom:2px solid transparent;color:var(--tx2);cursor:pointer;transition:.12s;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .tb:hover{color:var(--tx)}
 .tb.on{color:var(--bl);border-bottom-color:var(--bl)}
 .pane{display:none}.pane.on{display:block}
 
-/* CARD / SECTION */
-.card{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r12);margin-bottom:1rem;overflow:hidden}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--bdr)}
-.card-title{font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px}
-.card-title svg{color:var(--tx3);width:14px;height:14px}
-.card-body{padding:.875rem 1rem}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-@media(max-width:900px){.two{grid-template-columns:1fr}}
+/* ── CARD ── */
+.card{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r10);margin-bottom:.875rem;overflow:hidden}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem;border-bottom:1px solid var(--bdr);gap:8px;flex-wrap:wrap}
+.ct{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.ct svg{width:13px;height:13px;color:var(--tx3)}
+.cb{padding:.75rem .875rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:.875rem}
 
-/* TABLE */
-.tbl-scroll{overflow-x:auto;max-height:420px;overflow-y:auto}
+/* ── TABLE ── */
+.tscroll{overflow-x:auto;max-height:400px;overflow-y:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:var(--s2);padding:7px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:10}
-td{padding:7px 10px;border-bottom:1px solid var(--bdr);vertical-align:middle;white-space:nowrap}
+th{background:var(--s2);padding:6px 8px;text-align:left;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:5}
+td{padding:6px 8px;border-bottom:1px solid var(--bdr);vertical-align:middle;white-space:nowrap}
 tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:rgba(61,158,255,.04)}
+tbody tr:hover td{background:rgba(61,158,255,.035)}
 
-/* PILL */
-.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap}
+/* ── PILL ── */
+.pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap}
 .p-gr{background:var(--gr-bg);color:var(--gr);border:1px solid var(--gr-bdr)}
 .p-am{background:var(--am-bg);color:var(--am);border:1px solid var(--am-bdr)}
 .p-rd{background:var(--rd-bg);color:var(--rd);border:1px solid var(--rd-bdr)}
 .p-bl{background:var(--bl-bg);color:var(--bl);border:1px solid var(--bl-bdr)}
 .p-gy{background:var(--s3);color:var(--tx2);border:1px solid var(--bdr)}
 
-/* PROGRESS */
-.prog{display:flex;align-items:center;gap:6px;min-width:110px}
-.prog-bg{flex:1;height:5px;background:var(--s4);border-radius:99px;overflow:hidden;min-width:60px}
-.prog-fill{height:100%;border-radius:99px}
-.prog-lbl{font-family:var(--mono);font-size:10px;min-width:34px;text-align:right;color:var(--tx2)}
+/* ── PROGRESS ── */
+.prog{display:flex;align-items:center;gap:5px;min-width:100px}
+.pbg{flex:1;height:4px;background:var(--s4);border-radius:99px;overflow:hidden;min-width:50px}
+.pf{height:100%;border-radius:99px;transition:width .4s}
+.plbl{font-family:var(--mono);font-size:10px;min-width:30px;text-align:right;color:var(--tx2)}
 
-/* FILTERS */
-.filter-bar{display:flex;gap:8px;padding:.625rem 1rem;border-bottom:1px solid var(--bdr);flex-wrap:wrap;align-items:center;background:var(--s2)}
-.sbox{display:flex;align-items:center;gap:6px;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r8);padding:5px 10px;min-width:200px;flex:1}
-.sbox svg{width:13px;height:13px;color:var(--tx3);flex-shrink:0}
+/* ── FILTER BAR ── */
+.fbar{display:flex;gap:6px;padding:.5rem .875rem;border-bottom:1px solid var(--bdr);flex-wrap:wrap;align-items:center;background:var(--s2)}
+.sbox{display:flex;align-items:center;gap:5px;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);padding:4px 8px;flex:1;min-width:160px}
+.sbox svg{width:12px;height:12px;color:var(--tx3);flex-shrink:0}
 .sbox input{background:none;border:none;outline:none;color:var(--tx);font-family:var(--fnt);font-size:12px;width:100%}
 .sbox input::placeholder{color:var(--tx3)}
-select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r8);padding:5px 10px;color:var(--tx);font-family:var(--fnt);font-size:12px;outline:none;cursor:pointer}
-select:focus{border-color:var(--bdr2)}
+select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);padding:4px 8px;color:var(--tx);font-family:var(--fnt);font-size:11px;outline:none;cursor:pointer}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--r8);font-size:11px;font-family:var(--fnt);font-weight:600;cursor:pointer;transition:.15s;border:1px solid var(--bdr);background:var(--s2);color:var(--tx2)}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--r6);font-size:11px;font-family:var(--fnt);font-weight:600;cursor:pointer;transition:.12s;border:1px solid var(--bdr);background:var(--s2);color:var(--tx2)}
 .btn:hover{color:var(--tx);border-color:var(--bdr2)}
-.btn-gr{background:var(--gr-bg);border-color:var(--gr-bdr);color:var(--gr)}.btn-gr:hover{background:rgba(0,229,160,.15)}
-.btn-bl{background:var(--bl-bg);border-color:var(--bl-bdr);color:var(--bl)}.btn-bl:hover{background:rgba(61,158,255,.15)}
-.btn-am{background:var(--am-bg);border-color:var(--am-bdr);color:var(--am)}.btn-am:hover{background:rgba(255,184,48,.15)}
+.btn-gr{background:var(--gr-bg);border-color:var(--gr-bdr);color:var(--gr)}.btn-gr:hover{background:rgba(0,229,160,.13)}
+.btn-bl{background:var(--bl-bg);border-color:var(--bl-bdr);color:var(--bl)}.btn-bl:hover{background:rgba(61,158,255,.13)}
+.btn-am{background:var(--am-bg);border-color:var(--am-bdr);color:var(--am)}.btn-am:hover{background:rgba(255,184,48,.13)}
+.btn-rd{background:var(--rd-bg);border-color:var(--rd-bdr);color:var(--rd)}
 
-/* AVATAR */
-.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.av-bl{background:var(--bl-bg);color:var(--bl)} .av-gr{background:var(--gr-bg);color:var(--gr)} .av-am{background:var(--am-bg);color:var(--am)} .av-rd{background:var(--rd-bg);color:var(--rd)}
-.fr{display:flex;align-items:center;gap:7px}
+/* ── AVATAR ── */
+.av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
+.av-bl{background:var(--bl-bg);color:var(--bl)}.av-gr{background:var(--gr-bg);color:var(--gr)}
+.av-am{background:var(--am-bg);color:var(--am)}.av-rd{background:var(--rd-bg);color:var(--rd)}
+.av-pu{background:var(--pu-bg);color:var(--pu)}
+.fr{display:flex;align-items:center;gap:6px}
 
-/* NOTIF PANEL */
-.np{position:fixed;top:56px;right:1rem;width:340px;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r12);z-index:500;display:none;box-shadow:0 12px 40px rgba(0,0,0,.6)}
-.np.open{display:block}
-.np-head{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid var(--bdr)}
-.np-item{padding:.625rem 1rem;border-bottom:1px solid var(--bdr);cursor:pointer;transition:.15s;display:flex;gap:9px;align-items:flex-start}
-.np-item:hover{background:var(--s2)} .np-item:last-child{border:none}
-.np-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.np-ttl{font-size:12px;font-weight:600;margin-bottom:2px}
-.np-sub{font-size:11px;color:var(--tx2)} .np-time{font-size:10px;color:var(--tx3);font-family:var(--mono);margin-top:3px}
+/* ── CHART ── */
+.cwrap{height:200px;position:relative}
+.cwrap-lg{height:300px;position:relative}
 
-/* MODAL */
-.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;display:none;align-items:center;justify-content:center}
+/* ── PETA ── */
+.peta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.pkard{background:var(--s2);border:1px solid var(--bdr);border-radius:var(--r10);padding:.75rem .875rem;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.pkard:hover{border-color:var(--bdr2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.pkard-bar{height:2px;position:absolute;top:0;left:0;right:0}
+.pkard-kode{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.pkard-nm{font-weight:700;font-size:12px;margin:3px 0 6px}
+.pkard-stats{display:flex;gap:8px;margin-top:8px}
+.pkard-st{flex:1;text-align:center}
+.pkard-sv{font-family:var(--mono);font-size:14px;font-weight:500}
+.pkard-sl{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px}
+
+/* ── MODAL ── */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:600;display:none;align-items:center;justify-content:center}
 .moverlay.open{display:flex}
-.modal{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r16);width:420px;max-width:92vw;max-height:85vh;overflow-y:auto}
-.m-head{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--bdr);position:sticky;top:0;background:var(--s1)}
-.m-body{padding:1rem 1.25rem}
-.mopt{display:flex;align-items:center;gap:10px;padding:.75rem 1rem;border:1px solid var(--bdr);border-radius:var(--r8);cursor:pointer;transition:.15s;margin-bottom:8px}
+.modal{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r14);width:400px;max-width:92vw;max-height:85vh;overflow-y:auto}
+.mh{display:flex;justify-content:space-between;align-items:center;padding:.875rem 1rem;border-bottom:1px solid var(--bdr)}
+.mb{padding:.875rem 1rem;display:flex;flex-direction:column;gap:6px}
+.mopt{display:flex;align-items:center;gap:10px;padding:.625rem .875rem;border:1px solid var(--bdr);border-radius:var(--r6);cursor:pointer;transition:.12s}
 .mopt:hover{border-color:var(--bl-bdr);background:var(--bl-bg)}
-.mopt svg{width:20px;height:20px;flex-shrink:0}
-.mopt-t{font-size:12px;font-weight:600} .mopt-s{font-size:11px;color:var(--tx3);margin-top:1px}
+.mot{font-size:12px;font-weight:600}.mos{font-size:10px;color:var(--tx3);margin-top:1px}
 
-/* SLS DETAIL TABLE */
-.sls-tbl-row td:nth-child(4){font-family:var(--mono)} /* target */
-.sls-tbl-row td:nth-child(5){font-family:var(--mono);color:var(--bl)} /* open */
-.sls-tbl-row td:nth-child(6){font-family:var(--mono);color:var(--gr)} /* submit */
+/* ── NOTIF ── */
+.np{position:fixed;top:54px;right:.875rem;width:320px;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r10);z-index:500;display:none;box-shadow:0 16px 48px rgba(0,0,0,.7)}
+.np.open{display:block}
+.np-h{display:flex;justify-content:space-between;align-items:center;padding:.625rem .875rem;border-bottom:1px solid var(--bdr)}
+.np-item{padding:.5rem .875rem;border-bottom:1px solid var(--bdr);cursor:pointer;transition:.12s;display:flex;gap:8px}
+.np-item:hover{background:var(--s2)}.np-item:last-child{border:none}
+.np-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
 
-/* TOAST */
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--s2);border:1px solid var(--gr-bdr);border-radius:var(--r8);padding:.625rem 1rem;font-size:12px;display:flex;align-items:center;gap:8px;color:var(--gr);z-index:700;transform:translateY(60px);opacity:0;transition:.3s}
+/* ── BACK BTN ── */
+.bbtn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--bl);cursor:pointer;padding:3px 9px;border-radius:var(--r6);border:1px solid var(--bl-bdr);background:var(--bl-bg);transition:.12s}
+.bbtn:hover{background:rgba(61,158,255,.18)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--s2);border:1px solid var(--gr-bdr);border-radius:var(--r6);padding:.5rem .875rem;font-size:12px;display:flex;align-items:center;gap:7px;color:var(--gr);z-index:700;transform:translateY(50px);opacity:0;transition:.3s;pointer-events:none}
 .toast.show{transform:translateY(0);opacity:1}
 
-/* PETA GRID */
-.peta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px}
-.peta-card{background:var(--s2);border:1px solid var(--bdr);border-radius:var(--r12);padding:.875rem 1rem;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
-.peta-card:hover{border-color:var(--bdr2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
-.peta-accent{height:3px;position:absolute;top:0;left:0;right:0}
-.peta-name{font-weight:700;font-size:12px;margin:6px 0 4px}
-.peta-stats{display:flex;gap:10px;margin-top:8px}
-.peta-stat{flex:1;text-align:center}
-.peta-stat-v{font-family:var(--mono);font-size:15px;font-weight:500}
-.peta-stat-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+/* ── LOADING ── */
+.loverlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.lsp{width:36px;height:36px;border:2.5px solid var(--s3);border-top-color:var(--bl);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loverlay.done{display:none}
+.lerr{max-width:420px;text-align:center;padding:1rem;background:var(--s1);border:1px solid var(--rd-bdr);border-radius:var(--r10);line-height:1.7}
 
-/* CHART */
-.chart-wrap{height:220px;position:relative}
-
-/* EVAL PPL DETAIL */
-.ppl-sls-head{background:var(--s2);border:1px solid var(--bdr);border-radius:var(--r8);padding:.75rem 1rem;margin-bottom:.625rem;display:flex;justify-content:space-between;align-items:center}
-.back-btn{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--bl);cursor:pointer;padding:4px 10px;border-radius:var(--r8);border:1px solid var(--bl-bdr);background:var(--bl-bg);transition:.15s}
-.back-btn:hover{background:rgba(61,158,255,.2)}
-
-/* SLS STATUS CHIP */
-.sls-ok{color:var(--gr)} .sls-partial{color:var(--am)} .sls-empty{color:var(--rd)}
-
-/* STRUCT */
-.struct-box{background:var(--s3);border:1px solid var(--bdr);border-radius:var(--r8);padding:.875rem 1.25rem;text-align:center}
-.struct-arrow{text-align:center;color:var(--tx3);font-size:18px;margin:4px 0}
-.struct-label{font-size:10px;color:var(--tx3);margin-top:3px}
+/* ── DETAIL PANEL ── */
+.detail-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:.75rem}
 </style>
 </head>
 <body>
-<div class="shell">
+
+<div class="loverlay" id="loverlay">
+  <div class="lsp" id="lsp"></div>
+  <div style="font-size:13px;color:var(--tx2)">Memuat Dashboard SE2026…</div>
+  <div style="font-family:var(--mono);font-size:11px;color:var(--tx3)" id="lstep">Menginisialisasi…</div>
+</div>
+
+<div class="shell" id="shell" style="display:none">
 
 <!-- HEADER -->
 <header>
-  <div class="hdr-logo">
-    <div class="hdr-emblem">BPS</div>
-    <div>
-      <div class="hdr-title">Dashboard Monitoring Sensus Ekonomi 2026</div>
-      <div class="hdr-sub" id="hdr-kabupaten">—</div>
-    </div>
+  <div class="logo">BPS</div>
+  <div>
+    <div class="hd-title">Monitoring Sensus Ekonomi 2026</div>
+    <div class="hd-sub" id="hd-kab">—</div>
   </div>
-  <div class="hdr-space"></div>
-  <div class="hdr-pill"><div class="live-dot"></div><span>Live</span><span id="hdr-date" style="font-family:var(--mono)">—</span></div>
-  <button class="hdr-btn" onclick="doExportModal()">
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 13h12"/></svg>
-    Export
+  <div class="hspace"></div>
+  <div class="upd-pill"><div class="upd-dot"></div>Update: <span id="hd-date" style="color:var(--tx)">—</span></div>
+  <button class="hbtn" onclick="openModal()">
+    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M7 1v8m0 0L4.5 6.5M7 9l2.5-2.5M1.5 12h11"/></svg>Export
   </button>
-  <div class="notif-wrap">
-    <div class="notif-ico" id="notif-ico" onclick="toggleNp()">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15"><path d="M8 2a4 4 0 0 1 4 4v2l1 2H3l1-2V6a4 4 0 0 1 4-4zm-1 10h2"/></svg>
-      <span class="nbadge" id="nbadge">0</span>
-    </div>
+  <div style="position:relative">
+    <button class="hbtn" id="nbtn" onclick="toggleNp()" style="position:relative">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M7 1.5a3 3 0 0 1 3 3V7l1 2H3l1-2V4.5a3 3 0 0 1 3-3zM5.5 9.5h3"/></svg>
+      <span id="nbadge" style="position:absolute;top:-5px;right:-5px;background:var(--rd);color:#fff;font-size:9px;min-width:15px;height:15px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0 3px">0</span>
+    </button>
     <div class="np" id="np">
-      <div class="np-head"><span style="font-size:12px;font-weight:700">Notifikasi</span><span style="font-size:11px;color:var(--bl);cursor:pointer" onclick="markAll()">Tandai semua dibaca</span></div>
+      <div class="np-h"><span style="font-size:12px;font-weight:700">Notifikasi</span><span style="font-size:11px;color:var(--bl);cursor:pointer" onclick="markAll()">Semua dibaca</span></div>
       <div id="np-list"></div>
     </div>
   </div>
@@ -227,80 +224,69 @@ select:focus{border-color:var(--bdr2)}
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sb-sect">
-    <div class="sb-lbl">Navigasi</div>
-    <div class="sb-item on" onclick="goPan('rekap',this)" id="si-rekap">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="9" width="3" height="6"/><rect x="6" y="5" width="3" height="10"/><rect x="11" y="1" width="3" height="14"/></svg>
-      Rekap Wilayah<span class="sb-chip" id="sbc-kec">24</span>
+  <div class="sb-top">
+    <div class="sb-lbl">Monitoring</div>
+    <div class="nav on" id="si-rekap" onclick="goPane('rekap',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="8" width="2.5" height="5"/><rect x="5.5" y="4.5" width="2.5" height="8.5"/><rect x="10" y="1" width="2.5" height="12"/></svg>
+      Rekap Wilayah<span class="chip" id="ch-kec">24</span>
     </div>
-    <div class="sb-item" onclick="goPan('pml',this)" id="si-pml">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="3"/><path d="M1 14c0-3 2-5 5-5m5 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 0v5m2-3h-4"/></svg>
-      Per PML<span class="sb-chip" id="sbc-pml">—</span>
+    <div class="nav" id="si-pml" onclick="goPane('pml',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="4" r="2.5"/><path d="M1 13c0-2.5 1.8-4 4-4m4.5.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm0 0V13m1.5-2.5h-3"/></svg>
+      Per PML<span class="chip" id="ch-pml">—</span>
     </div>
-    <div class="sb-item" onclick="goPan('ppl',this)" id="si-ppl">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="4" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
-      Per PPL<span class="sb-chip" id="sbc-ppl">—</span>
+    <div class="nav" id="si-ppl" onclick="goPane('ppl',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="3.5" r="2.5"/><path d="M2 13c0-3 2.2-5 5-5s5 2 5 5"/></svg>
+      Per PPL<span class="chip" id="ch-ppl">—</span>
     </div>
-    <div class="sb-item" onclick="goPan('eval',this)" id="si-eval">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h10v10H3zM6 8h4M6 10h2"/><path d="M6 6h4"/></svg>
-      Evaluasi SLS<span class="sb-chip" id="sbc-sls">—</span>
+    <div class="nav" id="si-eval" onclick="goPane('eval',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="10" height="10" rx="1"/><path d="M5 6.5h4M5 9h2.5M5 4.5h4"/></svg>
+      Evaluasi SLS<span class="chip" id="ch-sls">—</span>
     </div>
-    <div class="sb-item" onclick="goPan('peta',this)" id="si-peta">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1a5 5 0 0 1 5 5c0 3.5-5 9-5 9S3 9.5 3 6a5 5 0 0 1 5-5z"/><circle cx="8" cy="6" r="1.5"/></svg>
+    <div class="nav" id="si-peta" onclick="goPane('peta',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1a4.5 4.5 0 0 1 4.5 4.5C11.5 9 7 13 7 13S2.5 9 2.5 5.5A4.5 4.5 0 0 1 7 1z"/><circle cx="7" cy="5.5" r="1.5"/></svg>
       Peta Spasial
     </div>
-  </div>
-  <div class="sb-div"></div>
-  <div class="sb-sect">
-    <div class="sb-lbl">Aksi</div>
-    <div class="sb-item" onclick="doExportModal()">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0-3-3m3 3 3-3M2 13h12"/></svg>
+    <div class="sb-div"></div>
+    <div class="sb-lbl">Lainnya</div>
+    <div class="nav" onclick="openModal()">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1v8m0 0L4.5 6.5M7 9l2.5-2.5M1.5 12h11"/></svg>
       Export Laporan
     </div>
-    <div class="sb-item" onclick="goPan('notif',this)" id="si-notif">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a4 4 0 0 1 4 4v2l1 2H3l1-2V6a4 4 0 0 1 4-4zm-1 10h2"/></svg>
-      Notifikasi<span class="sb-chip sb-notif-chip" id="sbc-notif">0</span>
+    <div class="nav" id="si-notif" onclick="goPane('notif',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1.5a3 3 0 0 1 3 3V7l1 2H3l1-2V4.5a3 3 0 0 1 3-3zM5.5 9.5h3"/></svg>
+      Notifikasi<span class="chip chip-rd" id="ch-notif">0</span>
     </div>
   </div>
-  <div class="sb-div"></div>
   <div class="sb-meta">
-    <div>Update: <span id="sb-upd" style="color:var(--tx2)">—</span></div>
-    <div>Target selesai: <span id="sb-target" style="color:var(--am)">—</span></div>
-    <div style="margin-top:4px;font-size:9px">Sumber: data.js</div>
+    <div>Update: <span id="sb-upd">—</span></div>
+    <div>Target: <span id="sb-tgt">—</span></div>
+    <div>SLS lapor: <span id="sb-lap">—</span></div>
+    <div style="margin-top:4px;font-size:9px;color:var(--tx3)">data_static.json · data_penyelesaian.json</div>
   </div>
 </aside>
 
 <!-- CONTENT -->
 <div class="content">
-
-  <!-- METRICS -->
   <div class="metrics" id="metrics-row"></div>
 
-  <!-- TAB BAR -->
   <div class="tab-bar">
     <button class="tb on" id="tb-rekap" onclick="switchTab('rekap',this)">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><rect x="1" y="8" width="3" height="5"/><rect x="5.5" y="4" width="3" height="9"/><rect x="10" y="1" width="3" height="12"/></svg>
-      Rekap Wilayah
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><rect x="1" y="7" width="2" height="5"/><rect x="5" y="4" width="2" height="8"/><rect x="9" y="1" width="2" height="11"/></svg>Rekap
     </button>
     <button class="tb" id="tb-pml" onclick="switchTab('pml',this)">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5" cy="4" r="2.5"/><path d="M1 12c0-2.5 1.8-4.5 4-4.5m4 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm0 0v4.5m1.5-2.5h-3"/></svg>
-      Per PML
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><circle cx="4.5" cy="3.5" r="2"/><path d="M1 12c0-2 1.5-3.5 3.5-3.5m4 .5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 0V12m1.5-2h-3"/></svg>PML
     </button>
     <button class="tb" id="tb-ppl" onclick="switchTab('ppl',this)">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="7" cy="3.5" r="2.5"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
-      Per PPL
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><circle cx="6.5" cy="3" r="2"/><path d="M1.5 12c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>PPL
     </button>
     <button class="tb" id="tb-eval" onclick="switchTab('eval',this)">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><rect x="2" y="2" width="10" height="10" rx="1"/><path d="M5 7h4M5 9h2M5 5h4"/></svg>
-      Evaluasi SLS
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><rect x="1.5" y="1.5" width="10" height="10" rx="1"/><path d="M4.5 6.5h4M4.5 9h2.5M4.5 4.5h4"/></svg>Eval SLS
     </button>
     <button class="tb" id="tb-peta" onclick="switchTab('peta',this)">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M7 1a4.5 4.5 0 0 1 4.5 4.5C11.5 8.5 7 13 7 13S2.5 8.5 2.5 5.5A4.5 4.5 0 0 1 7 1z"/><circle cx="7" cy="5.5" r="1.5"/></svg>
-      Peta Spasial
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><path d="M6.5 1a4 4 0 0 1 4 4C10.5 8.5 6.5 12 6.5 12S2.5 8.5 2.5 5a4 4 0 0 1 4-4z"/><circle cx="6.5" cy="5" r="1.5"/></svg>Peta
     </button>
     <button class="tb" id="tb-notif" onclick="switchTab('notif',this)">
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M7 1.5a3.5 3.5 0 0 1 3.5 3.5v1.5l1 2H2.5L3.5 6.5V5A3.5 3.5 0 0 1 7 1.5zM6 11.5h2"/></svg>
-      Notifikasi
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><path d="M6.5 1.5a2.5 2.5 0 0 1 2.5 2.5v2l1 2H3l1-2V4a2.5 2.5 0 0 1 2.5-2.5zM5.5 9h2"/></svg>Notifikasi
     </button>
   </div>
 
@@ -308,861 +294,795 @@ select:focus{border-color:var(--bdr2)}
   <div class="pane on" id="pane-rekap">
     <div class="two">
       <div class="card">
-        <div class="card-head">
-          <div class="card-title"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><rect x="1" y="7" width="2.5" height="5.5"/><rect x="5" y="4" width="2.5" height="8.5"/><rect x="9" y="1" width="2.5" height="11.5"/></svg>Progres Kecamatan</div>
-          <select id="chart-sort" onchange="renderBarChart()" style="font-size:11px;padding:4px 8px">
-            <option value="nama">A–Z</option><option value="asc">Progres ↑</option><option value="desc">Progres ↓</option>
+        <div class="ch">
+          <div class="ct">Progres per Kecamatan</div>
+          <select id="bsort" onchange="renderBar()" style="font-size:11px;padding:3px 7px">
+            <option value="nm">A–Z</option><option value="asc">Progres ↑</option><option value="desc">Progres ↓</option>
           </select>
         </div>
-        <div class="card-body"><div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
-          <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:10px;color:var(--tx2)">
-            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--gr);display:inline-block"></span>≥70% On track</span>
-            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--am);display:inline-block"></span>45–69% Perlu perhatian</span>
-            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--rd);display:inline-block"></span>&lt;45% Terlambat</span>
+        <div class="cb"><div class="cwrap"><canvas id="bar-c"></canvas></div>
+          <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;font-size:10px;color:var(--tx2)">
+            <span><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--gr);margin-right:3px"></span>≥70% On track</span>
+            <span><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--am);margin-right:3px"></span>45–69% Perlu perhatian</span>
+            <span><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:var(--rd);margin-right:3px"></span>&lt;45% Terlambat</span>
           </div>
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title">Distribusi Status Kecamatan</div></div>
-        <div class="card-body"><div class="chart-wrap"><canvas id="doughnut-chart"></canvas></div><div id="doughnut-leg" style="display:flex;justify-content:center;gap:14px;margin-top:10px;flex-wrap:wrap;font-size:10px;color:var(--tx2)"></div></div>
+        <div class="ch"><div class="ct">Distribusi Status</div></div>
+        <div class="cb"><div class="cwrap"><canvas id="dnt-c"></canvas></div>
+          <div id="dnt-leg" style="display:flex;justify-content:center;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:10px;color:var(--tx2)"></div>
+        </div>
       </div>
     </div>
     <div class="card">
-      <div class="card-head">
-        <div class="card-title">Tabel Rekap per Kecamatan</div>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-gr" onclick="exportExcel('kec')">Excel</button>
-          <button class="btn" onclick="exportCsv('kec')">CSV</button>
+      <div class="ch">
+        <div class="ct">Tabel Rekap Kecamatan</div>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-gr" onclick="exportXL('kec')">Excel</button>
+          <button class="btn" onclick="exportCSV('kec')">CSV</button>
         </div>
       </div>
-      <div class="filter-bar">
-        <div class="sbox"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="6" cy="6" r="4"/><path d="m9.5 9.5 3 3"/></svg><input id="kec-q" placeholder="Cari kecamatan…" oninput="renderKec()"></div>
-        <select id="kec-sf" onchange="renderKec()"><option value="">Semua status</option><option>On track</option><option>Perlu perhatian</option><option>Terlambat</option></select>
-        <select id="kec-of" onchange="renderKec()"><option value="">Urutkan…</option><option value="pct-d">Progres ↓</option><option value="pct-a">Progres ↑</option><option value="sls-d">SLS terbanyak</option></select>
+      <div class="fbar">
+        <div class="sbox"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5.5" cy="5.5" r="3.5"/><path d="m8.5 8.5 3 3"/></svg><input id="kq" placeholder="Cari kecamatan…" oninput="renderKec()"></div>
+        <select id="ksf" onchange="renderKec()"><option value="">Semua status</option><option>On track</option><option>Perlu perhatian</option><option>Terlambat</option></select>
+        <select id="kof" onchange="renderKec()"><option value="">Urutkan…</option><option value="pd">Progres ↓</option><option value="pa">Progres ↑</option><option value="sd">SLS terbanyak</option></select>
+        <span style="font-size:10px;color:var(--tx3);margin-left:4px;white-space:nowrap">Perkiraan = progres + 1,5% × sisa hari &nbsp;|&nbsp; <span id="sisa-hari-lbl"></span></span>
       </div>
-      <div class="tbl-scroll"><table><thead><tr>
-        <th>Kecamatan</th><th>Desa</th><th>PML</th><th>PPL</th><th>Total SLS</th><th>Target</th><th>Open</th><th>Submit</th><th>Progres</th><th>Status</th>
-      </tr></thead><tbody id="kec-tbody"></tbody></table></div>
+      <div class="tscroll"><table><thead><tr>
+        <th>Kecamatan</th><th>Desa</th><th>PML</th><th>PPL</th><th>Total SLS</th><th>Target Usaha</th><th>Selesai</th><th>Open</th><th>Progres</th><th>Perkiraan 25 Agt</th><th>Status</th>
+      </tr></thead><tbody id="kec-tb"></tbody></table></div>
     </div>
   </div>
 
   <!-- PANE: PML -->
   <div class="pane" id="pane-pml">
     <div class="card">
-      <div class="card-head">
-        <div class="card-title">Daftar PML & Kinerja Tim</div>
-        <button class="btn btn-gr" onclick="exportExcel('pml')">Export Excel</button>
+      <div class="ch">
+        <div class="ct">Kinerja PML</div>
+        <button class="btn btn-gr" onclick="exportXL('pml')">Export Excel</button>
       </div>
-      <div class="filter-bar">
-        <div class="sbox"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="6" cy="6" r="4"/><path d="m9.5 9.5 3 3"/></svg><input id="pml-q" placeholder="Cari nama PML…" oninput="renderPml()"></div>
-        <select id="pml-kf" onchange="renderPml()"><option value="">Semua kecamatan</option></select>
-        <select id="pml-sf" onchange="renderPml()"><option value="">Semua status</option><option>On track</option><option>Perlu perhatian</option><option>Terlambat</option></select>
+      <div class="fbar">
+        <div class="sbox"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5.5" cy="5.5" r="3.5"/><path d="m8.5 8.5 3 3"/></svg><input id="pmlq" placeholder="Cari nama PML…" oninput="renderPml()"></div>
+        <select id="pmlkf" onchange="renderPml()"><option value="">Semua kecamatan</option></select>
+        <select id="pmlsf" onchange="renderPml()"><option value="">Semua status</option><option>On track</option><option>Perlu perhatian</option><option>Terlambat</option></select>
       </div>
-      <div class="tbl-scroll"><table><thead><tr>
-        <th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Open</th><th>Submit</th><th>Progres</th><th>Status</th><th></th>
-      </tr></thead><tbody id="pml-tbody"></tbody></table></div>
+      <div class="tscroll"><table><thead><tr>
+        <th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Selesai</th><th>Open</th><th>Progres</th><th>Perkiraan 25 Agt</th><th>Status</th><th></th>
+      </tr></thead><tbody id="pml-tb"></tbody></table></div>
     </div>
   </div>
 
   <!-- PANE: PPL -->
   <div class="pane" id="pane-ppl">
     <div class="card">
-      <div class="card-head">
-        <div class="card-title">Daftar PPL & Kinerja per SLS</div>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-gr" onclick="exportExcel('ppl')">Excel</button>
-          <button class="btn" onclick="exportCsv('ppl')">CSV</button>
+      <div class="ch">
+        <div class="ct">Kinerja PPL</div>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-gr" onclick="exportXL('ppl')">Excel</button>
+          <button class="btn" onclick="exportCSV('ppl')">CSV</button>
         </div>
       </div>
-      <div class="filter-bar">
-        <div class="sbox"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="6" cy="6" r="4"/><path d="m9.5 9.5 3 3"/></svg><input id="ppl-q" placeholder="Cari nama PPL / desa…" oninput="renderPpl()"></div>
-        <select id="ppl-kf" onchange="()=>{filterDesaByKec('ppl');renderPpl()}"><option value="">Semua kecamatan</option></select>
-        <select id="ppl-df" onchange="renderPpl()"><option value="">Semua desa</option></select>
-        <select id="ppl-pmlf" onchange="renderPpl()"><option value="">Semua PML</option></select>
-        <select id="ppl-sf" onchange="renderPpl()"><option value="">Semua status</option><option>Selesai</option><option>On track</option><option>Perlu perhatian</option><option>Terlambat</option></select>
+      <div class="fbar">
+        <div class="sbox"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5.5" cy="5.5" r="3.5"/><path d="m8.5 8.5 3 3"/></svg><input id="pplq" placeholder="Cari nama PPL / desa…" oninput="renderPpl()"></div>
+        <select id="pplkf" onchange="onKecPpl()"><option value="">Semua kecamatan</option></select>
+        <select id="ppldf" onchange="renderPpl()"><option value="">Semua desa</option></select>
+        <select id="pplpf" onchange="renderPpl()"><option value="">Semua PML</option></select>
+        <select id="pplsf" onchange="renderPpl()"><option value="">Semua status</option><option>Selesai</option><option>On track</option><option>Perlu perhatian</option><option>Terlambat</option></select>
       </div>
-      <div class="tbl-scroll"><table><thead><tr>
-        <th>PPL</th><th>PML</th><th>Kecamatan</th><th>Desa</th><th>Jenis SLS</th><th>Jml SLS</th><th>Target</th><th>Open</th><th>Submit</th><th>Progres</th><th>Status</th><th></th>
-      </tr></thead><tbody id="ppl-tbody"></tbody></table></div>
+      <div class="tscroll"><table><thead><tr>
+        <th>PPL</th><th>PML</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Selesai</th><th>Open</th><th>Progres</th><th>Perkiraan 25 Agt</th><th>Status</th><th></th>
+      </tr></thead><tbody id="ppl-tb"></tbody></table></div>
     </div>
   </div>
 
-  <!-- PANE: EVALUASI SLS -->
+  <!-- PANE: EVAL -->
   <div class="pane" id="pane-eval">
-    <div id="eval-list-view">
+    <div id="ev-list">
       <div class="card">
-        <div class="card-head">
-          <div class="card-title">Evaluasi per PPL — Rincian SLS</div>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-gr" onclick="exportExcel('eval')">Export Semua SLS</button>
-          </div>
+        <div class="ch">
+          <div class="ct">Evaluasi per PPL — Rincian SLS</div>
+          <button class="btn btn-gr" onclick="exportXL('eval')">Export Semua SLS</button>
         </div>
-        <div class="filter-bar">
-          <div class="sbox"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="6" cy="6" r="4"/><path d="m9.5 9.5 3 3"/></svg><input id="ev-q" placeholder="Cari PPL / desa / SLS…" oninput="renderEvalList()"></div>
-          <select id="ev-kf" onchange="renderEvalList()"><option value="">Semua kecamatan</option></select>
-          <select id="ev-pmlf" onchange="renderEvalList()"><option value="">Semua PML</option></select>
-          <select id="ev-sf" onchange="renderEvalList()"><option value="">Semua status PPL</option><option>Selesai</option><option>On track</option><option>Perlu perhatian</option><option>Terlambat</option></select>
+        <div class="fbar">
+          <div class="sbox"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5.5" cy="5.5" r="3.5"/><path d="m8.5 8.5 3 3"/></svg><input id="evq" placeholder="Cari PPL / desa…" oninput="renderEval()"></div>
+          <select id="evkf" onchange="renderEval()"><option value="">Semua kecamatan</option></select>
+          <select id="evpf" onchange="renderEval()"><option value="">Semua PML</option></select>
+          <select id="evsf" onchange="renderEval()"><option value="">Semua status</option><option>Selesai</option><option>On track</option><option>Perlu perhatian</option><option>Terlambat</option></select>
         </div>
-        <div class="tbl-scroll"><table><thead><tr>
-          <th>PPL</th><th>Kecamatan</th><th>Desa</th><th>Jml SLS</th><th>Total Target</th><th>Total Open</th><th>Total Submit</th><th>Progres</th><th>Status</th><th>Detail SLS</th>
-        </tr></thead><tbody id="eval-tbody"></tbody></table></div>
+        <div class="tscroll"><table><thead><tr>
+          <th>PPL</th><th>Kecamatan</th><th>Desa</th><th>Jml SLS</th><th>Target</th><th>Selesai</th><th>Open</th><th>Progres</th><th>Perkiraan 25 Agt</th><th>Status</th><th>Detail</th>
+        </tr></thead><tbody id="ev-tb"></tbody></table></div>
       </div>
     </div>
-
-    <!-- DETAIL SLS per PPL -->
-    <div id="eval-detail-view" style="display:none">
+    <div id="ev-detail" style="display:none">
       <div class="card" style="margin-bottom:.75rem">
-        <div class="card-head">
-          <button class="back-btn" onclick="closeEvalDetail()">
-            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M9 2 4 7l5 5"/></svg>
-            Kembali
-          </button>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-gr" onclick="exportDetailSls()">Export SLS ini</button>
+        <div class="ch">
+          <div class="bbtn" onclick="closeDetail()">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><path d="M8 2 3.5 6.5 8 11"/></svg>Kembali
           </div>
+          <button class="btn btn-gr" onclick="exportXL('detail')">Export SLS PPL Ini</button>
         </div>
-        <div class="card-body">
-          <div id="eval-detail-info" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem"></div>
-          <div id="eval-detail-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:.875rem"></div>
+        <div class="cb">
+          <div id="ev-info" style="display:flex;gap:1rem;align-items:flex-start;margin-bottom:.625rem;flex-wrap:wrap"></div>
+          <div class="detail-metrics" id="ev-mets"></div>
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title">Rincian per SLS</div></div>
-        <div class="tbl-scroll">
-          <table><thead><tr>
-            <th>No</th><th>Nama SLS</th><th>Desa</th><th>Jenis</th><th>Target</th><th>Open</th><th>Submit</th><th>Progres</th><th>Status SLS</th>
-          </tr></thead><tbody id="detail-sls-tbody"></tbody></table>
-        </div>
+        <div class="ch"><div class="ct">Rincian per SLS</div></div>
+        <div class="tscroll"><table><thead><tr>
+          <th>No</th><th>regionCode</th><th>Desa</th><th>Target</th><th>Selesai</th><th>Open</th><th>Ditolak</th><th>Progres</th><th>Status SLS</th>
+        </tr></thead><tbody id="det-tb"></tbody></table></div>
       </div>
     </div>
   </div>
 
   <!-- PANE: PETA -->
   <div class="pane" id="pane-peta">
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-head">
-        <div class="card-title">Peta Progres per Kecamatan</div>
-        <select id="peta-met" onchange="renderPeta()"><option value="pct">Progres (%)</option><option value="submit">Total Submit</option><option value="sls">Total SLS</option></select>
+    <div class="card" style="margin-bottom:.875rem">
+      <div class="ch">
+        <div class="ct">Peta Progres Kecamatan</div>
+        <select id="petamet" onchange="renderPeta()"><option value="pct">Progres (%)</option><option value="sel">Selesai</option><option value="sls">Total SLS</option></select>
       </div>
-      <div class="card-body">
-        <div style="background:var(--s2);border:1px solid var(--bl-bdr);border-radius:var(--r8);padding:8px 12px;font-size:11px;color:var(--bl);display:flex;gap:6px;align-items:center;margin-bottom:12px">
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v3l2 1.5"/></svg>
-          Klik kartu kecamatan untuk melihat detail. Integrasi GeoJSON/OpenStreetMap bisa ditambahkan di versi berikutnya.
-        </div>
-        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:10px;color:var(--tx2)">
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--gr);display:inline-block"></span>≥70% On track</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--am);display:inline-block"></span>45–69% Perlu perhatian</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--rd);display:inline-block"></span>&lt;45% Terlambat</span>
+      <div class="cb">
+        <div style="background:var(--bl-bg);border:1px solid var(--bl-bdr);border-radius:var(--r6);padding:6px 10px;font-size:11px;color:var(--bl);display:flex;gap:5px;align-items:center;margin-bottom:10px">
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l1.5 1"/></svg>
+          Klik kartu untuk filter ke tabel Rekap
         </div>
         <div class="peta-grid" id="peta-grid"></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-head"><div class="card-title">Heatmap Horizontal</div></div>
-      <div class="card-body"><div style="height:280px;position:relative"><canvas id="heatmap-chart"></canvas></div></div>
+      <div class="ch"><div class="ct">Heatmap Horizontal</div></div>
+      <div class="cb"><div class="cwrap-lg"><canvas id="hm-c"></canvas></div></div>
     </div>
   </div>
 
   <!-- PANE: NOTIF -->
   <div class="pane" id="pane-notif">
     <div class="card">
-      <div class="card-head">
-        <div class="card-title">Pusat Notifikasi & Peringatan</div>
-        <div style="display:flex;gap:6px">
-          <select id="notif-filter" onchange="renderNotifTab()"><option value="">Semua</option><option value="rd">Kritis</option><option value="am">Peringatan</option><option value="bl">Info</option></select>
+      <div class="ch">
+        <div class="ct">Pusat Notifikasi</div>
+        <div style="display:flex;gap:5px">
+          <select id="nfil" onchange="renderNotifPane()"><option value="">Semua</option><option value="rd">Kritis</option><option value="am">Peringatan</option><option value="bl">Info</option></select>
           <button class="btn btn-am" onclick="markAll()">Tandai semua dibaca</button>
         </div>
       </div>
-      <div id="notif-tab-body" style="padding:.75rem 1rem;display:flex;flex-direction:column;gap:8px"></div>
+      <div id="notif-body" style="padding:.625rem .875rem;display:flex;flex-direction:column;gap:6px"></div>
     </div>
   </div>
-
 </div><!-- /content -->
 </div><!-- /shell -->
-
-<!-- NOTIF PANEL -->
-<div class="np" id="np">
-  <div class="np-head"><span style="font-size:12px;font-weight:700">Notifikasi</span><span style="font-size:11px;color:var(--bl);cursor:pointer" onclick="markAll()">Tandai semua</span></div>
-  <div id="np-list"></div>
-</div>
 
 <!-- EXPORT MODAL -->
 <div class="moverlay" id="exp-modal">
   <div class="modal">
-    <div class="m-head">
-      <span style="font-size:14px;font-weight:700">Export Laporan</span>
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16" style="cursor:pointer;color:var(--tx2)" onclick="closeModal()"><path d="m2 2 10 10M12 2 2 12"/></svg>
+    <div class="mh">
+      <span style="font-size:13px;font-weight:700">Export Laporan</span>
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15" style="cursor:pointer;color:var(--tx2)" onclick="closeModal()"><path d="m2 2 9 9M11 2 2 11"/></svg>
     </div>
-    <div class="m-body">
-      <div class="mopt" onclick="exportExcel('all');closeModal()">
-        <svg viewBox="0 0 20 20" fill="#1D6F42" width="20" height="20"><rect x="3" y="2" width="14" height="16" rx="2"/><path fill="#fff" d="M7 7l2 3-2 3h1.5l1.5-2.5L11.5 13H13l-2-3 2-3h-1.5L10 9.5 8.5 7z"/></svg>
-        <div><div class="mopt-t">Excel — Semua Data</div><div class="mopt-s">Kecamatan + PML + PPL + SLS dalam sheet terpisah</div></div>
+    <div class="mb">
+      <div class="mopt" onclick="exportXL('all');closeModal()">
+        <svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg>
+        <div><div class="mot">Excel — Semua Data</div><div class="mos">Kecamatan + PML + PPL + SLS dalam sheet terpisah</div></div>
       </div>
-      <div class="mopt" onclick="exportExcel('kec');closeModal()">
-        <svg viewBox="0 0 20 20" fill="#1D6F42" width="20" height="20"><rect x="3" y="2" width="14" height="16" rx="2"/><path fill="#fff" d="M7 7l2 3-2 3h1.5l1.5-2.5L11.5 13H13l-2-3 2-3h-1.5L10 9.5 8.5 7z"/></svg>
-        <div><div class="mopt-t">Excel — Rekap Kecamatan</div><div class="mopt-s">Progres per kecamatan</div></div>
+      <div class="mopt" onclick="exportXL('kec');closeModal()">
+        <svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg>
+        <div><div class="mot">Excel — Rekap Kecamatan</div><div class="mos">Progres per kecamatan</div></div>
       </div>
-      <div class="mopt" onclick="exportExcel('ppl');closeModal()">
-        <svg viewBox="0 0 20 20" fill="#1D6F42" width="20" height="20"><rect x="3" y="2" width="14" height="16" rx="2"/><path fill="#fff" d="M7 7l2 3-2 3h1.5l1.5-2.5L11.5 13H13l-2-3 2-3h-1.5L10 9.5 8.5 7z"/></svg>
-        <div><div class="mopt-t">Excel — Data PPL</div><div class="mopt-s">Semua petugas + agregat SLS</div></div>
+      <div class="mopt" onclick="exportXL('ppl');closeModal()">
+        <svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg>
+        <div><div class="mot">Excel — Data PPL</div><div class="mos">Semua PPL + agregat SLS</div></div>
       </div>
-      <div class="mopt" onclick="exportExcel('eval');closeModal()">
-        <svg viewBox="0 0 20 20" fill="#1D6F42" width="20" height="20"><rect x="3" y="2" width="14" height="16" rx="2"/><path fill="#fff" d="M7 7l2 3-2 3h1.5l1.5-2.5L11.5 13H13l-2-3 2-3h-1.5L10 9.5 8.5 7z"/></svg>
-        <div><div class="mopt-t">Excel — Semua Data SLS</div><div class="mopt-s">Target, Open, Submit tiap SLS</div></div>
+      <div class="mopt" onclick="exportXL('eval');closeModal()">
+        <svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg>
+        <div><div class="mot">Excel — Semua SLS</div><div class="mos">Detail tiap regionCode</div></div>
       </div>
-      <div class="mopt" onclick="exportCsv('kec');closeModal()">
-        <svg viewBox="0 0 20 20" fill="none" stroke="var(--bl)" stroke-width="1.5" width="20" height="20"><rect x="3" y="2" width="14" height="16" rx="2"/><path d="M7 8.5h6M7 11.5h4"/></svg>
-        <div><div class="mopt-t">CSV — Rekap Kecamatan</div><div class="mopt-s">Format teks, mudah diimpor</div></div>
+      <div class="mopt" onclick="exportCSV('kec');closeModal()">
+        <svg viewBox="0 0 18 18" fill="none" stroke="var(--bl)" stroke-width="1.5" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path d="M5.5 7h7M5.5 10h5"/></svg>
+        <div><div class="mot">CSV — Rekap Kecamatan</div><div class="mos">Format teks, mudah diimpor</div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><circle cx="7" cy="7" r="5.5"/><path d="m4.5 7 1.5 1.5 3-3"/></svg>
-  <span id="toast-msg"></span>
-</div>
+<div class="toast" id="toast"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="6.5" cy="6.5" r="5"/><path d="m4 6.5 1.5 1.5 3-3"/></svg><span id="toast-msg"></span></div>
 
 <script>
 // ============================================================
-//  COMPUTED STATE (dari data.js)
+// GLOBALS
 // ============================================================
-let STATE = {};   // diisi oleh buildState()
-let notifs = [];
-let curDetailPplId = null;
+let ST=null, PY=null, STATE={}, NOTIFS=[], CUR_PPL=null;
 
-function buildState() {
-  const kecMap = {};
-  DB.kecamatan.forEach(k => { kecMap[k.id] = { ...k, pml_list:[], ppl_list:[], sls_list:[], target:0, open:0, submit:0 }; });
+const $=id=>document.getElementById(id);
+const fN=n=>n!=null?n.toLocaleString('id-ID'):'—';
+const pct=(a,b)=>b>0?Math.round(a/b*100):0;
+const ini=n=>n?n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase():'?';
+const avC=n=>{const c=(n?.charCodeAt(0)??0)%5;return['av-bl','av-gr','av-am','av-rd','av-pu'][c]};
+const st2cls=s=>({Selesai:'p-gr','On track':'p-gr','Perlu perhatian':'p-am',Terlambat:'p-rd'}[s]||'p-gy');
+const pill=s=>`<span class="pill ${st2cls(s)}">${s}</span>`;
+const pb=(p,w=100)=>{const c=p>=70?'var(--gr)':p>=45?'var(--am)':'var(--rd)';return`<div class="prog" style="min-width:${w}px"><div class="pbg"><div class="pf" style="width:${Math.min(p,100)}%;background:${c}"></div></div><span class="plbl" style="color:${c}">${p}%</span></div>`};
+const status=p=>p>=70?'On track':p>=45?'Perlu perhatian':'Terlambat';
+const statusPPL=(p,n)=>n===0?'Terlambat':p>=100?'Selesai':status(p);
 
-  const pmlMap = {};
-  DB.pml.forEach(p => { pmlMap[p.id] = { ...p, ppl_list:[], target:0, open:0, submit:0 }; });
+// ── PERKIRAAN ──────────────────────────────────────────────
+// Tanggal akhir pencacahan SE2026
+const DEADLINE = new Date('2026-08-25');
+function getSisaHari(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const diff=Math.ceil((DEADLINE-today)/(1000*60*60*24));
+  return Math.max(diff,0);
+}
+// perkiraan(%) = pct_sekarang + 1.5 * sisa_hari
+function calcPerkiraan(pct){ return Math.min(Math.round(pct + 1.5*getSisaHari()),200); }
+function statusPerkiraan(pk){
+  if(pk>100)return'Aman';
+  if(pk>=95)return'Waspada';
+  if(pk>=80)return'Terlambat';
+  return'Bahaya';
+}
+function pillPk(pk){
+  const s=statusPerkiraan(pk);
+  const cls={Aman:'p-gr',Waspada:'p-am',Terlambat:'p-rd',Bahaya:'p-rd'}[s];
+  const sty=s==='Bahaya'?'font-weight:800':'';
+  return`<span class="pill ${cls}" style="${sty}">${s} (${pk}%)</span>`;
+}
 
-  const pplMap = {};
-  DB.ppl.forEach(p => { pplMap[p.id] = { ...p, sls_list:[], target:0, open:0, submit:0 }; });
+function toast(msg){const t=$('toast');$('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+function step(s){$('lstep').textContent=s}
 
-  // Agregasi SLS ke PPL
-  DB.sls.forEach(s => {
-    if (!pplMap[s.ppl_id]) return;
-    pplMap[s.ppl_id].sls_list.push(s);
-    pplMap[s.ppl_id].target  += s.target;
-    pplMap[s.ppl_id].open    += s.open;
-    pplMap[s.ppl_id].submit  += s.submit;
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function boot(){
+  try{
+    step('Memuat data_static.json…');
+    const r1=await fetch('data_static.json');
+    if(!r1.ok)throw new Error(`data_static.json tidak ditemukan (${r1.status}). Jalankan: python generate_json.py --all`);
+    ST=await r1.json();
+
+    step('Memuat data_penyelesaian.json…');
+    const r2=await fetch('data_penyelesaian.json');
+    if(!r2.ok)throw new Error(`data_penyelesaian.json tidak ditemukan (${r2.status}). Jalankan: python generate_json.py --progress`);
+    PY=await r2.json();
+
+    step('Membangun state…');
+    buildState();
+    step('Merender…');
+    initUI();
+    $('loverlay').classList.add('done');
+    $('shell').style.display='grid';
+  }catch(e){
+    $('lstep').innerHTML=`<div class="lerr"><span style="color:var(--rd)">✖ ${e.message}</span><br><span style="font-size:10px;color:var(--tx3)">Buka F12 → Console untuk detail.</span></div>`;
+    $('lsp').style.display='none';
+    console.error('[SE2026]',e);
+  }
+}
+
+// ============================================================
+// BUILD STATE
+// ============================================================
+function buildState(){
+  const pm={};
+  (PY.penyelesaian||[]).forEach(p=>{pm[p.regionCode]=p});
+
+  const KEC={},PML={},PPL={};
+  ST.kecamatan.forEach(k=>{KEC[k.id]={...k,pml_ids:[],ppl_ids:[],target:0,selesai:0,open:0}});
+  ST.pml.forEach(p=>{PML[p.id]={...p,ppl_ids:[],target:0,selesai:0,open:0}});
+  ST.ppl.forEach(p=>{PPL[p.id]={...p,sls:[],target:0,selesai:0,open:0,ditolak:0}});
+
+  ST.sls.forEach(s=>{
+    const py=pm[s.id];
+    const pp=PPL[s.ppl_id]; if(!pp)return;
+    const det=py?py.detail:{};
+    // Selesai = jumlah usaha dengan status:
+    //   submitted_pencacah + approved_pengawas + rejected_admin_kab
+    //   + edited_pengawas + edited_admin_kab
+    const selFromDetail=py?(
+      (det.submitted_pencacah||0)+
+      (det.approved_pengawas||0)+
+      (det.rejected_admin||0)+
+      (det.edited_pengawas||0)+
+      (det.edited_admin||0)
+    ):0;
+    pp.sls.push({id:s.id,nmdesa:s.nmdesa,kdsls:s.kdsls,kdsubsls:s.kdsubsls,
+      target:py?py.target:0,selesai:selFromDetail,open:py?py.open:0,
+      ditolak:py?py.ditolak:0,detail:det});
+    pp.target+=py?py.target:0; pp.selesai+=selFromDetail;
+    pp.open+=py?py.open:0; pp.ditolak+=py?py.ditolak:0;
   });
 
-  // Agregasi PPL ke PML
-  DB.ppl.forEach(p => {
-    const pml = pmlMap[p.pml_id]; if (!pml) return;
-    const pp  = pplMap[p.id];
-    pml.ppl_list.push(p.id);
-    pml.target  += pp.target;
-    pml.open    += pp.open;
-    pml.submit  += pp.submit;
+  ST.ppl.forEach(p=>{
+    const pm2=PML[p.pml_id]; if(!pm2)return;
+    const pp=PPL[p.id];
+    if(!pm2.ppl_ids.includes(p.id)) pm2.ppl_ids.push(p.id);
+    pm2.target+=pp.target; pm2.selesai+=pp.selesai; pm2.open+=pp.open;
   });
 
-  // Agregasi PML ke Kecamatan (pakai pml.kec_id)
-  DB.pml.forEach(p => {
-    const kec = kecMap[p.kec_id]; if (!kec) return;
-    const pm = pmlMap[p.id];
-    kec.pml_list.push(p.id);
-    kec.target  += pm.target;
-    kec.open    += pm.open;
-    kec.submit  += pm.submit;
+  ST.pml.forEach(p=>{
+    const k=KEC[p.kec_id]; if(!k)return;
+    const pm2=PML[p.id];
+    if(!k.pml_ids.includes(p.id)) k.pml_ids.push(p.id);
+    k.target+=pm2.target; k.selesai+=pm2.selesai; k.open+=pm2.open;
   });
 
-  // Hitung pct dan status
-  const status = (pct) => pct >= 70 ? "On track" : pct >= 45 ? "Perlu perhatian" : "Terlambat";
-  const pct = (submit, target) => target > 0 ? Math.round(submit / target * 100) : 0;
+  Object.values(KEC).forEach(k=>{k.pct=pct(k.selesai,k.target);k.status=status(k.pct)});
+  Object.values(PML).forEach(p=>{p.pct=pct(p.selesai,p.target);p.status=status(p.pct)});
+  Object.values(PPL).forEach(p=>{p.pct=pct(p.selesai,p.target);p.status=statusPPL(p.pct,p.sls.length)});
 
-  Object.values(kecMap).forEach(k => { k.pct = pct(k.submit, k.target); k.status = status(k.pct); });
-  Object.values(pmlMap).forEach(p => { p.pct = pct(p.submit, p.target); p.status = status(p.pct); });
-  Object.values(pplMap).forEach(p => {
-    p.pct = pct(p.submit, p.target);
-    p.status = p.sls_list.length === 0 ? "Terlambat" : p.pct >= 100 ? "Selesai" : p.pct >= 70 ? "On track" : p.pct >= 45 ? "Perlu perhatian" : "Terlambat";
-  });
+  const tSel=Object.values(PPL).reduce((a,p)=>a+p.selesai,0);
+  const tTgt=Object.values(PPL).reduce((a,p)=>a+p.target,0);
+  const tOpn=Object.values(PPL).reduce((a,p)=>a+p.open,0);
 
-  const totalSubmit = Object.values(pplMap).reduce((a,p) => a+p.submit, 0);
-  const totalTarget = Object.values(pplMap).reduce((a,p) => a+p.target, 0);
-  const totalOpen   = Object.values(pplMap).reduce((a,p) => a+p.open, 0);
-  const totalPct    = pct(totalSubmit, totalTarget);
-
-  STATE = { kecMap, pmlMap, pplMap, totalSubmit, totalTarget, totalOpen, totalPct };
+  STATE={KEC,PML,PPL,tSel,tTgt,tOpn,tPct:pct(tSel,tTgt)};
 
   // Build notifs
-  notifs = [];
-  Object.values(pplMap).forEach(p => {
-    if (p.pct < 45 && p.target > 0) notifs.push({ type:"rd", title:`PPL ${p.nama} — progres ${p.pct}%`, sub:`${p.desa}, Kec. ${kecMap[p.kec_id]?.nama}. Submit ${p.submit} dari target ${p.target}.`, time:"Otomatis", read:false, ppl_id:p.id });
+  NOTIFS=[];
+  Object.values(PPL).forEach(p=>{
+    if(p.pct<45&&p.target>0)
+      NOTIFS.push({type:'rd',title:`PPL ${p.nama} — progres ${p.pct}%`,
+        sub:`${p.desa}, Kec. ${STATE.KEC[p.kec_id]?.nama}. Selesai ${fN(p.selesai)} dari ${fN(p.target)}.`,read:false});
   });
-  Object.values(kecMap).forEach(k => {
-    if (k.status === "Terlambat") notifs.push({ type:"rd", title:`Kec. ${k.nama}: progres ${k.pct}%`, sub:`${k.pml_list.length} PML, submit ${k.submit} dari target ${k.target}.`, time:"Otomatis", read:false });
-    else if (k.status === "Perlu perhatian") notifs.push({ type:"am", title:`Kec. ${k.nama}: progres ${k.pct}%`, sub:"Perlu perhatian agar tidak terlambat.", time:"Otomatis", read:false });
+  Object.values(KEC).forEach(k=>{
+    if(k.status==='Terlambat')
+      NOTIFS.push({type:'rd',title:`Kec. ${k.nama}: ${k.pct}% (Terlambat)`,
+        sub:`Selesai ${fN(k.selesai)} dari target ${fN(k.target)}.`,read:false});
+    else if(k.status==='Perlu perhatian')
+      NOTIFS.push({type:'am',title:`Kec. ${k.nama}: ${k.pct}% (Perlu perhatian)`,
+        sub:'Diperlukan percepatan.',read:false});
   });
-  notifs.push({ type:"bl", title:"Data dimuat dari data.js", sub:`Total ${DB.sls.length} SLS terdaftar. Update: ${DB.meta.tanggal_update}.`, time:DB.meta.tanggal_update, read:false });
+  NOTIFS.push({type:'bl',title:'Data berhasil dimuat',
+    sub:`${PY.total_sls_dilaporkan} SLS dilaporkan. Update: ${PY.tanggal_update}.`,read:false});
 }
 
 // ============================================================
-//  HELPERS
+// INIT UI
 // ============================================================
-const fmtN = n => n?.toLocaleString("id-ID") ?? "—";
-const statusPill = s => {
-  const m = { "On track":"p-gr Selesai":"p-gr", "Perlu perhatian":"p-am", "Terlambat":"p-rd", "Selesai":"p-gr" };
-  const cls = m[s] ?? "p-gy";
-  return `<span class="pill ${cls}">${s}</span>`;
-};
-const progBar = pct => {
-  const c = pct >= 70 ? "var(--gr)" : pct >= 45 ? "var(--am)" : "var(--rd)";
-  return `<div class="prog"><div class="prog-bg"><div class="prog-fill" style="width:${Math.min(pct,100)}%;background:${c}"></div></div><span class="prog-lbl" style="color:${c}">${pct}%</span></div>`;
-};
-const avCls = n => { const c = (n?.charCodeAt(0)??0) % 4; return ["av-bl","av-gr","av-am","av-rd"][c]; };
-const initials = n => n ? n.split(" ").slice(0,2).map(w=>w[0]).join("").toUpperCase() : "?";
-const getPml = id => STATE.pmlMap[id];
-const getKec = id => STATE.kecMap[id];
-const getPpl = id => STATE.pplMap[id];
-
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  document.getElementById("toast-msg").textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 3000);
+function initUI(){
+  const m=ST.meta;
+  $('hd-kab').textContent=`${m.nama_kabupaten} · SE ${m.tahun}`;
+  $('hd-date').textContent=PY.tanggal_update;
+  $('sb-upd').textContent=PY.tanggal_update;
+  $('sb-tgt').textContent=m.target_selesai;
+  $('sb-lap').textContent=`${PY.total_sls_dilaporkan}/${m.total_sls}`;
+  $('ch-kec').textContent=ST.kecamatan.length;
+  $('ch-pml').textContent=ST.meta.total_pml;
+  $('ch-ppl').textContent=ST.meta.total_ppl;
+  $('ch-sls').textContent=ST.meta.total_sls;
+  renderMetrics();
+  buildFilters();
+  renderKec(); renderPml(); renderPpl(); renderEval();
+  setTimeout(()=>{renderBar();renderDnt();},150);
+  refreshNotif();
+  const sh=getSisaHari();
+  const slEl=$('sisa-hari-lbl');
+  if(slEl) slEl.textContent=`Sisa: ${sh} hari menuju 25 Agt 2026`;
 }
 
 // ============================================================
-//  RENDER METRICS
+// METRICS
 // ============================================================
-function renderMetrics() {
-  const { totalSubmit, totalTarget, totalOpen, totalPct } = STATE;
-  const kecs = Object.values(STATE.kecMap);
-  const late = kecs.filter(k=>k.status==="Terlambat").length;
-  document.getElementById("metrics-row").innerHTML = `
-    <div class="mc c-bl"><div class="mc-glow"></div><div class="mc-lbl">Kecamatan</div><div class="mc-val">${fmtN(DB.meta.total_ppl > 0 ? DB.kecamatan.length : 24)}</div><div class="mc-sub">Wilayah kerja</div></div>
-    <div class="mc c-bl"><div class="mc-glow"></div><div class="mc-lbl">PML</div><div class="mc-val">${fmtN(DB.meta.total_pml)}</div><div class="mc-sub">Pengawas lapangan</div></div>
-    <div class="mc c-bl"><div class="mc-glow"></div><div class="mc-lbl">PPL</div><div class="mc-val">${fmtN(DB.meta.total_ppl)}</div><div class="mc-sub">Maks. 20 SLS/PPL</div></div>
-    <div class="mc c-pu"><div class="mc-glow"></div><div class="mc-lbl">Total SLS</div><div class="mc-val">${fmtN(DB.meta.total_sls)}</div><div class="mc-sub">Target cacah</div></div>
-    <div class="mc c-gr"><div class="mc-glow"></div><div class="mc-lbl">Submit</div><div class="mc-val">${fmtN(totalSubmit)}</div><div class="mc-sub">dari target ${fmtN(totalTarget)}</div></div>
-    <div class="mc ${totalPct>=70?"c-gr":totalPct>=45?"c-am":"c-rd"}"><div class="mc-glow"></div><div class="mc-lbl">Progres Global</div><div class="mc-val">${totalPct}%</div><div class="mc-sub">${late} kec. terlambat</div></div>
-  `;
+function renderMetrics(){
+  const {tSel,tTgt,tOpn,tPct,KEC}=STATE;
+  const late=Object.values(KEC).filter(k=>k.status==='Terlambat').length;
+  $('metrics-row').innerHTML=`
+    <div class="mc c-bl"><div class="mc-glow"></div><div class="mc-lbl">Kecamatan</div><div class="mc-val">${ST.kecamatan.length}</div><div class="mc-sub">Wilayah kerja</div></div>
+    <div class="mc c-pu"><div class="mc-glow"></div><div class="mc-lbl">PML</div><div class="mc-val">${ST.meta.total_pml}</div><div class="mc-sub">Pengawas</div></div>
+    <div class="mc c-bl"><div class="mc-glow"></div><div class="mc-lbl">PPL</div><div class="mc-val">${ST.meta.total_ppl}</div><div class="mc-sub">Pencacah</div></div>
+    <div class="mc c-cy"><div class="mc-glow"></div><div class="mc-lbl">Total SLS</div><div class="mc-val">${fN(ST.meta.total_sls)}</div><div class="mc-sub">Satuan cacah</div></div>
+    <div class="mc c-gr" title="Submitted+Approved+Rejected Admin+Edited Pengawas+Edited Admin"><div class="mc-glow"></div><div class="mc-lbl">Selesai</div><div class="mc-val">${fN(tSel)}</div><div class="mc-sub">dari ${fN(tTgt)} usaha</div></div>
+    <div class="mc ${tPct>=70?'c-gr':tPct>=45?'c-am':'c-rd'}"><div class="mc-glow"></div><div class="mc-lbl">Progres Global</div><div class="mc-val">${tPct}%</div><div class="mc-sub">${late} kec. terlambat</div></div>
+    ${(()=>{const sh=getSisaHari();const pk=calcPerkiraan(tPct);const spk=statusPerkiraan(pk);const cl=spk==='Aman'?'c-gr':spk==='Waspada'?'c-am':'c-rd';return`<div class="mc ${cl}"><div class="mc-glow"></div><div class="mc-lbl">Perkiraan 25 Agt</div><div class="mc-val">${pk}%</div><div class="mc-sub">${spk} · sisa ${sh} hari</div></div>`;})()}`;
 }
 
 // ============================================================
-//  RENDER KEK
+// FILTERS BUILD
 // ============================================================
-function renderKec() {
-  let d = Object.values(STATE.kecMap);
-  const q = (document.getElementById("kec-q")?.value||"").toLowerCase();
-  const sf = document.getElementById("kec-sf")?.value||"";
-  const of = document.getElementById("kec-of")?.value||"";
-  d = d.filter(k => k.nama.toLowerCase().includes(q) && (sf===""||k.status===sf));
-  if (of==="pct-d") d.sort((a,b)=>b.pct-a.pct);
-  else if (of==="pct-a") d.sort((a,b)=>a.pct-b.pct);
-  else if (of==="sls-d") d.sort((a,b)=>b.jumlah_sls-a.jumlah_sls);
-  document.getElementById("kec-tbody").innerHTML = d.map(k => `<tr>
+function buildFilters(){
+  const kecs=[...new Set(ST.pml.map(p=>p.kec_id))].map(id=>STATE.KEC[id]?.nama).filter(Boolean).sort();
+  const pmls=[...new Set(ST.pml.map(p=>p.nama))].sort();
+  ['pmlkf','pplkf','evkf'].forEach(id=>{
+    const s=$(id); if(!s)return;
+    s.innerHTML=`<option value="">Semua kecamatan</option>`+kecs.map(k=>`<option>${k}</option>`).join('');
+  });
+  ['pplpf','evpf'].forEach(id=>{
+    const s=$(id); if(!s)return;
+    s.innerHTML=`<option value="">Semua PML</option>`+pmls.map(p=>`<option>${p}</option>`).join('');
+  });
+}
+
+// ============================================================
+// REKAP KEC
+// ============================================================
+function renderKec(){
+  let d=Object.values(STATE.KEC);
+  const q=($('kq')?.value||'').toLowerCase();
+  const sf=$('ksf')?.value||'';
+  const of=$('kof')?.value||'';
+  d=d.filter(k=>k.nama.toLowerCase().includes(q)&&(sf===''||k.status===sf));
+  if(of==='pd')d.sort((a,b)=>b.pct-a.pct);
+  else if(of==='pa')d.sort((a,b)=>a.pct-b.pct);
+  else if(of==='sd')d.sort((a,b)=>b.jumlah_sls-a.jumlah_sls);
+  $('kec-tb').innerHTML=d.map(k=>`<tr>
     <td><strong>${k.nama}</strong></td>
-    <td>${fmtN(k.jumlah_desa)}</td>
-    <td>${fmtN(k.jumlah_pml)}</td>
-    <td>${fmtN(k.jumlah_ppl)}</td>
-    <td style="font-family:var(--mono)">${fmtN(k.jumlah_sls)}</td>
-    <td style="font-family:var(--mono)">${fmtN(k.target)}</td>
-    <td style="font-family:var(--mono);color:var(--bl)">${fmtN(k.open)}</td>
-    <td style="font-family:var(--mono);color:var(--gr)">${fmtN(k.submit)}</td>
-    <td>${progBar(k.pct)}</td>
-    <td>${statusPill(k.status)}</td>
-  </tr>`).join("");
+    <td style="font-family:var(--mono);text-align:center">${fN(k.jumlah_desa)}</td>
+    <td style="font-family:var(--mono);text-align:center">${fN(k.jumlah_pml)}</td>
+    <td style="font-family:var(--mono);text-align:center">${fN(k.jumlah_ppl)}</td>
+    <td style="font-family:var(--mono)">${fN(k.jumlah_sls)}</td>
+    <td style="font-family:var(--mono)">${fN(k.target)}</td>
+    <td style="font-family:var(--mono);color:var(--gr)">${fN(k.selesai)}</td>
+    <td style="font-family:var(--mono);color:var(--bl)">${fN(k.open)}</td>
+    <td>${pb(k.pct)}</td>
+    <td>${pillPk(calcPerkiraan(k.pct))}</td>
+    <td>${pill(k.status)}</td>
+  </tr>`).join('');
 }
 
 // ============================================================
-//  RENDER PML
+// PML
 // ============================================================
-function buildPmlFilters() {
-  const sel = document.getElementById("pml-kf");
-  const kecs = [...new Set(DB.pml.map(p=>p.kec_id))].map(id=>STATE.kecMap[id]?.nama).filter(Boolean).sort();
-  sel.innerHTML = `<option value="">Semua kecamatan</option>` + kecs.map(k=>`<option>${k}</option>`).join("");
-}
-
-function renderPml() {
-  let d = Object.values(STATE.pmlMap);
-  const q = (document.getElementById("pml-q")?.value||"").toLowerCase();
-  const kf = document.getElementById("pml-kf")?.value||"";
-  const sf = document.getElementById("pml-sf")?.value||"";
-  d = d.filter(p =>
-    p.nama.toLowerCase().includes(q) &&
-    (kf===""||STATE.kecMap[p.kec_id]?.nama===kf) &&
-    (sf===""||p.status===sf)
-  );
-  document.getElementById("pml-tbody").innerHTML = d.map(p => {
-    const kNm = STATE.kecMap[p.kec_id]?.nama||"—";
-    return `<tr>
-      <td><div class="fr"><div class="av ${avCls(p.nama)}">${initials(p.nama)}</div>${p.nama}</div></td>
-      <td>${kNm}</td>
-      <td style="font-family:var(--mono)">${p.ppl_list.length} <span style="font-size:10px;color:var(--tx3)">/ maks 8</span></td>
-      <td style="font-family:var(--mono)">${fmtN(p.target)}</td>
-      <td style="font-family:var(--mono);color:var(--bl)">${fmtN(p.open)}</td>
-      <td style="font-family:var(--mono);color:var(--gr)">${fmtN(p.submit)}</td>
-      <td>${progBar(p.pct)}</td>
-      <td>${statusPill(p.status)}</td>
-      <td><button class="btn btn-bl" style="font-size:10px" onclick="drillPml('${p.id}')">PPL →</button></td>
+function renderPml(){
+  let d=Object.values(STATE.PML);
+  const q=($('pmlq')?.value||'').toLowerCase();
+  const kf=$('pmlkf')?.value||'';
+  const sf=$('pmlsf')?.value||'';
+  d=d.filter(p=>p.nama.toLowerCase().includes(q)&&(kf===''||STATE.KEC[p.kec_id]?.nama===kf)&&(sf===''||p.status===sf));
+  $('pml-tb').innerHTML=d.map(p=>{
+    const kn=STATE.KEC[p.kec_id]?.nama||'—';
+    return`<tr>
+      <td><div class="fr"><div class="av ${avC(p.nama)}">${ini(p.nama)}</div>${p.nama}</div></td>
+      <td>${kn}</td>
+      <td style="font-family:var(--mono);text-align:center">${p.ppl_ids.length}</td>
+      <td style="font-family:var(--mono)">${fN(p.target)}</td>
+      <td style="font-family:var(--mono);color:var(--gr)">${fN(p.selesai)}</td>
+      <td style="font-family:var(--mono);color:var(--bl)">${fN(p.open)}</td>
+      <td>${pb(p.pct)}</td>
+      <td>${pillPk(calcPerkiraan(p.pct))}</td>
+      <td>${pill(p.status)}</td>
+      <td><button class="btn btn-bl" style="font-size:10px" onclick="drillPML('${p.id}')">PPL →</button></td>
     </tr>`;
-  }).join("");
+  }).join('');
+}
+function drillPML(id){
+  $('pplpf').value=STATE.PML[id]?.nama||'';
+  switchTab('ppl',$('tb-ppl')); renderPpl();
 }
 
-function drillPml(pmlId) {
-  document.getElementById("ppl-pmlf").value = STATE.pmlMap[pmlId]?.nama||"";
-  switchTab("ppl", document.getElementById("tb-ppl"));
+// ============================================================
+// PPL
+// ============================================================
+function onKecPpl(){
+  const kf=$('pplkf')?.value||'';
+  const dSel=$('ppldf');
+  const desas=kf?[...new Set(ST.ppl.filter(p=>STATE.KEC[p.kec_id]?.nama===kf).map(p=>p.desa))].sort():[];
+  dSel.innerHTML=`<option value="">Semua desa</option>`+desas.map(d=>`<option>${d}</option>`).join('');
   renderPpl();
 }
-
-// ============================================================
-//  RENDER PPL
-// ============================================================
-function buildPplFilters() {
-  const kSel = document.getElementById("ppl-kf");
-  const pmlSel = document.getElementById("ppl-pmlf");
-  const kecs = [...new Set(DB.ppl.map(p=>p.kec_id))].map(id=>STATE.kecMap[id]?.nama).filter(Boolean).sort();
-  kSel.innerHTML = `<option value="">Semua kecamatan</option>` + kecs.map(k=>`<option>${k}</option>`).join("");
-  const pmls = [...new Set(DB.pml.map(p=>p.nama))].sort();
-  pmlSel.innerHTML = `<option value="">Semua PML</option>` + pmls.map(n=>`<option>${n}</option>`).join("");
-  kSel.addEventListener("change", () => { filterDesaByKec("ppl"); renderPpl(); });
-}
-
-function filterDesaByKec(prefix) {
-  const kf = document.getElementById(`${prefix}-kf`)?.value||"";
-  const dSel = document.getElementById(`${prefix}-df`);
-  if (!dSel) return;
-  const desas = kf
-    ? [...new Set(DB.ppl.filter(p=>STATE.kecMap[p.kec_id]?.nama===kf).map(p=>p.desa))].sort()
-    : [];
-  dSel.innerHTML = `<option value="">Semua desa</option>` + desas.map(d=>`<option>${d}</option>`).join("");
-}
-
-function renderPpl() {
-  let d = Object.values(STATE.pplMap);
-  const q   = (document.getElementById("ppl-q")?.value||"").toLowerCase();
-  const kf  = document.getElementById("ppl-kf")?.value||"";
-  const df  = document.getElementById("ppl-df")?.value||"";
-  const pmlf= document.getElementById("ppl-pmlf")?.value||"";
-  const sf  = document.getElementById("ppl-sf")?.value||"";
-  d = d.filter(p => {
-    const kNm = STATE.kecMap[p.kec_id]?.nama||"";
-    const pNm = STATE.pmlMap[p.pml_id]?.nama||"";
-    return (p.nama.toLowerCase().includes(q)||p.desa.toLowerCase().includes(q)||pNm.toLowerCase().includes(q)) &&
-      (kf===""||kNm===kf) && (df===""||p.desa===df) && (pmlf===""||pNm===pmlf) && (sf===""||p.status===sf);
+function renderPpl(){
+  let d=Object.values(STATE.PPL);
+  const q=($('pplq')?.value||'').toLowerCase();
+  const kf=$('pplkf')?.value||'';
+  const df=$('ppldf')?.value||'';
+  const pf=$('pplpf')?.value||'';
+  const sf=$('pplsf')?.value||'';
+  d=d.filter(p=>{
+    const kn=STATE.KEC[p.kec_id]?.nama||'';
+    const pn=STATE.PML[p.pml_id]?.nama||'';
+    return(p.nama.toLowerCase().includes(q)||p.desa.toLowerCase().includes(q)||pn.toLowerCase().includes(q))
+      &&(kf===''||kn===kf)&&(df===''||p.desa===df)&&(pf===''||pn===pf)&&(sf===''||p.status===sf);
   });
-  document.getElementById("ppl-tbody").innerHTML = d.map(p => {
-    const kNm  = STATE.kecMap[p.kec_id]?.nama||"—";
-    const pNm  = STATE.pmlMap[p.pml_id]?.nama||"—";
-    return `<tr>
-      <td><div class="fr"><div class="av ${avCls(p.nama)}">${initials(p.nama)}</div>${p.nama}</div></td>
-      <td style="font-size:11px;color:var(--tx2)">${pNm}</td>
-      <td>${kNm}</td>
+  $('ppl-tb').innerHTML=d.map(p=>{
+    const kn=STATE.KEC[p.kec_id]?.nama||'—';
+    const pn=STATE.PML[p.pml_id]?.nama||'—';
+    return`<tr>
+      <td><div class="fr"><div class="av ${avC(p.nama)}">${ini(p.nama)}</div>${p.nama}</div></td>
+      <td style="font-size:11px;color:var(--tx2)">${pn}</td>
+      <td>${kn}</td>
       <td style="font-size:11px">${p.desa}</td>
-      <td><span class="pill ${p.jenis_sls==="RT"?"p-bl":"p-gy"}">${p.jenis_sls}</span></td>
-      <td style="font-family:var(--mono);text-align:center">${p.sls_list.length}</td>
-      <td style="font-family:var(--mono)">${fmtN(p.target)}</td>
-      <td style="font-family:var(--mono);color:var(--bl)">${fmtN(p.open)}</td>
-      <td style="font-family:var(--mono);color:var(--gr)">${fmtN(p.submit)}</td>
-      <td>${progBar(p.pct)}</td>
-      <td>${statusPill(p.status)}</td>
-      <td><button class="btn btn-bl" style="font-size:10px" onclick="openEvalDetail('${p.id}')">SLS →</button></td>
+      <td style="font-family:var(--mono);text-align:center">${p.sls.length}</td>
+      <td style="font-family:var(--mono)">${fN(p.target)}</td>
+      <td style="font-family:var(--mono);color:var(--gr)">${fN(p.selesai)}</td>
+      <td style="font-family:var(--mono);color:var(--bl)">${fN(p.open)}</td>
+      <td>${pb(p.pct)}</td>
+      <td>${pillPk(calcPerkiraan(p.pct))}</td>
+      <td>${pill(p.status)}</td>
+      <td><button class="btn btn-bl" style="font-size:10px" onclick="openDetail('${p.id}')">SLS →</button></td>
     </tr>`;
-  }).join("");
+  }).join('');
 }
 
 // ============================================================
-//  EVALUASI SLS
+// EVAL LIST
 // ============================================================
-function buildEvalFilters() {
-  const kSel   = document.getElementById("ev-kf");
-  const pmlSel = document.getElementById("ev-pmlf");
-  const kecs = [...new Set(DB.ppl.map(p=>p.kec_id))].map(id=>STATE.kecMap[id]?.nama).filter(Boolean).sort();
-  kSel.innerHTML   = `<option value="">Semua kecamatan</option>` + kecs.map(k=>`<option>${k}</option>`).join("");
-  const pmls = [...new Set(DB.pml.map(p=>p.nama))].sort();
-  pmlSel.innerHTML = `<option value="">Semua PML</option>` + pmls.map(n=>`<option>${n}</option>`).join("");
-}
-
-function renderEvalList() {
-  let d = Object.values(STATE.pplMap);
-  const q    = (document.getElementById("ev-q")?.value||"").toLowerCase();
-  const kf   = document.getElementById("ev-kf")?.value||"";
-  const pmlf = document.getElementById("ev-pmlf")?.value||"";
-  const sf   = document.getElementById("ev-sf")?.value||"";
-  d = d.filter(p => {
-    const kNm = STATE.kecMap[p.kec_id]?.nama||"";
-    const pNm = STATE.pmlMap[p.pml_id]?.nama||"";
-    return (p.nama.toLowerCase().includes(q)||p.desa.toLowerCase().includes(q)||p.sls_list.some(s=>s.nama_sls.toLowerCase().includes(q))) &&
-      (kf===""||kNm===kf) && (pmlf===""||pNm===pmlf) && (sf===""||p.status===sf);
+function renderEval(){
+  let d=Object.values(STATE.PPL);
+  const q=($('evq')?.value||'').toLowerCase();
+  const kf=$('evkf')?.value||'';
+  const pf=$('evpf')?.value||'';
+  const sf=$('evsf')?.value||'';
+  d=d.filter(p=>{
+    const kn=STATE.KEC[p.kec_id]?.nama||'';
+    const pn=STATE.PML[p.pml_id]?.nama||'';
+    return(p.nama.toLowerCase().includes(q)||p.desa.toLowerCase().includes(q))
+      &&(kf===''||kn===kf)&&(pf===''||pn===pf)&&(sf===''||p.status===sf);
   });
-  document.getElementById("eval-tbody").innerHTML = d.map(p => {
-    const kNm = STATE.kecMap[p.kec_id]?.nama||"—";
-    return `<tr>
-      <td><div class="fr"><div class="av ${avCls(p.nama)}">${initials(p.nama)}</div><div><div>${p.nama}</div><div style="font-size:10px;color:var(--tx3)">${p.desa}</div></div></div></td>
-      <td>${kNm}</td>
-      <td style="font-size:11px;color:var(--tx2)">${p.desa}</td>
-      <td style="font-family:var(--mono);text-align:center">${p.sls_list.length}</td>
-      <td style="font-family:var(--mono)">${fmtN(p.target)}</td>
-      <td style="font-family:var(--mono);color:var(--bl)">${fmtN(p.open)}</td>
-      <td style="font-family:var(--mono);color:var(--gr)">${fmtN(p.submit)}</td>
-      <td>${progBar(p.pct)}</td>
-      <td>${statusPill(p.status)}</td>
-      <td><button class="btn btn-bl" style="font-size:10px" onclick="openEvalDetail('${p.id}')">Rincian SLS ↗</button></td>
+  $('ev-tb').innerHTML=d.map(p=>{
+    const kn=STATE.KEC[p.kec_id]?.nama||'—';
+    return`<tr>
+      <td><div class="fr"><div class="av ${avC(p.nama)}">${ini(p.nama)}</div><div><div>${p.nama}</div><div style="font-size:10px;color:var(--tx3)">${p.email}</div></div></div></td>
+      <td>${kn}</td>
+      <td style="font-size:11px">${p.desa}</td>
+      <td style="font-family:var(--mono);text-align:center">${p.sls.length}</td>
+      <td style="font-family:var(--mono)">${fN(p.target)}</td>
+      <td style="font-family:var(--mono);color:var(--gr)">${fN(p.selesai)}</td>
+      <td style="font-family:var(--mono);color:var(--bl)">${fN(p.open)}</td>
+      <td>${pb(p.pct)}</td>
+      <td>${pillPk(calcPerkiraan(p.pct))}</td>
+      <td>${pill(p.status)}</td>
+      <td><button class="btn btn-bl" style="font-size:10px" onclick="openDetail('${p.id}')">Rincian ↗</button></td>
     </tr>`;
-  }).join("");
+  }).join('');
 }
 
-function openEvalDetail(pplId) {
-  curDetailPplId = pplId;
-  const p   = STATE.pplMap[pplId];
-  const kNm = STATE.kecMap[p.kec_id]?.nama||"—";
-  const pNm = STATE.pmlMap[p.pml_id]?.nama||"—";
-
-  document.getElementById("eval-list-view").style.display   = "none";
-  document.getElementById("eval-detail-view").style.display = "block";
-
-  // INFO HEADER
-  document.getElementById("eval-detail-info").innerHTML = `
+// EVAL DETAIL
+function openDetail(pid){
+  CUR_PPL=pid;
+  const p=STATE.PPL[pid];
+  const kn=STATE.KEC[p.kec_id]?.nama||'—';
+  const pn=STATE.PML[p.pml_id]?.nama||'—';
+  $('ev-list').style.display='none';
+  $('ev-detail').style.display='block';
+  $('ev-info').innerHTML=`
     <div class="fr" style="gap:10px">
-      <div class="av ${avCls(p.nama)}" style="width:38px;height:38px;font-size:13px">${initials(p.nama)}</div>
+      <div class="av ${avC(p.nama)}" style="width:36px;height:36px;font-size:12px">${ini(p.nama)}</div>
       <div>
         <div style="font-size:14px;font-weight:700">${p.nama}</div>
-        <div style="font-size:11px;color:var(--tx2)">PPL · ${p.desa} · Kec. ${kNm}</div>
-        <div style="font-size:11px;color:var(--tx3)">PML: ${pNm} · Jenis SLS: <span class="pill ${p.jenis_sls==="RT"?"p-bl":"p-gy"}" style="font-size:9px">${p.jenis_sls}</span></div>
+        <div style="font-size:11px;color:var(--tx2)">PPL · ${p.desa} · Kec. ${kn}</div>
+        <div style="font-size:11px;color:var(--tx3)">${p.email} · PML: ${pn}</div>
       </div>
     </div>
-    <div style="margin-left:auto">${statusPill(p.status)}</div>
-  `;
-
-  // METRICS
-  document.getElementById("eval-detail-metrics").innerHTML = `
-    <div class="mc c-pu" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Jml SLS</div><div class="mc-val" style="font-size:20px">${p.sls_list.length}</div><div class="mc-sub">SLS ditugaskan</div></div>
-    <div class="mc c-bl" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Target</div><div class="mc-val" style="font-size:20px">${fmtN(p.target)}</div><div class="mc-sub">Total usaha</div></div>
-    <div class="mc c-am" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Open</div><div class="mc-val" style="font-size:20px">${fmtN(p.open)}</div><div class="mc-sub">Dikunjungi</div></div>
-    <div class="mc c-gr" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Submit</div><div class="mc-val" style="font-size:20px">${fmtN(p.submit)}</div><div class="mc-sub">Selesai dicacah</div></div>
-    <div class="mc ${p.pct>=70?"c-gr":p.pct>=45?"c-am":"c-rd"}" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Progres</div><div class="mc-val" style="font-size:20px">${p.pct}%</div><div class="mc-sub">Submit / Target</div></div>
-  `;
-
-  // RINCIAN SLS
-  document.getElementById("detail-sls-tbody").innerHTML = p.sls_list.map((s, i) => {
-    const sPct   = s.target > 0 ? Math.round(s.submit / s.target * 100) : 0;
-    const sStat  = sPct >= 100 ? "Selesai" : sPct >= 50 ? "Sebagian" : "Belum";
-    const sClass = sPct >= 100 ? "p-gr" : sPct >= 50 ? "p-am" : "p-rd";
-    return `<tr class="sls-tbl-row">
+    <div style="margin-left:auto">${pill(p.status)}</div>`;
+  // Hitung komponen selesai dari semua SLS PPL ini
+  const selDet=p.sls.reduce((a,s)=>({
+    sub:a.sub+(s.detail.submitted_pencacah||0),
+    apv:a.apv+(s.detail.approved_pengawas||0),
+    rej:a.rej+(s.detail.rejected_admin||0),
+    edp:a.edp+(s.detail.edited_pengawas||0),
+    eda:a.eda+(s.detail.edited_admin||0)
+  }),{sub:0,apv:0,rej:0,edp:0,eda:0});
+  $('ev-mets').innerHTML=`
+    <div class="mc c-cy" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Jml SLS</div><div class="mc-val" style="font-size:18px">${p.sls.length}</div></div>
+    <div class="mc c-bl" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Target</div><div class="mc-val" style="font-size:18px">${fN(p.target)}</div></div>
+    <div class="mc c-am" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Open</div><div class="mc-val" style="font-size:18px">${fN(p.open)}</div></div>
+    <div class="mc c-gr" style="margin:0;cursor:help" title="Submitted Pencacah: ${selDet.sub} | Approved Pengawas: ${selDet.apv} | Rejected Admin Kab: ${selDet.rej} | Edited Pengawas: ${selDet.edp} | Edited Admin Kab: ${selDet.eda}"><div class="mc-glow"></div><div class="mc-lbl">Selesai ⓘ</div><div class="mc-val" style="font-size:18px">${fN(p.selesai)}</div><div class="mc-sub" style="font-size:9px">hover utk rincian</div></div>
+    <div class="mc ${p.pct>=70?'c-gr':p.pct>=45?'c-am':'c-rd'}" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Progres</div><div class="mc-val" style="font-size:18px">${p.pct}%</div></div>
+    <div style="grid-column:1/-1;background:var(--s2);border:1px solid var(--bdr);border-radius:var(--r6);padding:.5rem .75rem;font-size:11px;color:var(--tx2);display:flex;gap:1rem;flex-wrap:wrap">
+      <span style="color:var(--tx3);font-weight:600">Komponen Selesai:</span>
+      <span>📤 Submitted Pencacah: <strong style="color:var(--tx)">${fN(selDet.sub)}</strong></span>
+      <span>✅ Approved Pengawas: <strong style="color:var(--gr)">${fN(selDet.apv)}</strong></span>
+      <span>❌ Rejected Admin Kab: <strong style="color:var(--rd)">${fN(selDet.rej)}</strong></span>
+      <span>✏️ Edited Pengawas: <strong style="color:var(--am)">${fN(selDet.edp)}</strong></span>
+      <span>✏️ Edited Admin Kab: <strong style="color:var(--am)">${fN(selDet.eda)}</strong></span>
+    </div>`;
+  $('det-tb').innerHTML=p.sls.map((s,i)=>{
+    const sp=s.target>0?Math.round(s.selesai/s.target*100):0;
+    const ss=sp>=100?'Selesai':sp>=50?'Sebagian':'Belum';
+    const sc=sp>=100?'p-gr':sp>=50?'p-am':'p-rd';
+    return`<tr>
       <td style="color:var(--tx3);font-family:var(--mono)">${i+1}</td>
-      <td><strong>${s.nama_sls}</strong></td>
-      <td style="font-size:11px;color:var(--tx2)">${s.desa}</td>
-      <td><span class="pill ${p.jenis_sls==="RT"?"p-bl":"p-gy"}">${p.jenis_sls}</span></td>
-      <td>${fmtN(s.target)}</td>
-      <td style="color:var(--bl)">${fmtN(s.open)}</td>
-      <td style="color:var(--gr)">${fmtN(s.submit)}</td>
-      <td>${progBar(sPct)}</td>
-      <td><span class="pill ${sClass}">${sStat}</span></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--tx3)">${s.id}</td>
+      <td style="font-size:11px">${s.nmdesa}</td>
+      <td style="font-family:var(--mono)">${fN(s.target)}</td>
+      <td style="font-family:var(--mono);color:var(--gr)">${fN(s.selesai)}</td>
+      <td style="font-family:var(--mono);color:var(--bl)">${fN(s.open)}</td>
+      <td style="font-family:var(--mono);color:var(--rd)">${fN(s.ditolak)}</td>
+      <td>${pb(sp,90)}</td>
+      <td><span class="pill ${sc}">${ss}</span></td>
     </tr>`;
-  }).join("");
+  }).join('');
 }
-
-function closeEvalDetail() {
-  curDetailPplId = null;
-  document.getElementById("eval-list-view").style.display   = "block";
-  document.getElementById("eval-detail-view").style.display = "none";
+function closeDetail(){
+  CUR_PPL=null;
+  $('ev-list').style.display='block';
+  $('ev-detail').style.display='none';
 }
 
 // ============================================================
-//  PETA
+// PETA
 // ============================================================
-function renderPeta() {
-  const met = document.getElementById("peta-met")?.value||"pct";
-  const d   = Object.values(STATE.kecMap);
-  document.getElementById("peta-grid").innerHTML = d.map(k => {
-    const c   = k.pct>=70?"var(--gr)":k.pct>=45?"var(--am)":"var(--rd)";
-    const val = met==="pct" ? `${k.pct}%` : met==="submit" ? fmtN(k.submit) : fmtN(k.jumlah_sls);
-    const lbl = met==="pct" ? "Progres" : met==="submit" ? "Submit" : "SLS";
-    return `<div class="peta-card" onclick="drillKec('${k.id}')">
-      <div class="peta-accent" style="background:${c}"></div>
-      <div style="font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-top:6px">${k.id}</div>
-      <div class="peta-name">${k.nama}</div>
-      ${progBar(k.pct)}
-      <div class="peta-stats" style="margin-top:8px">
-        <div class="peta-stat"><div class="peta-stat-v" style="color:${c}">${val}</div><div class="peta-stat-l">${lbl}</div></div>
-        <div class="peta-stat"><div class="peta-stat-v">${fmtN(k.jumlah_ppl)}</div><div class="peta-stat-l">PPL</div></div>
-        <div class="peta-stat"><div class="peta-stat-v">${fmtN(k.jumlah_pml)}</div><div class="peta-stat-l">PML</div></div>
+function renderPeta(){
+  const met=$('petamet')?.value||'pct';
+  const d=Object.values(STATE.KEC);
+  $('peta-grid').innerHTML=d.map(k=>{
+    const c=k.pct>=70?'var(--gr)':k.pct>=45?'var(--am)':'var(--rd)';
+    const val=met==='pct'?`${k.pct}%`:met==='sel'?fN(k.selesai):fN(k.jumlah_sls);
+    const lbl=met==='pct'?'Progres':met==='sel'?'Selesai':'SLS';
+    return`<div class="pkard" onclick="drillKec('${k.id}')">
+      <div class="pkard-bar" style="background:${c}"></div>
+      <div class="pkard-kode">Kec. ${k.kdkec}</div>
+      <div class="pkard-nm">${k.nama}</div>
+      ${pb(k.pct)}
+      <div class="pkard-stats">
+        <div class="pkard-st"><div class="pkard-sv" style="color:${c}">${val}</div><div class="pkard-sl">${lbl}</div></div>
+        <div class="pkard-st"><div class="pkard-sv">${k.jumlah_ppl}</div><div class="pkard-sl">PPL</div></div>
+        <div class="pkard-st"><div class="pkard-sv">${k.jumlah_pml}</div><div class="pkard-sl">PML</div></div>
       </div>
     </div>`;
-  }).join("");
+  }).join('');
 }
-
-function drillKec(kecId) {
-  const k = STATE.kecMap[kecId];
-  document.getElementById("kec-q").value = k.nama;
-  switchTab("rekap", document.getElementById("tb-rekap"));
-  renderKec();
+function drillKec(id){
+  $('kq').value=STATE.KEC[id]?.nama||'';
+  switchTab('rekap',$('tb-rekap')); renderKec();
 }
-
-let heatmapChart;
-function renderHeatmap() {
-  const d     = Object.values(STATE.kecMap);
-  const labels = d.map(k => k.nama.length > 10 ? k.nama.slice(0,10)+"…" : k.nama);
-  const vals   = d.map(k => k.pct);
-  const colors = vals.map(v => v>=70?"rgba(0,229,160,.8)":v>=45?"rgba(255,184,48,.8)":"rgba(255,77,106,.8)");
-  if (heatmapChart) heatmapChart.destroy();
-  heatmapChart = new Chart(document.getElementById("heatmap-chart"), {
-    type:"bar",
-    data:{ labels, datasets:[{ data:vals, backgroundColor:colors, borderRadius:3, barThickness:14 }] },
-    options:{ indexAxis:"y", responsive:true, maintainAspectRatio:false,
+let hmC;
+function renderHeatmap(){
+  const d=Object.values(STATE.KEC).sort((a,b)=>a.nama.localeCompare(b.nama));
+  const lbl=d.map(k=>k.nama.length>11?k.nama.slice(0,11)+'…':k.nama);
+  const vals=d.map(k=>k.pct);
+  const cols=vals.map(v=>v>=70?'rgba(0,229,160,.8)':v>=45?'rgba(255,184,48,.8)':'rgba(255,64,96,.8)');
+  if(hmC)hmC.destroy();
+  hmC=new Chart($('hm-c'),{type:'bar',
+    data:{labels:lbl,datasets:[{data:vals,backgroundColor:cols,borderRadius:3,barThickness:10}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw}%`}}},
       scales:{
-        x:{min:0,max:100,ticks:{color:"#4a6a8a",font:{size:9},callback:v=>v+"%"},grid:{color:"rgba(255,255,255,.04)"}},
-        y:{ticks:{color:"#7a9bbf",font:{size:9},family:"DM Mono"},grid:{color:"rgba(255,255,255,.04)"}}
+        x:{min:0,max:100,ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'}},
+        y:{ticks:{color:'#7090b0',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}}
       }
     }
   });
 }
 
 // ============================================================
-//  CHARTS REKAP
+// CHARTS
 // ============================================================
-let barChart, doughnutChart;
-function renderBarChart() {
-  const sort = document.getElementById("chart-sort")?.value||"nama";
-  let d = Object.values(STATE.kecMap);
-  if (sort==="asc") d.sort((a,b)=>a.pct-b.pct);
-  else if (sort==="desc") d.sort((a,b)=>b.pct-a.pct);
-  const labels = d.map(k=>k.nama.length>8?k.nama.slice(0,8)+"…":k.nama);
-  const vals   = d.map(k=>k.pct);
-  const colors = d.map(k=>k.pct>=70?"rgba(0,229,160,.85)":k.pct>=45?"rgba(255,184,48,.85)":"rgba(255,77,106,.85)");
-  if (barChart) barChart.destroy();
-  barChart = new Chart(document.getElementById("bar-chart"),{
-    type:"bar",
-    data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:4,borderSkipped:false}]},
+let barC,dntC;
+function renderBar(){
+  const sort=$('bsort')?.value||'nm';
+  let d=Object.values(STATE.KEC);
+  if(sort==='asc')d.sort((a,b)=>a.pct-b.pct);
+  else if(sort==='desc')d.sort((a,b)=>b.pct-a.pct);
+  else d.sort((a,b)=>a.nama.localeCompare(b.nama));
+  const lbl=d.map(k=>k.nama.length>8?k.nama.slice(0,8)+'…':k.nama);
+  const vals=d.map(k=>k.pct);
+  const cols=d.map(k=>k.pct>=70?'rgba(0,229,160,.85)':k.pct>=45?'rgba(255,184,48,.85)':'rgba(255,64,96,.85)');
+  if(barC)barC.destroy();
+  barC=new Chart($('bar-c'),{type:'bar',
+    data:{labels:lbl,datasets:[{data:vals,backgroundColor:cols,borderRadius:3,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw}%`}}},
       scales:{
-        x:{ticks:{color:"#4a6a8a",font:{size:9}},grid:{color:"rgba(255,255,255,.04)"}},
-        y:{min:0,max:100,ticks:{color:"#4a6a8a",font:{size:9},callback:v=>v+"%"},grid:{color:"rgba(255,255,255,.04)"}}
+        x:{ticks:{color:'#405878',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}},
+        y:{min:0,max:100,ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'}}
       }
     }
   });
 }
-
-function renderDoughnut() {
-  const d    = Object.values(STATE.kecMap);
-  const ok   = d.filter(k=>k.status==="On track").length;
-  const warn = d.filter(k=>k.status==="Perlu perhatian").length;
-  const bad  = d.filter(k=>k.status==="Terlambat").length;
-  if (doughnutChart) doughnutChart.destroy();
-  doughnutChart = new Chart(document.getElementById("doughnut-chart"),{
-    type:"doughnut",
-    data:{labels:["On track","Perlu perhatian","Terlambat"],
-      datasets:[{data:[ok,warn,bad],backgroundColor:["rgba(0,229,160,.85)","rgba(255,184,48,.85)","rgba(255,77,106,.85)"],borderWidth:2,borderColor:"#0f1623",hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:"68%",
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} kecamatan`}}}}
+function renderDnt(){
+  const d=Object.values(STATE.KEC);
+  const ok=d.filter(k=>k.status==='On track').length;
+  const wn=d.filter(k=>k.status==='Perlu perhatian').length;
+  const bd=d.filter(k=>k.status==='Terlambat').length;
+  if(dntC)dntC.destroy();
+  dntC=new Chart($('dnt-c'),{type:'doughnut',
+    data:{labels:['On track','Perlu perhatian','Terlambat'],
+      datasets:[{data:[ok,wn,bd],backgroundColor:['rgba(0,229,160,.85)','rgba(255,184,48,.85)','rgba(255,64,96,.85)'],
+        borderWidth:2,borderColor:'#0c1018',hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} kec`}}}}
   });
-  document.getElementById("doughnut-leg").innerHTML = [
-    {c:"var(--gr)",lbl:`On track (${ok})`},{c:"var(--am)",lbl:`Perlu perhatian (${warn})`},{c:"var(--rd)",lbl:`Terlambat (${bad})`}
-  ].map(x=>`<span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:${x.c};display:inline-block"></span>${x.lbl}</span>`).join("");
+  $('dnt-leg').innerHTML=[{c:'var(--gr)',l:`On track (${ok})`},{c:'var(--am)',l:`Perlu perhatian (${wn})`},{c:'var(--rd)',l:`Terlambat (${bd})`}]
+    .map(x=>`<span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:2px;background:${x.c};display:inline-block"></span>${x.l}</span>`).join('');
 }
 
 // ============================================================
-//  NOTIFIKASI
+// NOTIF
 // ============================================================
-function renderNotifBadge() {
-  const n = notifs.filter(x=>!x.read).length;
-  document.getElementById("nbadge").textContent = n;
-  document.getElementById("sbc-notif").textContent = n;
-}
-
-function renderNpList() {
-  const top = notifs.slice(0,6);
-  document.getElementById("np-list").innerHTML = top.map((n,i)=>{
-    const c = n.type==="rd"?"var(--rd)":n.type==="am"?"var(--am)":"var(--bl)";
-    return `<div class="np-item" onclick="markRead(${i});renderNotifBadge();renderNpList()">
+function refreshNotif(){
+  const n=NOTIFS.filter(x=>!x.read).length;
+  $('nbadge').textContent=n;
+  $('ch-notif').textContent=n;
+  const top=NOTIFS.slice(0,6);
+  $('np-list').innerHTML=top.map((n,i)=>{
+    const c=n.type==='rd'?'var(--rd)':n.type==='am'?'var(--am)':'var(--bl)';
+    return`<div class="np-item" onclick="NOTIFS[${i}].read=true;refreshNotif()">
       <div class="np-dot" style="background:${c};opacity:${n.read?.4:1}"></div>
-      <div>
-        <div class="np-ttl" style="color:${n.read?"var(--tx2)":"var(--tx)"}">${n.title}</div>
-        <div class="np-sub">${n.sub}</div>
-        <div class="np-time">${n.time}</div>
-      </div>
+      <div><div style="font-size:12px;font-weight:600;color:${n.read?'var(--tx2)':'var(--tx)'}">${n.title}</div>
+      <div style="font-size:11px;color:var(--tx2);margin-top:2px">${n.sub}</div></div>
     </div>`;
-  }).join("");
+  }).join('');
 }
-
-function renderNotifTab() {
-  const f = document.getElementById("notif-filter")?.value||"";
-  const list = notifs.filter(n=>f===""||n.type===f);
-  const cMap = {rd:"var(--rd)",am:"var(--am)",bl:"var(--bl)"};
-  const bgMap= {rd:"var(--rd-bg)",am:"var(--am-bg)",bl:"var(--bl-bg)"};
-  document.getElementById("notif-tab-body").innerHTML = list.map((n,i)=>`
-    <div style="background:${n.read?"var(--s3)":bgMap[n.type]};border:1px solid ${n.read?"var(--bdr)":"transparent"};border-radius:var(--r8);padding:.875rem 1rem;display:flex;gap:10px;opacity:${n.read?.6:1}">
-      <div style="width:7px;height:7px;border-radius:50%;background:${cMap[n.type]};flex-shrink:0;margin-top:5px"></div>
+function renderNotifPane(){
+  const f=$('nfil')?.value||'';
+  const list=NOTIFS.filter(n=>f===''||n.type===f);
+  const cM={rd:'var(--rd)',am:'var(--am)',bl:'var(--bl)'};
+  const bM={rd:'var(--rd-bg)',am:'var(--am-bg)',bl:'var(--bl-bg)'};
+  $('notif-body').innerHTML=list.map((n,i)=>`
+    <div style="background:${n.read?'var(--s3)':bM[n.type]};border:1px solid ${n.read?'var(--bdr)':'transparent'};border-radius:var(--r6);padding:.625rem .875rem;display:flex;gap:8px;opacity:${n.read?.55:1}">
+      <div style="width:6px;height:6px;border-radius:50%;background:${cM[n.type]};flex-shrink:0;margin-top:5px"></div>
       <div style="flex:1">
-        <div style="font-size:12px;font-weight:700;margin-bottom:3px">${n.title}</div>
-        <div style="font-size:11px;color:var(--tx2);margin-bottom:4px">${n.sub}</div>
-        <div style="font-size:10px;color:var(--tx3);font-family:var(--mono)">${n.time}</div>
+        <div style="font-size:12px;font-weight:700;margin-bottom:2px">${n.title}</div>
+        <div style="font-size:11px;color:var(--tx2)">${n.sub}</div>
       </div>
-      ${!n.read?`<button class="btn" style="font-size:10px;padding:3px 8px;flex-shrink:0" onclick="markRead(${i});renderAll()">Dibaca</button>`:""}
-    </div>`).join("");
+      ${!n.read?`<button class="btn" style="font-size:10px;flex-shrink:0;padding:2px 7px" onclick="NOTIFS[${i}].read=true;refreshNotif();renderNotifPane()">Dibaca</button>`:''}
+    </div>`).join('');
 }
-
-function markRead(i) { notifs[i].read = true; }
-function markAll() { notifs.forEach(n=>n.read=true); renderAll(); }
-
-function renderAll() {
-  renderNotifBadge();
-  renderNpList();
-  renderNotifTab();
-}
+function markAll(){NOTIFS.forEach(n=>n.read=true);refreshNotif();renderNotifPane()}
+function toggleNp(){$('np').classList.toggle('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('#np')&&!e.target.closest('#nbtn'))$('np').classList.remove('open')});
 
 // ============================================================
-//  EXPORT
+// EXPORT
 // ============================================================
-function exportExcel(type) {
-  if (!window.XLSX) { showToast("Library XLSX belum dimuat"); return; }
-  const wb = XLSX.utils.book_new();
-
-  if (type==="kec"||type==="all") {
-    const rows = Object.values(STATE.kecMap).map(k=>({
-      Kecamatan:k.nama, "Jml Desa":k.jumlah_desa, PML:k.jumlah_pml, PPL:k.jumlah_ppl,
-      "Total SLS":k.jumlah_sls, Target:k.target, Open:k.open, Submit:k.submit,
-      "Progres (%)":k.pct, Status:k.status
+function exportXL(type){
+  const wb=XLSX.utils.book_new();
+  const upd=PY.tanggal_update;
+  if(type==='kec'||type==='all'){
+    const rows=Object.values(STATE.KEC).map(k=>({Kecamatan:k.nama,'Jml Desa':k.jumlah_desa,PML:k.jumlah_pml,PPL:k.jumlah_ppl,'Total SLS':k.jumlah_sls,'Target Usaha':k.target,Selesai:k.selesai,Open:k.open,'Progres (%)':k.pct,Status:k.status}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Kecamatan');
+  }
+  if(type==='pml'||type==='all'){
+    const rows=Object.values(STATE.PML).map(p=>({Nama:p.nama,Email:p.email,Kecamatan:STATE.KEC[p.kec_id]?.nama||'',' Jml PPL':p.ppl_ids.length,Target:p.target,Selesai:p.selesai,Open:p.open,'Progres (%)':p.pct,Status:p.status}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'PML');
+  }
+  if(type==='ppl'||type==='all'){
+    const rows=Object.values(STATE.PPL).map(p=>({Nama:p.nama,Email:p.email,PML:STATE.PML[p.pml_id]?.nama||'',Kecamatan:STATE.KEC[p.kec_id]?.nama||'',Desa:p.desa,'Jml SLS':p.sls.length,Target:p.target,Selesai:p.selesai,Open:p.open,Ditolak:p.ditolak,'Progres (%)':p.pct,Status:p.status}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'PPL');
+  }
+  if(type==='eval'||type==='all'){
+    const rows=[];
+    Object.values(STATE.PPL).forEach(p=>p.sls.forEach(s=>{
+      const sp=s.target>0?Math.round(s.selesai/s.target*100):0;
+      rows.push({regionCode:s.id,PPL:p.nama,PML:STATE.PML[p.pml_id]?.nama||'',Kecamatan:STATE.KEC[p.kec_id]?.nama||'',Desa:s.nmdesa,Target:s.target,Selesai:s.selesai,Open:s.open,Ditolak:s.ditolak,'Progres (%)':sp,'Submitted Pencacah':s.detail?.submitted_pencacah||0,'Approved Pengawas':s.detail?.approved_pengawas||0,'Rejected Admin':s.detail?.rejected_admin||0,'Edited Pengawas':s.detail?.edited_pengawas||0,'Edited Admin':s.detail?.edited_admin||0,'Rejected Pengawas':s.detail?.rejected_pengawas||0,Draft:s.detail?.draft||0});
     }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Kecamatan");
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'SLS');
   }
-  if (type==="pml"||type==="all") {
-    const rows = Object.values(STATE.pmlMap).map(p=>({
-      Nama:p.nama, Kecamatan:STATE.kecMap[p.kec_id]?.nama||"",
-      "Jml PPL":p.ppl_list.length, Target:p.target, Open:p.open, Submit:p.submit,
-      "Progres (%)":p.pct, Status:p.status
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "PML");
+  if(type==='detail'&&CUR_PPL){
+    const p=STATE.PPL[CUR_PPL];
+    const rows=p.sls.map((s,i)=>({No:i+1,regionCode:s.id,Desa:s.nmdesa,Target:s.target,Selesai:s.selesai,Open:s.open,Ditolak:s.ditolak,'Progres (%)':s.target>0?Math.round(s.selesai/s.target*100):0}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),`SLS_${p.nama.slice(0,20)}`);
   }
-  if (type==="ppl"||type==="all") {
-    const rows = Object.values(STATE.pplMap).map(p=>({
-      Nama:p.nama, PML:STATE.pmlMap[p.pml_id]?.nama||"",
-      Kecamatan:STATE.kecMap[p.kec_id]?.nama||"", Desa:p.desa, "Jenis SLS":p.jenis_sls,
-      "Jml SLS":p.sls_list.length, Target:p.target, Open:p.open, Submit:p.submit,
-      "Progres (%)":p.pct, Status:p.status
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "PPL");
-  }
-  if (type==="eval"||type==="all") {
-    const rows = DB.sls.map(s=>{
-      const p   = STATE.pplMap[s.ppl_id];
-      const pct = s.target>0?Math.round(s.submit/s.target*100):0;
-      return {
-        "ID SLS":s.id, PPL:p?.nama||"", PML:STATE.pmlMap[p?.pml_id]?.nama||"",
-        Kecamatan:STATE.kecMap[s.kec_id]?.nama||"", Desa:s.desa, "Nama SLS":s.nama_sls,
-        "Jenis SLS":p?.jenis_sls||"", Target:s.target, Open:s.open, Submit:s.submit,
-        "Progres (%)":pct
-      };
-    });
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "SLS");
-  }
-  if (curDetailPplId && type==="detail") {
-    const p   = STATE.pplMap[curDetailPplId];
-    const rows = p.sls_list.map((s,i)=>({
-      No:i+1, "Nama SLS":s.nama_sls, Desa:s.desa, "Jenis SLS":p.jenis_sls,
-      Target:s.target, Open:s.open, Submit:s.submit,
-      "Progres (%)": s.target>0?Math.round(s.submit/s.target*100):0
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), `PPL_${p.nama.slice(0,20)}`);
-  }
-
-  const fname = `SE2026_${type}_${DB.meta.tanggal_update}.xlsx`;
-  XLSX.writeFile(wb, fname);
-  showToast(`${fname} berhasil diunduh`);
+  XLSX.writeFile(wb,`SE2026_${type}_${upd}.xlsx`);
+  toast('File Excel berhasil diunduh');
 }
-
-function exportDetailSls() { exportExcel("detail"); }
-
-function exportCsv(type) {
-  let headers, rows;
-  if (type==="kec") {
-    headers = ["Kecamatan","Desa","PML","PPL","Total SLS","Target","Open","Submit","Progres (%)","Status"];
-    rows    = Object.values(STATE.kecMap).map(k=>[k.nama,k.jumlah_desa,k.jumlah_pml,k.jumlah_ppl,k.jumlah_sls,k.target,k.open,k.submit,k.pct,k.status]);
-  } else {
-    headers = ["Nama PPL","PML","Kecamatan","Desa","Jenis SLS","Jml SLS","Target","Open","Submit","Progres (%)","Status"];
-    rows    = Object.values(STATE.pplMap).map(p=>[p.nama,STATE.pmlMap[p.pml_id]?.nama||"",STATE.kecMap[p.kec_id]?.nama||"",p.desa,p.jenis_sls,p.sls_list.length,p.target,p.open,p.submit,p.pct,p.status]);
+function exportCSV(type){
+  let hdr,rows;
+  if(type==='kec'){
+    hdr=['Kecamatan','Jml Desa','PML','PPL','Total SLS','Target Usaha','Selesai','Open','Progres (%)','Status'];
+    rows=Object.values(STATE.KEC).map(k=>[k.nama,k.jumlah_desa,k.jumlah_pml,k.jumlah_ppl,k.jumlah_sls,k.target,k.selesai,k.open,k.pct,k.status]);
+  }else{
+    hdr=['Nama PPL','Email','PML','Kecamatan','Desa','Jml SLS','Target','Selesai','Open','Ditolak','Progres (%)','Status'];
+    rows=Object.values(STATE.PPL).map(p=>[p.nama,p.email,STATE.PML[p.pml_id]?.nama||'',STATE.KEC[p.kec_id]?.nama||'',p.desa,p.sls.length,p.target,p.selesai,p.open,p.ditolak,p.pct,p.status]);
   }
-  const csv  = [headers,...rows].map(r=>r.map(v=>`"${v}"`).join(",")).join("\n");
-  const blob = new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
-  const a    = document.createElement("a"); a.href=URL.createObjectURL(blob);
-  a.download = `SE2026_${type}_${DB.meta.tanggal_update}.csv`; a.click();
-  showToast("File CSV berhasil diunduh");
+  const csv=[hdr,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`SE2026_${type}_${PY.tanggal_update}.csv`; a.click();
+  toast('File CSV berhasil diunduh');
 }
 
 // ============================================================
-//  TAB & NAVIGATION
+// TABS & NAV
 // ============================================================
-const PANES = ["rekap","pml","ppl","eval","peta","notif"];
-
-function switchTab(id, btn) {
+const PANES=['rekap','pml','ppl','eval','peta','notif'];
+function switchTab(id,btn){
   PANES.forEach(p=>{
-    document.getElementById(`pane-${p}`).classList.toggle("on", p===id);
-    document.getElementById(`tb-${p}`).classList.toggle("on", p===id);
+    $(`pane-${p}`).classList.toggle('on',p===id);
+    $(`tb-${p}`).classList.toggle('on',p===id);
   });
-  if (id==="peta") { renderPeta(); setTimeout(renderHeatmap,150); }
-  if (id==="notif") renderNotifTab();
+  if(id==='peta'){renderPeta();setTimeout(renderHeatmap,120)}
+  if(id==='notif')renderNotifPane();
 }
-
-function goPan(id, el) {
-  switchTab(id, null);
-  document.querySelectorAll(".sb-item").forEach(i=>i.classList.remove("on"));
-  if (el) el.classList.add("on");
+function goPane(id,el){
+  switchTab(id,null);
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  if(el)el.classList.add('on');
 }
+function openModal(){$('exp-modal').classList.add('open')}
+function closeModal(){$('exp-modal').classList.remove('open')}
+$('exp-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
 
-// ============================================================
-//  MODAL & NOTIF PANEL
-// ============================================================
-function doExportModal() { document.getElementById("exp-modal").classList.add("open"); }
-function closeModal()     { document.getElementById("exp-modal").classList.remove("open"); }
-document.getElementById("exp-modal").addEventListener("click",e=>{ if(e.target===e.currentTarget) closeModal(); });
-
-function toggleNp() { document.getElementById("np").classList.toggle("open"); }
-document.addEventListener("click", e => {
-  if (!e.target.closest("#np")&&!e.target.closest("#notif-ico")) document.getElementById("np").classList.remove("open");
-});
-
-// ============================================================
-//  SIDEBAR CHIPS
-// ============================================================
-function updateSidebarChips() {
-  document.getElementById("sbc-kec").textContent  = DB.kecamatan.length;
-  document.getElementById("sbc-pml").textContent  = Object.keys(STATE.pmlMap).length;
-  document.getElementById("sbc-ppl").textContent  = DB.meta.total_ppl;
-  document.getElementById("sbc-sls").textContent  = DB.meta.total_sls;
-}
-
-// ============================================================
-//  INIT
-// ============================================================
-function init() {
-  buildState();
-
-  // Meta
-  document.getElementById("hdr-kabupaten").textContent = DB.meta.nama_kabupaten + " · Sensus Ekonomi " + DB.meta.tahun;
-  document.getElementById("hdr-date").textContent      = DB.meta.tanggal_update;
-  document.getElementById("sb-upd").textContent        = DB.meta.tanggal_update;
-  document.getElementById("sb-target").textContent     = DB.meta.target_selesai;
-
-  updateSidebarChips();
-  renderMetrics();
-
-  // Build filter dropdowns
-  buildPmlFilters();
-  buildPplFilters();
-  buildEvalFilters();
-
-  // Render tables
-  renderKec();
-  renderPml();
-  renderPpl();
-  renderEvalList();
-
-  // Charts (delayed for DOM readiness)
-  setTimeout(() => { renderBarChart(); renderDoughnut(); }, 200);
-
-  // Notifikasi
-  renderAll();
-}
-
-init();
+boot();
 </script>
 </body>
 </html>
