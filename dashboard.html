@@ -270,18 +270,18 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
     <div class="two">
       <div class="card">
         <div class="ch">
-          <div class="ct">Proyeksi per Kecamatan</div>
+          <div class="ct">Progres Hari Ini per Kecamatan</div>
           <select id="bsort" onchange="renderBar()" style="font-size:11px;padding:3px 7px">
-            <option value="nm">A–Z</option><option value="asc">Proyeksi ↑</option><option value="desc">Proyeksi ↓</option>
+            <option value="nm">A–Z</option><option value="asc">Progres ↑</option><option value="desc">Progres ↓</option>
           </select>
         </div>
         <div class="cb">
           <div class="cwrap"><canvas id="bar-c"></canvas></div>
-          <div class="leg-proy">
-            <span><span class="leg-dot" style="background:var(--gr)"></span>Aman (&gt;100%)</span>
-            <span><span class="leg-dot" style="background:var(--am)"></span>Waspada (95–99%)</span>
-            <span><span class="leg-dot" style="background:var(--or)"></span>Terlambat (80–94%)</span>
-            <span><span class="leg-dot" style="background:var(--rd)"></span>Bahaya (&lt;80%)</span>
+          <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:10px;color:var(--tx2)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#00e5a0;display:inline-block"></span>Aman (proyeksi &gt;100%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ffb830;display:inline-block"></span>Waspada (95–100%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ff8c00;display:inline-block"></span>Terlambat (80–94%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ff4060;display:inline-block"></span>Bahaya (&lt;80%)</span>
           </div>
         </div>
       </div>
@@ -617,7 +617,9 @@ function initUI(){
   $('proy-banner').innerHTML=`<span style="font-size:16px">${ico}</span>
     <span>Status Global: <strong>${tStat}</strong></span>
     <span style="color:var(--tx2);font-weight:400">·</span>
-    <span>Progres saat ini: <strong style="font-family:var(--mono)">${tPctNow}%</strong></span>
+    <span>Progres saat ini: <strong style="font-family:var(--mono)">${tPctNow}%</strong>
+      <span style="font-size:10px;font-weight:400;color:var(--tx2);font-family:var(--mono);margin-left:4px">(data: ${PY.tanggal_update})</span>
+    </span>
     <span style="color:var(--tx2);font-weight:400">·</span>
     <span>Proyeksi 25 Agustus: <strong style="font-family:var(--mono)">${fr(tProy)}%</strong></span>
     <span style="color:var(--tx2);font-weight:400">·</span>
@@ -847,20 +849,41 @@ let barC,dntC;
 function renderBar(){
   const sort=$('bsort')?.value||'nm';
   let d=Object.values(STATE.KEC);
-  if(sort==='asc')d.sort((a,b)=>a.proyeksi-b.proyeksi);
-  else if(sort==='desc')d.sort((a,b)=>b.proyeksi-a.proyeksi);
+  if(sort==='asc')d.sort((a,b)=>a.pct_now-b.pct_now);
+  else if(sort==='desc')d.sort((a,b)=>b.pct_now-a.pct_now);
   else d.sort((a,b)=>a.nama.localeCompare(b.nama));
   const lbl=d.map(k=>k.nama.length>8?k.nama.slice(0,8)+'…':k.nama);
-  const vals=d.map(k=>Math.min(parseFloat(fr(k.proyeksi)),130));
-  const cols=d.map(k=>statusColor(k.status)+'cc');
+  const vals=d.map(k=>k.pct_now);
+  // Warna solid penuh berdasar status proyeksi
+  const colMap={Aman:'#00e5a0',Waspada:'#ffb830',Terlambat:'#ff8c00',Bahaya:'#ff4060'};
+  const cols=d.map(k=>colMap[k.status]||'#3d9eff');
+  const maxVal=Math.max(...vals,1);
   if(barC)barC.destroy();
   barC=new Chart($('bar-c'),{type:'bar',
-    data:{labels:lbl,datasets:[{data:vals,backgroundColor:cols,borderRadius:3,borderSkipped:false,label:'Proyeksi'}]},
+    data:{labels:lbl,datasets:[{
+      data:vals,
+      backgroundColor:cols,
+      borderRadius:4,
+      borderSkipped:false,
+      label:'Progres'
+    }]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${fr(d[c.dataIndex].proyeksi)}% (${d[c.dataIndex].status})`}}},
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{
+          title:c=>`${d[c[0].dataIndex].nama}`,
+          label:c=>[
+            `Progres kini : ${d[c.dataIndex].pct_now}%`,
+            `Proyeksi 25 Ags: ${fr(d[c.dataIndex].proyeksi)}%`,
+            `Status : ${d[c.dataIndex].status}`,
+            `Selesai : ${fN(d[c.dataIndex].selesai)} / ${fN(d[c.dataIndex].target)}`
+          ]
+        }}
+      },
       scales:{
         x:{ticks:{color:'#405878',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}},
-        y:{min:0,max:130,ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'}}
+        y:{min:0,max:Math.max(Math.ceil(maxVal/10)*10+5,20),
+          ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},
+          grid:{color:'rgba(255,255,255,.05)'}}
       }
     }
   });
