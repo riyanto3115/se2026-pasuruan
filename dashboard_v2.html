@@ -1074,22 +1074,38 @@ function openLaporan(){
   const {KEC,PML,PPL,tSel,tTgt,tPctNow,tProy,tStat,SISA,LAJU}=STATE;
   const m=ST.meta;
   const upd=PY.tanggal_update;
+
+  // Format tanggal update: dd/mm/yyyy hh:mm (24 jam)
+  function fmtUpd(s){
+    // s bisa berupa string ISO "2026-06-23T14:30:00" atau "2026-06-23"
+    const d=new Date(s.includes('T')?s:s+'T00:00:00');
+    if(isNaN(d))return s; // fallback ke string asli
+    const dd=String(d.getDate()).padStart(2,'0');
+    const mm=String(d.getMonth()+1).padStart(2,'0');
+    const yyyy=d.getFullYear();
+    const hh=String(d.getHours()).padStart(2,'0');
+    const mi=String(d.getMinutes()).padStart(2,'0');
+    return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+  }
+  const updFmt=fmtUpd(upd);
+
   const now=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-  // Aggregate status
-  const kecArr=Object.values(KEC).sort((a,b)=>a.nama.localeCompare(b.nama));
+  // Kecamatan diurutkan berdasarkan proyeksi TERTINGGI → terendah
+  const kecArr=Object.values(KEC).sort((a,b)=>b.proyeksi-a.proyeksi);
   const aman=kecArr.filter(k=>k.status==='Aman');
   const waspada=kecArr.filter(k=>k.status==='Waspada');
   const terlambat=kecArr.filter(k=>k.status==='Terlambat');
   const bahaya=kecArr.filter(k=>k.status==='Bahaya');
 
-  // PPL issues
+  // PPL issues — TAMPILKAN SEMUA (hapus slice)
   const pplBahaya=Object.values(PPL).filter(p=>p.status==='Bahaya'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
   const pplTerlambat=Object.values(PPL).filter(p=>p.status==='Terlambat'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
-  const pplAman=Object.values(PPL).filter(p=>p.status==='Aman'&&p.target>0).sort((a,b)=>b.proyeksi-a.proyeksi);
 
   const statColor={Aman:'#00c47a',Waspada:'#d4900a',Terlambat:'#cc6600',Bahaya:'#cc2040'};
   const statBg={Aman:'#e6fff5',Waspada:'#fff8e6',Terlambat:'#fff3e6',Bahaya:'#ffe6eb'};
+
+  // Progress bar dengan label nilai %
   const pctBar=(v,color='#00c47a')=>`<div style="display:inline-flex;align-items:center;gap:6px;width:100%">
     <div style="flex:1;height:5px;background:#e0e8f0;border-radius:3px;overflow:hidden">
       <div style="width:${Math.min(v,100)}%;height:100%;background:${color};border-radius:3px"></div>
@@ -1115,9 +1131,31 @@ function openLaporan(){
 
   const statPill=(s)=>`<span style="display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:${statBg[s]};color:${statColor[s]};border:1px solid ${statColor[s]}40">${s}</span>`;
 
-  // Top 5 performer & needs attention PPL
-  const top5ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>b.pct_now-a.pct_now).slice(0,5);
-  const bot5ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>a.pct_now-b.pct_now).slice(0,5);
+  // Top 10 PPL terbaik
+  const top10ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>b.pct_now-a.pct_now).slice(0,10);
+  const rankIcon=i=>['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]||String(i+1);
+
+  // Bar chart SVG per kecamatan — diurutkan proyeksi tertinggi, label nilai di ujung batang
+  const maxProy=Math.max(...kecArr.map(k=>k.proyeksi),100);
+  const barH=22, barGap=4, chartW=460, labelW=110, numW=52;
+  const totalW=labelW+chartW+numW;
+  const svgH=kecArr.length*(barH+barGap)+20;
+  const barSvg=`<svg viewBox="0 0 ${totalW} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:Arial,sans-serif">
+    ${kecArr.map((k,i)=>{
+      const y=i*(barH+barGap)+10;
+      const barW=Math.max((k.proyeksi/maxProy)*chartW,2);
+      const c=statColor[k.status];
+      const bg=statBg[k.status];
+      const labelX=labelW-4;
+      const barX=labelW;
+      return`<g>
+        <text x="${labelX}" y="${y+barH/2+4}" text-anchor="end" font-size="9.5" fill="#4a6080">${k.nama.length>14?k.nama.slice(0,13)+'…':k.nama}</text>
+        <rect x="${barX}" y="${y}" width="${barW}" height="${barH}" rx="3" fill="${c}" opacity="0.85"/>
+        <text x="${barX+barW+5}" y="${y+barH/2+4}" text-anchor="start" font-size="9.5" font-weight="700" fill="${c}">${fr(k.proyeksi)}%</text>
+      </g>`;
+    }).join('')}
+    <line x1="${labelW}" y1="0" x2="${labelW}" y2="${svgH}" stroke="#dce4ee" stroke-width="1"/>
+  </svg>`;
 
   $('lap-body').innerHTML=`
   <div style="font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#1a2a4a;max-width:760px;margin:0 auto" id="lap-content">
@@ -1127,9 +1165,9 @@ function openLaporan(){
       <div style="font-size:10px;color:#4a6080;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">BADAN PUSAT STATISTIK</div>
       <div style="font-size:17px;font-weight:800;color:#1a3a6a;line-height:1.2">Laporan Kinerja Petugas Lapangan</div>
       <div style="font-size:14px;font-weight:600;color:#2a5aa0;margin-top:2px">Sensus Ekonomi 2026 — ${m.nama_kabupaten}</div>
-      <div style="font-size:11px;color:#4a6080;margin-top:6px;display:flex;justify-content:center;gap:16px">
+      <div style="font-size:11px;color:#4a6080;margin-top:6px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap">
         <span>📅 Dibuat: ${now}</span>
-        <span>📊 Data per: <strong>${upd}</strong></span>
+        <span>📊 Data per: <strong>${updFmt}</strong></span>
         <span>⏳ Sisa: <strong style="color:#cc6600">${SISA} hari</strong> s.d. 25 Agustus 2026</span>
       </div>
     </div>
@@ -1137,7 +1175,7 @@ function openLaporan(){
     <!-- RINGKASAN EKSEKUTIF -->
     ${section('I. RINGKASAN EKSEKUTIF','📋',`
       <div style="background:#f0f6ff;border:1px solid #c0d8f0;border-radius:8px;padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:1.8">
-        Berdasarkan data pemutakhiran terakhir tanggal <strong>${upd}</strong>, pelaksanaan Sensus Ekonomi 2026 di ${m.nama_kabupaten} telah mencapai progres 
+        Berdasarkan data pemutakhiran terakhir <strong>${updFmt}</strong>, pelaksanaan Sensus Ekonomi 2026 di ${m.nama_kabupaten} telah mencapai progres 
         <strong style="color:${statColor[tStat]}">${tPctNow}%</strong> dari total target 
         <strong>${fN(tTgt)}</strong> usaha. Dengan laju penyelesaian rata-rata 
         <strong>${LAJU}%/hari</strong> dan sisa waktu <strong style="color:#cc6600">${SISA} hari</strong>, 
@@ -1184,9 +1222,15 @@ function openLaporan(){
         </div>`).join('')}
       </div>
 
+      <!-- Bar chart SVG proyeksi per kecamatan (tertinggi → terendah) -->
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;color:#4a6080;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Proyeksi Perolehan per Kecamatan (%) — diurutkan tertinggi</div>
+        ${barSvg}
+      </div>
+
       ${tbl(['No','Kecamatan','PPL','Target','Selesai','Progres Kini','Proyeksi 25 Ags','Status'],
         kecArr.map((k,i)=>[
-          `<span style="color:#778899">${i+1}</span>`,
+          `<span style="color:#778899;font-weight:700">${i+1}</span>`,
           `<strong>${k.nama}</strong>`,
           k.jumlah_ppl,
           fN(k.target),
@@ -1228,14 +1272,15 @@ function openLaporan(){
         )}`:''}
     `,'#aa2020'):''}
 
-    <!-- PPL BERMASALAH -->
+    <!-- PPL BERMASALAH — TAMPILKAN SEMUA -->
     ${section('IV. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
       ${pplBahaya.length?`
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
-          <strong>🔴 ${pplBahaya.length} PPL Proyeksi BAHAYA (&lt;80%)</strong>
+          <strong>🔴 ${pplBahaya.length} PPL Proyeksi BAHAYA (&lt;80%)</strong> — Ditampilkan semua ${pplBahaya.length}/${pplBahaya.length} PPL
         </div>
-        ${tbl(['Nama PPL','Kecamatan','Desa','Target','Selesai','Progres','Proyeksi'],
-          pplBahaya.slice(0,10).map(p=>[
+        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Selesai','Progres','Proyeksi'],
+          pplBahaya.map((p,i)=>[
+            `<span style="color:#778899">${i+1}</span>`,
             `<strong style="color:#cc2040">${p.nama}</strong>`,
             STATE.KEC[p.kec_id]?.nama||'—',
             p.desa,
@@ -1243,15 +1288,15 @@ function openLaporan(){
             fN(p.selesai),
             pctBar(p.pct_now,'#cc2040'),
             `<strong style="color:#cc2040;font-family:monospace">${fr(p.proyeksi)}%</strong>`
-          ]),
-          pplBahaya.length>10?`*Menampilkan 10 dari ${pplBahaya.length} PPL bahaya`:''
+          ])
         )}`:''}
       ${pplTerlambat.length?`
         <div style="background:#fff3e6;border:1px solid #cc660040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc6600">
-          <strong>🟠 ${pplTerlambat.length} PPL Proyeksi TERLAMBAT (80–94%)</strong>
+          <strong>🟠 ${pplTerlambat.length} PPL Proyeksi TERLAMBAT (80–94%)</strong> — Ditampilkan semua ${pplTerlambat.length}/${pplTerlambat.length} PPL
         </div>
-        ${tbl(['Nama PPL','Kecamatan','Desa','Target','Selesai','Progres','Proyeksi'],
-          pplTerlambat.slice(0,10).map(p=>[
+        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Selesai','Progres','Proyeksi'],
+          pplTerlambat.map((p,i)=>[
+            `<span style="color:#778899">${i+1}</span>`,
             `<strong style="color:#cc6600">${p.nama}</strong>`,
             STATE.KEC[p.kec_id]?.nama||'—',
             p.desa,
@@ -1259,17 +1304,16 @@ function openLaporan(){
             fN(p.selesai),
             pctBar(p.pct_now,'#cc6600'),
             `<strong style="color:#cc6600;font-family:monospace">${fr(p.proyeksi)}%</strong>`
-          ]),
-          pplTerlambat.length>10?`*Menampilkan 10 dari ${pplTerlambat.length} PPL terlambat`:''
+          ])
         )}`:''}
       ${(!pplBahaya.length&&!pplTerlambat.length)?`<div style="background:#e6faf2;border:1px solid #00c47a40;border-radius:6px;padding:10px 14px;font-size:12px;color:#1a7a4a">✅ Seluruh PPL dalam status Aman atau Waspada. Tidak ada PPL yang memerlukan perhatian khusus.</div>`:''}
     `,'#804020')}
 
-    <!-- TOP PERFORMER -->
-    ${section('V. PETUGAS LAPANGAN TERBAIK','🏆',`
-      ${tbl(['Peringkat','Nama PPL','Kecamatan','Target','Selesai','Progres','Proyeksi'],
-        top5ppl.map((p,i)=>[
-          `<span style="font-size:16px">${['🥇','🥈','🥉','4','5'][i]}</span>`,
+    <!-- TOP 10 PERFORMER -->
+    ${section('V. PETUGAS LAPANGAN TERBAIK (TOP 10)','🏆',`
+      ${tbl(['#','Nama PPL','Kecamatan','Target','Selesai','Progres','Proyeksi'],
+        top10ppl.map((p,i)=>[
+          `<span style="font-size:${i<3?'16':'12'}px">${rankIcon(i)}</span>`,
           `<strong>${p.nama}</strong>`,
           STATE.KEC[p.kec_id]?.nama||'—',
           fN(p.target),
@@ -1298,7 +1342,7 @@ function openLaporan(){
         <div>BPS Kabupaten Pasuruan — Sensus Ekonomi 2026</div>
       </div>
       <div style="text-align:right">
-        <div>Data terakhir: <strong>${upd}</strong></div>
+        <div>Data terakhir: <strong>${updFmt}</strong></div>
         <div>Dicetak: ${now}</div>
         <div style="margin-top:8px;font-size:11px;color:#4a6080">Mengetahui,</div>
         <div style="margin-top:40px;border-top:1px solid #4a6080;padding-top:4px;min-width:180px;text-align:center">
