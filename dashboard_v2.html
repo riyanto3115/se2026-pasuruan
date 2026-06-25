@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SE2026 — BPS Kab. Pasuruan</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--s1:#0c1018;--s2:#111620;--s3:#171e2c;--s4:#1e2a3d;
+  --bdr:#1b2638;--bdr2:#263549;
+  --tx:#d8e8f8;--tx2:#7090b0;--tx3:#405878;
+  --gr:#00e5a0;--gr-bg:rgba(0,229,160,.07);--gr-bdr:rgba(0,229,160,.18);
+  --am:#ffb830;--am-bg:rgba(255,184,48,.07);--am-bdr:rgba(255,184,48,.18);
+  --or:#ff8c00;--or-bg:rgba(255,140,0,.07);--or-bdr:rgba(255,140,0,.18);
+  --rd:#ff4060;--rd-bg:rgba(255,64,96,.07);--rd-bdr:rgba(255,64,96,.18);
+  --bl:#3d9eff;--bl-bg:rgba(61,158,255,.07);--bl-bdr:rgba(61,158,255,.18);
+  --pu:#a855f7;--pu-bg:rgba(168,85,247,.07);--pu-bdr:rgba(168,85,247,.18);
+  --cy:#22d3ee;--cy-bg:rgba(34,211,238,.07);
+  --r6:6px;--r10:10px;--r14:14px;
+  --fnt:'Plus Jakarta Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--fnt);font-size:13px;min-height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:4px}
+.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:50px 1fr;height:100vh}
+header{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 1rem;gap:10px;z-index:200}
+.sidebar{background:var(--s1);border-right:1px solid var(--bdr);overflow-y:auto;display:flex;flex-direction:column}
+.content{overflow-y:auto;padding:1rem;background:var(--bg)}
+/* HEADER */
+.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--bl),var(--pu));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.hd-title{font-size:13px;font-weight:700;letter-spacing:-.3px}.hd-sub{font-size:10px;color:var(--tx2);margin-top:1px}
+.hspace{flex:1}
+.upd-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;background:var(--gr-bg);border:1px solid var(--gr-bdr);font-size:10px;color:var(--gr);font-family:var(--mono)}
+.upd-dot{width:5px;height:5px;border-radius:50%;background:var(--gr);animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hbtn{padding:4px 10px;border-radius:var(--r6);font-size:11px;font-family:var(--fnt);font-weight:600;border:1px solid var(--bdr);background:var(--s2);color:var(--tx2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:5px}
+.hbtn:hover{color:var(--tx);border-color:var(--bdr2)}
+/* SIDEBAR */
+.sb-top{padding:.75rem .5rem .5rem}
+.sb-lbl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;padding:.5rem .75rem .2rem}
+.nav{display:flex;align-items:center;gap:7px;padding:6px 10px;margin:1px .25rem;border-radius:var(--r6);cursor:pointer;color:var(--tx2);font-size:12px;font-weight:500;border:1px solid transparent;transition:.12s}
+.nav:hover{background:var(--s2);color:var(--tx)}.nav.on{background:var(--bl-bg);border-color:var(--bl-bdr);color:var(--bl)}
+.nav svg{width:14px;height:14px;flex-shrink:0;opacity:.75}.nav.on svg{opacity:1}
+.chip{margin-left:auto;font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;background:var(--s3);color:var(--tx3)}
+.nav.on .chip{background:var(--bl-bg);color:var(--bl)}.chip-rd{background:var(--rd-bg)!important;color:var(--rd)!important}
+.sb-div{height:1px;background:var(--bdr);margin:.4rem .75rem}
+.sb-meta{padding:.5rem .75rem;font-family:var(--mono);font-size:10px;color:var(--tx3);line-height:1.9;margin-top:auto;border-top:1px solid var(--bdr)}
+.sb-meta span{color:var(--tx2)}
+/* PROYEKSI BANNER */
+.proy-banner{display:flex;align-items:center;gap:10px;padding:.5rem .75rem;margin:.5rem;border-radius:var(--r6);border:1px solid;font-size:11px;font-weight:600}
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:1rem}
+.mc{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r10);padding:.75rem .875rem;position:relative;overflow:hidden;transition:border-color .2s;cursor:default}
+.mc:hover{border-color:var(--bdr2)}
+.mc-glow{position:absolute;top:-16px;left:-16px;width:70px;height:70px;border-radius:50%;opacity:.1;filter:blur(18px);pointer-events:none}
+.mc-lbl{font-size:10px;color:var(--tx2);font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.mc-val{font-family:var(--mono);font-size:20px;font-weight:500;line-height:1}.mc-sub{font-size:10px;color:var(--tx3);margin-top:4px}
+.c-bl .mc-val{color:var(--bl)}.c-bl .mc-glow{background:var(--bl)}
+.c-gr .mc-val{color:var(--gr)}.c-gr .mc-glow{background:var(--gr)}
+.c-am .mc-val{color:var(--am)}.c-am .mc-glow{background:var(--am)}
+.c-or .mc-val{color:var(--or)}.c-or .mc-glow{background:var(--or)}
+.c-rd .mc-val{color:var(--rd)}.c-rd .mc-glow{background:var(--rd)}
+.c-pu .mc-val{color:var(--pu)}.c-pu .mc-glow{background:var(--pu)}
+.c-cy .mc-val{color:var(--cy)}.c-cy .mc-glow{background:var(--cy)}
+/* TABS */
+.tab-bar{display:flex;gap:1px;border-bottom:1px solid var(--bdr);margin-bottom:1rem;background:var(--bg);position:sticky;top:0;z-index:100}
+.tb{padding:6px 14px;font-size:12px;font-weight:500;font-family:var(--fnt);background:none;border:none;border-bottom:2px solid transparent;color:var(--tx2);cursor:pointer;transition:.12s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.tb:hover{color:var(--tx)}.tb.on{color:var(--bl);border-bottom-color:var(--bl)}
+.pane{display:none}.pane.on{display:block}
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r10);margin-bottom:.875rem;overflow:hidden}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem;border-bottom:1px solid var(--bdr);gap:8px;flex-wrap:wrap}
+.ct{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.ct svg{width:13px;height:13px;color:var(--tx3)}.cb{padding:.75rem .875rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:.875rem}
+/* TABLE */
+.tscroll{overflow-x:auto;max-height:400px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--s2);padding:6px 8px;text-align:left;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:5}
+td{padding:6px 8px;border-bottom:1px solid var(--bdr);vertical-align:middle;white-space:nowrap}
+tr:last-child td{border-bottom:none}tbody tr:hover td{background:rgba(61,158,255,.03)}
+/* PILL STATUS PROYEKSI */
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;white-space:nowrap}
+.p-aman{background:var(--gr-bg);color:var(--gr);border:1px solid var(--gr-bdr)}
+.p-waspada{background:var(--am-bg);color:var(--am);border:1px solid var(--am-bdr)}
+.p-terlambat{background:var(--or-bg);color:var(--or);border:1px solid var(--or-bdr)}
+.p-bahaya{background:var(--rd-bg);color:var(--rd);border:1px solid var(--rd-bdr)}
+.p-gy{background:var(--s3);color:var(--tx2);border:1px solid var(--bdr)}
+.p-cn{background:rgba(34,211,238,.07);color:var(--cy);border:1px solid rgba(34,211,238,.18)}
+.p-or{background:rgba(255,122,48,.07);color:#ff7a30;border:1px solid rgba(255,122,48,.25)}
+/* PROGRESS */
+.prog{display:flex;align-items:center;gap:5px;min-width:100px}
+.pbg{flex:1;height:4px;background:var(--s4);border-radius:99px;overflow:hidden;min-width:50px}
+.pf{height:100%;border-radius:99px}
+.plbl{font-family:var(--mono);font-size:10px;min-width:30px;text-align:right;color:var(--tx2)}
+/* FILTER */
+.fbar{display:flex;gap:6px;padding:.5rem .875rem;border-bottom:1px solid var(--bdr);flex-wrap:wrap;align-items:center;background:var(--s2)}
+.sbox{display:flex;align-items:center;gap:5px;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);padding:4px 8px;flex:1;min-width:160px}
+.sbox svg{width:12px;height:12px;color:var(--tx3);flex-shrink:0}
+.sbox input{background:none;border:none;outline:none;color:var(--tx);font-family:var(--fnt);font-size:12px;width:100%}
+.sbox input::placeholder{color:var(--tx3)}
+select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);padding:4px 8px;color:var(--tx);font-family:var(--fnt);font-size:11px;outline:none;cursor:pointer}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--r6);font-size:11px;font-family:var(--fnt);font-weight:600;cursor:pointer;transition:.12s;border:1px solid var(--bdr);background:var(--s2);color:var(--tx2)}
+.btn:hover{color:var(--tx);border-color:var(--bdr2)}
+.btn-gr{background:var(--gr-bg);border-color:var(--gr-bdr);color:var(--gr)}.btn-gr:hover{background:rgba(0,229,160,.13)}
+.btn-bl{background:var(--bl-bg);border-color:var(--bl-bdr);color:var(--bl)}.btn-bl:hover{background:rgba(61,158,255,.13)}
+/* AVATAR */
+.av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
+.av-bl{background:var(--bl-bg);color:var(--bl)}.av-gr{background:var(--gr-bg);color:var(--gr)}
+.av-am{background:var(--am-bg);color:var(--am)}.av-rd{background:var(--rd-bg);color:var(--rd)}.av-pu{background:var(--pu-bg);color:var(--pu)}
+.fr{display:flex;align-items:center;gap:6px}
+/* CHART */
+.cwrap{height:500px;position:relative}.cwrap-lg{height:300px;position:relative}
+/* PETA */
+.peta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:8px}
+.pkard{background:var(--s2);border:1px solid var(--bdr);border-radius:var(--r10);padding:.75rem .875rem;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.pkard:hover{border-color:var(--bdr2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.pkard-bar{height:2px;position:absolute;top:0;left:0;right:0}
+.pkard-kode{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.pkard-nm{font-weight:700;font-size:12px;margin:3px 0 4px}
+.pkard-stats{display:flex;gap:8px;margin-top:8px}
+.pkard-st{flex:1;text-align:center}
+.pkard-sv{font-family:var(--mono);font-size:13px;font-weight:500}.pkard-sl{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px}
+/* MODAL */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:600;display:none;align-items:center;justify-content:center}
+.moverlay.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r14);width:400px;max-width:92vw;max-height:85vh;overflow-y:auto}
+.mh{display:flex;justify-content:space-between;align-items:center;padding:.875rem 1rem;border-bottom:1px solid var(--bdr)}
+.mb{padding:.875rem 1rem;display:flex;flex-direction:column;gap:6px}
+.mopt{display:flex;align-items:center;gap:10px;padding:.625rem .875rem;border:1px solid var(--bdr);border-radius:var(--r6);cursor:pointer;transition:.12s}
+.mopt:hover{border-color:var(--bl-bdr);background:var(--bl-bg)}
+.mot{font-size:12px;font-weight:600}.mos{font-size:10px;color:var(--tx3);margin-top:1px}
+/* NOTIF */
+.np{position:fixed;top:54px;right:.875rem;width:320px;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r10);z-index:500;display:none;box-shadow:0 16px 48px rgba(0,0,0,.7)}
+.np.open{display:block}
+.np-h{display:flex;justify-content:space-between;align-items:center;padding:.625rem .875rem;border-bottom:1px solid var(--bdr)}
+.np-item{padding:.5rem .875rem;border-bottom:1px solid var(--bdr);cursor:pointer;transition:.12s;display:flex;gap:8px}
+.np-item:hover{background:var(--s2)}.np-item:last-child{border:none}
+.np-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+/* BACK */
+.bbtn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--bl);cursor:pointer;padding:3px 9px;border-radius:var(--r6);border:1px solid var(--bl-bdr);background:var(--bl-bg);transition:.12s}
+.bbtn:hover{background:rgba(61,158,255,.18)}
+/* TOAST */
+.toast{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--s2);border:1px solid var(--gr-bdr);border-radius:var(--r6);padding:.5rem .875rem;font-size:12px;display:flex;align-items:center;gap:7px;color:var(--gr);z-index:700;transform:translateY(50px);opacity:0;transition:.3s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+/* LOADING */
+.loverlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.lsp{width:36px;height:36px;border:2.5px solid var(--s3);border-top-color:var(--bl);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}.loverlay.done{display:none}
+.lerr{max-width:420px;text-align:center;padding:1rem;background:var(--s1);border:1px solid var(--rd-bdr);border-radius:var(--r10);line-height:1.7}
+.det-mets{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:.75rem}
+/* LEGEND PROYEKSI */
+.leg-proy{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:var(--tx2);margin-top:6px}
+.leg-proy span{display:flex;align-items:center;gap:3px}
+.leg-dot{width:7px;height:7px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+
+<div class="loverlay" id="loverlay">
+  <div class="lsp" id="lsp"></div>
+  <div style="font-size:13px;color:var(--tx2)">Memuat Dashboard SE2026…</div>
+  <div style="font-family:var(--mono);font-size:11px;color:var(--tx3)" id="lstep">Menginisialisasi…</div>
+</div>
+
+<div class="shell" id="shell" style="display:none">
+<header>
+  <div class="logo">BPS</div>
+  <div><div class="hd-title">Monitoring Sensus Ekonomi 2026</div><div class="hd-sub" id="hd-kab">—</div></div>
+  <div class="hspace"></div>
+  <div style="font-family:var(--mono);font-size:10px;color:var(--tx3);text-align:right;line-height:1.6">
+    <div>Sisa: <span id="hd-sisa" style="color:var(--am)">—</span> hari</div>
+    <div>Deadline: <span style="color:var(--tx2)">25 Ags 2026</span></div>
+  </div>
+  <div class="upd-pill"><div class="upd-dot"></div>Update: <span id="hd-date" style="color:var(--tx)">—</span></div>
+  <button class="hbtn" onclick="openLaporan()" style="background:var(--pu-bg);border-color:var(--pu-bdr);color:var(--pu)">
+    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4.5 4.5h5M4.5 7h5M4.5 9.5h3"/></svg>Laporan Pimpinan
+  </button>
+  <button class="hbtn" onclick="openModal()">
+    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M7 1v8m0 0L4.5 6.5M7 9l2.5-2.5M1.5 12h11"/></svg>Export
+  </button>
+  <div style="position:relative">
+    <button class="hbtn" id="nbtn" onclick="toggleNp()" style="position:relative">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M7 1.5a3 3 0 0 1 3 3V7l1 2H3l1-2V4.5a3 3 0 0 1 3-3zM5.5 9.5h3"/></svg>
+      <span id="nbadge" style="position:absolute;top:-5px;right:-5px;background:var(--rd);color:#fff;font-size:9px;min-width:15px;height:15px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0 3px">0</span>
+    </button>
+    <div class="np" id="np">
+      <div class="np-h"><span style="font-size:12px;font-weight:700">Notifikasi</span><span style="font-size:11px;color:var(--bl);cursor:pointer" onclick="markAll()">Semua dibaca</span></div>
+      <div id="np-list"></div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <div class="sb-top">
+    <div class="sb-lbl">Monitoring</div>
+    <div class="nav on" id="si-rekap" onclick="goPane('rekap',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="8" width="2.5" height="5"/><rect x="5.5" y="4.5" width="2.5" height="8.5"/><rect x="10" y="1" width="2.5" height="12"/></svg>
+      Rekap Wilayah<span class="chip" id="ch-kec">24</span>
+    </div>
+    <div class="nav" id="si-pml" onclick="goPane('pml',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="4" r="2.5"/><path d="M1 13c0-2.5 1.8-4 4-4m4.5.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm0 0V13m1.5-2.5h-3"/></svg>
+      Per PML<span class="chip" id="ch-pml">—</span>
+    </div>
+    <div class="nav" id="si-ppl" onclick="goPane('ppl',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="3.5" r="2.5"/><path d="M2 13c0-3 2.2-5 5-5s5 2 5 5"/></svg>
+      Per PPL<span class="chip" id="ch-ppl">—</span>
+    </div>
+    <div class="nav" id="si-eval" onclick="goPane('eval',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="10" height="10" rx="1"/><path d="M5 6.5h4M5 9h2.5M5 4.5h4"/></svg>
+      Evaluasi SLS<span class="chip" id="ch-sls">—</span>
+    </div>
+    <div class="nav" id="si-peta" onclick="goPane('peta',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1a4.5 4.5 0 0 1 4.5 4.5C11.5 9 7 13 7 13S2.5 9 2.5 5.5A4.5 4.5 0 0 1 7 1z"/><circle cx="7" cy="5.5" r="1.5"/></svg>
+      Peta Spasial
+    </div>
+    <div class="sb-div"></div>
+    <div class="sb-lbl">Lainnya</div>
+    <div class="nav" onclick="openModal()">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1v8m0 0L4.5 6.5M7 9l2.5-2.5M1.5 12h11"/></svg>Export Laporan
+    </div>
+    <div class="nav" id="si-notif" onclick="goPane('notif',this)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1.5a3 3 0 0 1 3 3V7l1 2H3l1-2V4.5a3 3 0 0 1 3-3zM5.5 9.5h3"/></svg>
+      Notifikasi<span class="chip chip-rd" id="ch-notif">0</span>
+    </div>
+  </div>
+  <div class="sb-meta">
+    <div>Update: <span id="sb-upd">—</span></div>
+    <div>Deadline: <span style="color:var(--am)">25 Ags 2026</span></div>
+    <div>Sisa: <span id="sb-sisa">—</span> hari</div>
+    <div>Laju asumsi: <span style="color:var(--bl)">1.5%/hari</span></div>
+    <div style="margin-top:4px">SLS lapor: <span id="sb-lap">—</span></div>
+    <div style="margin-top:4px" id="sb-proy-wrap">
+      Proyeksi: <span id="sb-proy">—</span>
+    </div>
+    <div style="margin-top:4px;font-size:9px;color:var(--tx3)">data_static.json · data_penyelesaian.json</div>
+  </div>
+</aside>
+
+<div class="content">
+  <!-- PROYEKSI BANNER -->
+  <div id="proy-banner" style="margin-bottom:.875rem;padding:.625rem 1rem;border-radius:var(--r10);border:1px solid;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600"></div>
+
+  <div class="metrics" id="metrics-row"></div>
+
+  <div class="tab-bar">
+    <button class="tb on" id="tb-rekap" onclick="switchTab('rekap',this)">
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><rect x="1" y="7" width="2" height="5"/><rect x="5" y="4" width="2" height="8"/><rect x="9" y="1" width="2" height="11"/></svg>Rekap
+    </button>
+    <button class="tb" id="tb-pml" onclick="switchTab('pml',this)">
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><circle cx="4.5" cy="3.5" r="2"/><path d="M1 12c0-2 1.5-3.5 3.5-3.5m4 .5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 0V12m1.5-2h-3"/></svg>PML
+    </button>
+    <button class="tb" id="tb-ppl" onclick="switchTab('ppl',this)">
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><circle cx="6.5" cy="3" r="2"/><path d="M1.5 12c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>PPL
+    </button>
+    <button class="tb" id="tb-eval" onclick="switchTab('eval',this)">
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><rect x="1.5" y="1.5" width="10" height="10" rx="1"/><path d="M4.5 6.5h4M4.5 9h2.5M4.5 4.5h4"/></svg>Eval SLS
+    </button>
+    <button class="tb" id="tb-peta" onclick="switchTab('peta',this)">
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><path d="M6.5 1a4 4 0 0 1 4 4C10.5 8.5 6.5 12 6.5 12S2.5 8.5 2.5 5a4 4 0 0 1 4-4z"/><circle cx="6.5" cy="5" r="1.5"/></svg>Peta
+    </button>
+    <button class="tb" id="tb-notif" onclick="switchTab('notif',this)">
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><path d="M6.5 1.5a2.5 2.5 0 0 1 2.5 2.5v2l1 2H3l1-2V4a2.5 2.5 0 0 1 2.5-2.5zM5.5 9h2"/></svg>Notifikasi
+    </button>
+  </div>
+
+  <!-- REKAP -->
+  <div class="pane on" id="pane-rekap">
+    <div class="two">
+      <div class="card">
+        <div class="ch">
+          <div class="ct">Progres Hari Ini per Kecamatan</div>
+          <select id="bsort" onchange="renderBar()" style="font-size:11px;padding:3px 7px">
+            <option value="nm">A–Z</option><option value="asc">Progres ↑</option><option value="desc">Progres ↓</option>
+          </select>
+        </div>
+        <div class="cb">
+          <div class="cwrap"><canvas id="bar-c"></canvas></div>
+          <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:10px;color:var(--tx2)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#00e5a0;display:inline-block"></span>Aman (proyeksi &gt;100%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ffb830;display:inline-block"></span>Waspada (95–100%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ff8c00;display:inline-block"></span>Terlambat (80–94%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ff4060;display:inline-block"></span>Bahaya (&lt;80%)</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Distribusi Status Proyeksi</div></div>
+        <div class="cb">
+          <div class="cwrap"><canvas id="dnt-c"></canvas></div>
+          <div id="dnt-leg" style="display:flex;justify-content:center;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:10px;color:var(--tx2)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <div class="ct">Tabel Rekap Kecamatan</div>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-gr" onclick="exportXL('kec')">Excel</button>
+          <button class="btn" onclick="exportCSV('kec')">CSV</button>
+        </div>
+      </div>
+      <div class="fbar">
+        <div class="sbox"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5.5" cy="5.5" r="3.5"/><path d="m8.5 8.5 3 3"/></svg><input id="kq" placeholder="Cari kecamatan…" oninput="renderKec()"></div>
+        <select id="ksf" onchange="renderKec()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
+        <select id="kof" onchange="renderKec()"><option value="">Urutkan…</option><option value="pd">Proyeksi ↓</option><option value="pa">Proyeksi ↑</option><option value="sd">SLS terbanyak</option></select>
+      </div>
+      <div class="tscroll"><table><thead><tr>
+        <th>Kecamatan</th><th>PML</th><th>PPL</th><th>SLS</th><th>Target</th><th>Selesai</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th>
+      </tr></thead><tbody id="kec-tb"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- PML -->
+  <div class="pane" id="pane-pml">
+    <div class="card">
+      <div class="ch"><div class="ct">Kinerja PML</div><button class="btn btn-gr" onclick="exportXL('pml')">Export Excel</button></div>
+      <div class="fbar">
+        <div class="sbox"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5.5" cy="5.5" r="3.5"/><path d="m8.5 8.5 3 3"/></svg><input id="pmlq" placeholder="Cari nama PML…" oninput="renderPml()"></div>
+        <select id="pmlkf" onchange="renderPml()"><option value="">Semua kecamatan</option></select>
+        <select id="pmlsf" onchange="renderPml()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
+      </div>
+      <div class="tscroll"><table><thead><tr>
+        <th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Selesai</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th></th>
+      </tr></thead><tbody id="pml-tb"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- PPL -->
+  <div class="pane" id="pane-ppl">
+    <div class="card">
+      <div class="ch"><div class="ct">Kinerja PPL</div><div style="display:flex;gap:5px"><button class="btn btn-gr" onclick="exportXL('ppl')">Excel</button><button class="btn" onclick="exportCSV('ppl')">CSV</button></div></div>
+      <div class="fbar">
+        <div class="sbox"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5.5" cy="5.5" r="3.5"/><path d="m8.5 8.5 3 3"/></svg><input id="pplq" placeholder="Cari nama PPL / desa…" oninput="renderPpl()"></div>
+        <select id="pplkf" onchange="onKecPpl()"><option value="">Semua kecamatan</option></select>
+        <select id="ppldf" onchange="renderPpl()"><option value="">Semua desa</option></select>
+        <select id="pplpf" onchange="renderPpl()"><option value="">Semua PML</option></select>
+        <select id="pplsf" onchange="renderPpl()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
+      </div>
+      <div class="tscroll"><table><thead><tr>
+        <th>PPL</th><th>PML</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Selesai</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th></th>
+      </tr></thead><tbody id="ppl-tb"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- EVAL -->
+  <div class="pane" id="pane-eval">
+    <div id="ev-list">
+      <div class="card">
+        <div class="ch"><div class="ct">Evaluasi per PPL — Rincian SLS</div><button class="btn btn-gr" onclick="exportXL('eval')">Export Semua SLS</button></div>
+        <div class="fbar">
+          <div class="sbox"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="5.5" cy="5.5" r="3.5"/><path d="m8.5 8.5 3 3"/></svg><input id="evq" placeholder="Cari PPL / desa…" oninput="renderEval()"></div>
+          <select id="evkf" onchange="renderEval()"><option value="">Semua kecamatan</option></select>
+          <select id="evpf" onchange="renderEval()"><option value="">Semua PML</option></select>
+          <select id="evsf" onchange="renderEval()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
+        </div>
+        <div class="tscroll"><table><thead><tr>
+          <th>PPL</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Selesai</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th>Detail</th>
+        </tr></thead><tbody id="ev-tb"></tbody></table></div>
+      </div>
+    </div>
+    <div id="ev-detail" style="display:none">
+      <div class="card" style="margin-bottom:.75rem">
+        <div class="ch"><div class="bbtn" onclick="closeDetail()"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><path d="M8 2 3.5 6.5 8 11"/></svg>Kembali</div><button class="btn btn-gr" onclick="exportXL('detail')">Export SLS PPL Ini</button></div>
+        <div class="cb">
+          <div id="ev-info" style="display:flex;gap:1rem;align-items:flex-start;margin-bottom:.625rem;flex-wrap:wrap"></div>
+          <div class="det-mets" id="ev-mets"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Rincian per SLS</div></div>
+        <div class="tscroll"><table><thead><tr>
+          <th>No</th><th>regionCode</th><th>Desa</th><th>Target</th><th>Selesai</th><th>Open</th><th>Draft</th><th>Sub Resp</th><th>Ditolak</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th>
+        </tr></thead><tbody id="det-tb"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PETA -->
+  <div class="pane" id="pane-peta">
+    <div class="card" style="margin-bottom:.875rem">
+      <div class="ch"><div class="ct">Peta Status Proyeksi per Kecamatan</div></div>
+      <div class="cb">
+        <div style="background:var(--bl-bg);border:1px solid var(--bl-bdr);border-radius:var(--r6);padding:6px 10px;font-size:11px;color:var(--bl);display:flex;gap:5px;align-items:center;margin-bottom:10px">
+          <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l1.5 1"/></svg>
+          Status = proyeksi perolehan 25 Agustus 2026. Klik kartu untuk filter ke tabel Rekap.
+        </div>
+        <div class="peta-grid" id="peta-grid"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Heatmap Proyeksi Horizontal</div></div>
+      <div class="cb"><div class="cwrap-lg"><canvas id="hm-c"></canvas></div></div>
+    </div>
+  </div>
+
+  <!-- NOTIF -->
+  <div class="pane" id="pane-notif">
+    <div class="card">
+      <div class="ch"><div class="ct">Pusat Notifikasi</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <select id="nfil" onchange="renderNotifPane()"><option value="">Semua Level</option><option value="rd">🔴 Bahaya</option><option value="or">🟠 Terlambat</option><option value="am">🟡 Waspada</option><option value="bl">🔵 Info</option></select>
+          <select id="nkec" onchange="renderNotifPane()"><option value="">Semua Kecamatan</option></select>
+          <button class="btn" onclick="markAll()">Tandai semua dibaca</button>
+          <button class="btn btn-pu" onclick="openLaporan()" style="background:var(--pu-bg);border-color:var(--pu-bdr);color:var(--pu)">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><rect x="1.5" y="1" width="10" height="11" rx="1"/><path d="M4 4h5M4 6.5h5M4 9h3"/></svg>Laporan Pimpinan
+          </button>
+        </div>
+      </div>
+      <div id="notif-stats" style="padding:.5rem .875rem;border-bottom:1px solid var(--bdr);display:flex;gap:10px;flex-wrap:wrap"></div>
+      <div id="notif-body" style="padding:.625rem .875rem;display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="moverlay" id="exp-modal">
+  <div class="modal">
+    <div class="mh"><span style="font-size:13px;font-weight:700">Export Laporan</span>
+      <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15" style="cursor:pointer;color:var(--tx2)" onclick="closeModal()"><path d="m2 2 9 9M11 2 2 11"/></svg>
+    </div>
+    <div class="mb">
+      <div class="mopt" onclick="exportXL('all');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Semua Data</div><div class="mos">Kec + PML + PPL + SLS dalam sheet terpisah</div></div></div>
+      <div class="mopt" onclick="exportXL('kec');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Rekap Kecamatan</div><div class="mos">Dengan kolom proyeksi</div></div></div>
+      <div class="mopt" onclick="exportXL('ppl');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Data PPL</div><div class="mos">Semua PPL + proyeksi</div></div></div>
+      <div class="mopt" onclick="exportXL('eval');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Semua SLS</div><div class="mos">Detail tiap regionCode + proyeksi</div></div></div>
+      <div class="mopt" onclick="exportCSV('kec');closeModal()"><svg viewBox="0 0 18 18" fill="none" stroke="var(--bl)" stroke-width="1.5" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path d="M5.5 7h7M5.5 10h5"/></svg><div><div class="mot">CSV — Rekap Kecamatan</div><div class="mos">Format teks</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="6.5" cy="6.5" r="5"/><path d="m4 6.5 1.5 1.5 3-3"/></svg><span id="toast-msg"></span></div>
+
+<!-- LAPORAN PIMPINAN MODAL -->
+<div class="moverlay" id="lap-modal" style="align-items:flex-start;overflow-y:auto;padding:1rem">
+  <div class="modal" style="width:820px;max-width:96vw;max-height:none">
+    <div class="mh" style="position:sticky;top:0;z-index:10;background:var(--s1)">
+      <span style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 14 14" fill="none" stroke="var(--pu)" stroke-width="1.5" width="14" height="14"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4.5 4.5h5M4.5 7h5M4.5 9.5h3"/></svg>
+        Laporan Kinerja Petugas Lapangan — SE2026
+      </span>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-gr" onclick="printLaporan()">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><rect x="2" y="5" width="10" height="7" rx="1"/><path d="M4 5V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M4 10h6"/></svg>Cetak / Print
+        </button>
+        <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15" style="cursor:pointer;color:var(--tx2);flex-shrink:0" onclick="closeLaporan()"><path d="m2 2 9 9M11 2 2 11"/></svg>
+      </div>
+    </div>
+    <div id="lap-body" style="padding:1.25rem 1.5rem;font-family:var(--fnt);font-size:13px;line-height:1.7"></div>
+  </div>
+</div>
+
+<style id="print-style">
+@media print{
+  body>*:not(#printframe){display:none!important}
+  #printframe{display:block!important;position:fixed;inset:0;background:#fff;z-index:9999;overflow:auto;padding:20mm}
+}
+</style>
+
+<script>
+// ============================================================
+// GLOBALS & HELPERS
+// ============================================================
+let ST=null,PY=null,STATE={},NOTIFS=[],CUR_PPL=null;
+const $=id=>document.getElementById(id);
+const fN=n=>n!=null?n.toLocaleString('id-ID'):'—';
+const pct=(a,b)=>b>0?Math.round(a/b*100):0;
+const ini=n=>n?n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase():'?';
+const avC=n=>{const c=(n?.charCodeAt(0)??0)%5;return['av-bl','av-gr','av-am','av-rd','av-pu'][c]};
+const fr=v=>v!=null?v.toFixed(1):'—';
+
+// STATUS PROYEKSI (berdasarkan perkiraan perolehan 25 Agustus)
+function getStatus(proyeksi){
+  if(proyeksi>100) return'Aman';
+  if(proyeksi>=95) return'Waspada';
+  if(proyeksi>=80) return'Terlambat';
+  return'Bahaya';
+}
+function statusColor(s){
+  return{Aman:'var(--gr)',Waspada:'var(--am)',Terlambat:'var(--or)',Bahaya:'var(--rd)'}[s]||'var(--tx2)';
+}
+function pillCls(s){
+  return{Aman:'p-aman',Waspada:'p-waspada',Terlambat:'p-terlambat',Bahaya:'p-bahaya'}[s]||'p-gy';
+}
+const pill=s=>`<span class="pill ${pillCls(s)}">${s}</span>`;
+
+// Progress bar — warna berdasarkan status proyeksi bukan progres
+const pb=(p,s,w=100)=>{
+  const c=statusColor(s);
+  return`<div class="prog" style="min-width:${w}px"><div class="pbg"><div class="pf" style="width:${Math.min(p,100)}%;background:${c}"></div></div><span class="plbl" style="color:${c}">${p}%</span></div>`;
+};
+// Proyeksi badge
+const proyBadge=p=>{
+  const s=getStatus(p);
+  const c=statusColor(s);
+  return`<span style="font-family:var(--mono);font-size:11px;font-weight:600;color:${c}">${fr(p)}%</span>`;
+};
+
+function toast(msg){const t=$('toast');$('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+function step(s){$('lstep').textContent=s}
+
+// ============================================================
+// BOOT
+// ============================================================
+async function boot(){
+  try{
+    step('Memuat data_static.json…');
+    const r1=await fetch('data_static.json');
+    if(!r1.ok)throw new Error(`data_static.json tidak ditemukan (${r1.status})`);
+    ST=await r1.json();
+    step('Memuat data_penyelesaian.json…');
+    const r2=await fetch('data_penyelesaian.json');
+    if(!r2.ok)throw new Error(`data_penyelesaian.json tidak ditemukan (${r2.status})`);
+    PY=await r2.json();
+    step('Membangun state…');
+    buildState();
+    step('Merender…');
+    initUI();
+    $('loverlay').classList.add('done');
+    $('shell').style.display='grid';
+  }catch(e){
+    $('lstep').innerHTML=`<div class="lerr"><span style="color:var(--rd)">✖ ${e.message}</span><br><span style="font-size:10px;color:var(--tx3)">Buka F12 → Console untuk detail.<br>Untuk buka lokal, gunakan dashboard_local.html</span></div>`;
+    $('lsp').style.display='none';
+    console.error('[SE2026]',e);
+  }
+}
+
+// ============================================================
+// BUILD STATE
+// ============================================================
+function buildState(){
+  const SISA=PY.sisa_hari;
+  const LAJU=PY.laju_per_hari||1.5;
+
+  // map regionCode → penyelesaian
+  const pm={};
+  (PY.penyelesaian||[]).forEach(p=>{pm[p.regionCode]=p});
+
+  const KEC={},PML={},PPL={};
+  ST.kecamatan.forEach(k=>{KEC[k.id]={...k,pml_ids:[],ppl_ids:[],target:0,selesai:0,open:0}});
+  ST.pml.forEach(p=>{PML[p.id]={...p,ppl_ids:[],target:0,selesai:0,open:0}});
+  ST.ppl.forEach(p=>{PPL[p.id]={...p,sls:[],target:0,selesai:0,open:0,ditolak:0,draft:0,sub_resp:0}});
+
+  ST.sls.forEach(s=>{
+    const py=pm[s.id];
+    const pp=PPL[s.ppl_id]; if(!pp)return;
+    const tgt=py?py.target:0;
+    const sel=py?py.selesai:0;
+    const pctNow=tgt>0?sel/tgt*100:0;
+    const proy=parseFloat((pctNow+LAJU*SISA).toFixed(2));
+    const slsDraft=py?py.draft:0, slsSub=py?py.sub_resp:0;
+    pp.sls.push({id:s.id,nmdesa:s.nmdesa,kdsls:s.kdsls,kdsubsls:s.kdsubsls,
+      target:tgt,selesai:sel,open:py?py.open:0,ditolak:py?py.ditolak:0,
+      draft:slsDraft,sub_resp:slsSub,
+      pct_now:Math.round(pctNow),proyeksi:proy,detail:py?py.detail:{}});
+    pp.target+=tgt; pp.selesai+=sel; pp.open+=py?py.open:0;
+    pp.ditolak+=py?py.ditolak:0; pp.draft+=slsDraft; pp.sub_resp+=slsSub;
+  });
+
+  ST.ppl.forEach(p=>{
+    const pm2=PML[p.pml_id]; if(!pm2)return;
+    const pp=PPL[p.id];
+    if(!pm2.ppl_ids.includes(p.id))pm2.ppl_ids.push(p.id);
+    pm2.target+=pp.target; pm2.selesai+=pp.selesai; pm2.open+=pp.open;
+  });
+  ST.pml.forEach(p=>{
+    const k=KEC[p.kec_id]; if(!k)return;
+    const pm2=PML[p.id];
+    if(!k.pml_ids.includes(p.id))k.pml_ids.push(p.id);
+    k.target+=pm2.target; k.selesai+=pm2.selesai; k.open+=pm2.open;
+  });
+
+  // Hitung pct_now dan proyeksi per entitas
+  Object.values(PPL).forEach(p=>{
+    p.pct_now=p.target>0?Math.round(p.selesai/p.target*100):0;
+    p.proyeksi=parseFloat((p.pct_now+LAJU*SISA).toFixed(2));
+    p.status=getStatus(p.proyeksi);
+  });
+  Object.values(PML).forEach(p=>{
+    p.pct_now=p.target>0?Math.round(p.selesai/p.target*100):0;
+    p.proyeksi=parseFloat((p.pct_now+LAJU*SISA).toFixed(2));
+    p.status=getStatus(p.proyeksi);
+  });
+  Object.values(KEC).forEach(k=>{
+    k.pct_now=k.target>0?Math.round(k.selesai/k.target*100):0;
+    k.proyeksi=parseFloat((k.pct_now+LAJU*SISA).toFixed(2));
+    k.status=getStatus(k.proyeksi);
+  });
+
+  const tSel=Object.values(PPL).reduce((a,p)=>a+p.selesai,0);
+  const tTgt=Object.values(PPL).reduce((a,p)=>a+p.target,0);
+  const tOpn=Object.values(PPL).reduce((a,p)=>a+p.open,0);
+  const tPctNow=tTgt>0?Math.round(tSel/tTgt*100):0;
+  const tProy=parseFloat((tPctNow+LAJU*SISA).toFixed(2));
+  const tStat=getStatus(tProy);
+
+  STATE={KEC,PML,PPL,tSel,tTgt,tOpn,tPctNow,tProy,tStat,SISA,LAJU};
+
+  // Build notifs
+  NOTIFS=[];
+  Object.values(PPL).forEach(p=>{
+    if(p.status==='Bahaya'&&p.target>0)
+      NOTIFS.push({type:'rd',title:`🔴 BAHAYA — PPL ${p.nama} (${fr(p.proyeksi)}%)`,
+        sub:`${p.desa}, Kec. ${STATE.KEC[p.kec_id]?.nama}. Selesai ${fN(p.selesai)} / ${fN(p.target)}.`,read:false});
+    else if(p.status==='Terlambat'&&p.target>0)
+      NOTIFS.push({type:'or',title:`🟠 Terlambat — PPL ${p.nama} (${fr(p.proyeksi)}%)`,
+        sub:`${p.desa}, Kec. ${STATE.KEC[p.kec_id]?.nama}. Perlu percepatan.`,read:false});
+  });
+  Object.values(KEC).forEach(k=>{
+    if(k.status==='Bahaya')
+      NOTIFS.push({type:'rd',title:`🔴 BAHAYA — Kec. ${k.nama} (${fr(k.proyeksi)}%)`,sub:'Proyeksi jauh di bawah target.',read:false});
+    else if(k.status==='Terlambat')
+      NOTIFS.push({type:'or',title:`🟠 Terlambat — Kec. ${k.nama} (${fr(k.proyeksi)}%)`,sub:'Perlu percepatan signifikan.',read:false});
+    else if(k.status==='Waspada')
+      NOTIFS.push({type:'am',title:`🟡 Waspada — Kec. ${k.nama} (${fr(k.proyeksi)}%)`,sub:'Proyeksi mendekati batas aman.',read:false});
+  });
+  NOTIFS.push({type:'bl',title:'Data berhasil dimuat',
+    sub:`Update ${PY.tanggal_update}. Sisa ${SISA} hari ke deadline. Proyeksi global: ${fr(tProy)}% → ${tStat}.`,read:false});
+}
+
+// ============================================================
+// INIT UI
+// ============================================================
+function initUI(){
+  const m=ST.meta;
+  const {tSel,tTgt,tOpn,tPctNow,tProy,tStat,SISA}=STATE;
+  $('hd-kab').textContent=`${m.nama_kabupaten} · SE ${m.tahun}`;
+  $('hd-date').textContent=PY.tanggal_update;
+  $('hd-sisa').textContent=SISA;
+  $('sb-upd').textContent=PY.tanggal_update;
+  $('sb-sisa').textContent=SISA;
+  $('sb-lap').textContent=`${PY.total_sls_dilaporkan}/${m.total_sls}`;
+  $('sb-proy').textContent=`${fr(tProy)}% → ${tStat}`;
+  $('sb-proy').style.color=statusColor(tStat);
+  $('ch-kec').textContent=ST.kecamatan.length;
+  $('ch-pml').textContent=m.total_pml;
+  $('ch-ppl').textContent=m.total_ppl;
+  $('ch-sls').textContent=m.total_sls;
+
+  // Banner proyeksi global
+  const bc=statusColor(tStat);
+  const bbc={Aman:'var(--gr-bg)',Waspada:'var(--am-bg)',Terlambat:'var(--or-bg)',Bahaya:'var(--rd-bg)'}[tStat];
+  const bdrc={Aman:'var(--gr-bdr)',Waspada:'var(--am-bdr)',Terlambat:'var(--or-bdr)',Bahaya:'var(--rd-bdr)'}[tStat];
+  const ico={Aman:'✅',Waspada:'🟡',Terlambat:'🟠',Bahaya:'🔴'}[tStat];
+  $('proy-banner').style.cssText=`background:${bbc};border-color:${bdrc};color:${bc};margin-bottom:.875rem;padding:.625rem 1rem;border-radius:var(--r10);border:1px solid;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600`;
+  $('proy-banner').innerHTML=`<span style="font-size:16px">${ico}</span>
+    <span>Status Global: <strong>${tStat}</strong></span>
+    <span style="color:var(--tx2);font-weight:400">·</span>
+    <span>Progres saat ini: <strong style="font-family:var(--mono)">${tPctNow}%</strong>
+      <span style="font-size:10px;font-weight:400;color:var(--tx2);font-family:var(--mono);margin-left:4px">(data: ${PY.tanggal_update})</span>
+    </span>
+    <span style="color:var(--tx2);font-weight:400">·</span>
+    <span>Proyeksi 25 Agustus: <strong style="font-family:var(--mono)">${fr(tProy)}%</strong></span>
+    <span style="color:var(--tx2);font-weight:400">·</span>
+    <span style="color:var(--tx2);font-weight:400">Sisa <strong style="color:${bc}">${SISA} hari</strong> × 1,5%/hari = +${fr(1.5*SISA)}%</span>`;
+
+  renderMetrics();
+  buildFilters();
+  buildNotifKecFilter();
+  renderKec(); renderPml(); renderPpl(); renderEval();
+  setTimeout(()=>{renderBar();renderDnt();},150);
+  refreshNotif();
+}
+
+// ============================================================
+// METRICS
+// ============================================================
+function renderMetrics(){
+  const {tSel,tTgt,tOpn,tPctNow,tProy,tStat,KEC,SISA,LAJU}=STATE;
+  const bad=Object.values(KEC).filter(k=>k.status==='Bahaya').length;
+  const late=Object.values(KEC).filter(k=>k.status==='Terlambat').length;
+  const statC=tStat==='Aman'?'c-gr':tStat==='Waspada'?'c-am':tStat==='Terlambat'?'c-or':'c-rd';
+  $('metrics-row').innerHTML=`
+    <div class="mc c-pu"><div class="mc-glow"></div><div class="mc-lbl">PML / PPL</div><div class="mc-val">${ST.meta.total_pml}/${ST.meta.total_ppl}</div><div class="mc-sub">${ST.kecamatan.length} kecamatan</div></div>
+    <div class="mc c-cy"><div class="mc-glow"></div><div class="mc-lbl">Total SLS</div><div class="mc-val">${fN(ST.meta.total_sls)}</div><div class="mc-sub">Satuan cacah</div></div>
+    <div class="mc c-bl"><div class="mc-glow"></div><div class="mc-lbl">Target Usaha</div><div class="mc-val">${fN(tTgt)}</div><div class="mc-sub">Total di SLS</div></div>
+    <div class="mc c-gr"><div class="mc-glow"></div><div class="mc-lbl">Selesai</div><div class="mc-val">${fN(tSel)}</div><div class="mc-sub">Progres kini: ${tPctNow}%</div></div>
+    <div class="mc ${statC}"><div class="mc-glow"></div><div class="mc-lbl">Proyeksi 25 Ags</div><div class="mc-val">${fr(tProy)}%</div><div class="mc-sub">${tStat} · sisa ${SISA}h × ${LAJU}%</div></div>
+    <div class="mc c-rd"><div class="mc-glow"></div><div class="mc-lbl">Perlu Perhatian</div><div class="mc-val">${bad+late}</div><div class="mc-sub">${bad} bahaya · ${late} terlambat kec.</div></div>`;
+}
+
+// ============================================================
+// FILTERS
+// ============================================================
+function buildFilters(){
+  const kecs=[...new Set(ST.pml.map(p=>p.kec_id))].map(id=>STATE.KEC[id]?.nama).filter(Boolean).sort();
+  const pmls=[...new Set(ST.pml.map(p=>p.nama))].sort();
+  ['pmlkf','pplkf','evkf'].forEach(id=>{const s=$(id);if(!s)return;s.innerHTML=`<option value="">Semua kecamatan</option>`+kecs.map(k=>`<option>${k}</option>`).join('')});
+  ['pplpf','evpf'].forEach(id=>{const s=$(id);if(!s)return;s.innerHTML=`<option value="">Semua PML</option>`+pmls.map(p=>`<option>${p}</option>`).join('')});
+}
+
+// ============================================================
+// REKAP KEC
+// ============================================================
+function renderKec(){
+  let d=Object.values(STATE.KEC);
+  const q=($('kq')?.value||'').toLowerCase();
+  const sf=$('ksf')?.value||'';
+  const of=$('kof')?.value||'';
+  d=d.filter(k=>k.nama.toLowerCase().includes(q)&&(sf===''||k.status===sf));
+  if(of==='pd')d.sort((a,b)=>b.proyeksi-a.proyeksi);
+  else if(of==='pa')d.sort((a,b)=>a.proyeksi-b.proyeksi);
+  else if(of==='sd')d.sort((a,b)=>b.jumlah_sls-a.jumlah_sls);
+  $('kec-tb').innerHTML=d.map(k=>`<tr>
+    <td><strong>${k.nama}</strong></td>
+    <td style="font-family:var(--mono);text-align:center">${k.jumlah_pml}</td>
+    <td style="font-family:var(--mono);text-align:center">${k.jumlah_ppl}</td>
+    <td style="font-family:var(--mono)">${fN(k.jumlah_sls)}</td>
+    <td style="font-family:var(--mono)">${fN(k.target)}</td>
+    <td style="font-family:var(--mono);color:var(--gr)">${fN(k.selesai)}</td>
+    <td>${pb(k.pct_now,k.status)}</td>
+    <td>${proyBadge(k.proyeksi)}</td>
+    <td>${pill(k.status)}</td>
+  </tr>`).join('');
+}
+
+// PML
+function renderPml(){
+  let d=Object.values(STATE.PML);
+  const q=($('pmlq')?.value||'').toLowerCase();
+  const kf=$('pmlkf')?.value||'';
+  const sf=$('pmlsf')?.value||'';
+  d=d.filter(p=>p.nama.toLowerCase().includes(q)&&(kf===''||STATE.KEC[p.kec_id]?.nama===kf)&&(sf===''||p.status===sf));
+  $('pml-tb').innerHTML=d.map(p=>`<tr>
+    <td><div class="fr"><div class="av ${avC(p.nama)}">${ini(p.nama)}</div>${p.nama}</div></td>
+    <td>${STATE.KEC[p.kec_id]?.nama||'—'}</td>
+    <td style="font-family:var(--mono);text-align:center">${p.ppl_ids.length}</td>
+    <td style="font-family:var(--mono)">${fN(p.target)}</td>
+    <td style="font-family:var(--mono);color:var(--gr)">${fN(p.selesai)}</td>
+    <td>${pb(p.pct_now,p.status)}</td>
+    <td>${proyBadge(p.proyeksi)}</td>
+    <td>${pill(p.status)}</td>
+    <td><button class="btn btn-bl" style="font-size:10px" onclick="drillPML('${p.id}')">PPL →</button></td>
+  </tr>`).join('');
+}
+function drillPML(id){$('pplpf').value=STATE.PML[id]?.nama||'';switchTab('ppl',$('tb-ppl'));renderPpl()}
+
+// PPL
+function onKecPpl(){
+  const kf=$('pplkf')?.value||'';
+  const dSel=$('ppldf');
+  const desas=kf?[...new Set(ST.ppl.filter(p=>STATE.KEC[p.kec_id]?.nama===kf).map(p=>p.desa))].sort():[];
+  dSel.innerHTML=`<option value="">Semua desa</option>`+desas.map(d=>`<option>${d}</option>`).join('');
+  renderPpl();
+}
+function renderPpl(){
+  let d=Object.values(STATE.PPL);
+  const q=($('pplq')?.value||'').toLowerCase();
+  const kf=$('pplkf')?.value||'',df=$('ppldf')?.value||'',pf=$('pplpf')?.value||'',sf=$('pplsf')?.value||'';
+  d=d.filter(p=>{
+    const kn=STATE.KEC[p.kec_id]?.nama||'',pn=STATE.PML[p.pml_id]?.nama||'';
+    return(p.nama.toLowerCase().includes(q)||p.desa.toLowerCase().includes(q)||pn.toLowerCase().includes(q))
+      &&(kf===''||kn===kf)&&(df===''||p.desa===df)&&(pf===''||pn===pf)&&(sf===''||p.status===sf);
+  });
+  $('ppl-tb').innerHTML=d.map(p=>`<tr>
+    <td><div class="fr"><div class="av ${avC(p.nama)}">${ini(p.nama)}</div>${p.nama}</div></td>
+    <td style="font-size:11px;color:var(--tx2)">${STATE.PML[p.pml_id]?.nama||'—'}</td>
+    <td>${STATE.KEC[p.kec_id]?.nama||'—'}</td>
+    <td style="font-size:11px">${p.desa}</td>
+    <td style="font-family:var(--mono);text-align:center">${p.sls.length}</td>
+    <td style="font-family:var(--mono)">${fN(p.target)}</td>
+    <td style="font-family:var(--mono);color:var(--gr)">${fN(p.selesai)}</td>
+    <td>${pb(p.pct_now,p.status)}</td>
+    <td>${proyBadge(p.proyeksi)}</td>
+    <td>${pill(p.status)}</td>
+    <td><button class="btn btn-bl" style="font-size:10px" onclick="openDetail('${p.id}')">SLS →</button></td>
+  </tr>`).join('');
+}
+
+// EVAL LIST
+function renderEval(){
+  let d=Object.values(STATE.PPL);
+  const q=($('evq')?.value||'').toLowerCase();
+  const kf=$('evkf')?.value||'',pf=$('evpf')?.value||'',sf=$('evsf')?.value||'';
+  d=d.filter(p=>{
+    const kn=STATE.KEC[p.kec_id]?.nama||'',pn=STATE.PML[p.pml_id]?.nama||'';
+    return(p.nama.toLowerCase().includes(q)||p.desa.toLowerCase().includes(q))
+      &&(kf===''||kn===kf)&&(pf===''||pn===pf)&&(sf===''||p.status===sf);
+  });
+  $('ev-tb').innerHTML=d.map(p=>`<tr>
+    <td><div class="fr"><div class="av ${avC(p.nama)}">${ini(p.nama)}</div><div><div>${p.nama}</div><div style="font-size:10px;color:var(--tx3)">${p.email}</div></div></div></td>
+    <td>${STATE.KEC[p.kec_id]?.nama||'—'}</td>
+    <td style="font-size:11px">${p.desa}</td>
+    <td style="font-family:var(--mono);text-align:center">${p.sls.length}</td>
+    <td style="font-family:var(--mono)">${fN(p.target)}</td>
+    <td style="font-family:var(--mono);color:var(--gr)">${fN(p.selesai)}</td>
+    <td>${pb(p.pct_now,p.status)}</td>
+    <td>${proyBadge(p.proyeksi)}</td>
+    <td>${pill(p.status)}</td>
+    <td><button class="btn btn-bl" style="font-size:10px" onclick="openDetail('${p.id}')">Rincian ↗</button></td>
+  </tr>`).join('');
+}
+
+// EVAL DETAIL
+function openDetail(pid){
+  CUR_PPL=pid;
+  const p=STATE.PPL[pid];
+  const kn=STATE.KEC[p.kec_id]?.nama||'—';
+  const pn=STATE.PML[p.pml_id]?.nama||'—';
+  $('ev-list').style.display='none';$('ev-detail').style.display='block';
+  $('ev-info').innerHTML=`
+    <div class="fr" style="gap:10px">
+      <div class="av ${avC(p.nama)}" style="width:36px;height:36px;font-size:12px">${ini(p.nama)}</div>
+      <div>
+        <div style="font-size:14px;font-weight:700">${p.nama}</div>
+        <div style="font-size:11px;color:var(--tx2)">PPL · ${p.desa} · Kec. ${kn}</div>
+        <div style="font-size:11px;color:var(--tx3)">${p.email} · PML: ${pn}</div>
+      </div>
+    </div><div style="margin-left:auto">${pill(p.status)}</div>`;
+  $('ev-mets').innerHTML=`
+    <div class="mc c-cy" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Jml SLS</div><div class="mc-val" style="font-size:18px">${p.sls.length}</div></div>
+    <div class="mc c-bl" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Target</div><div class="mc-val" style="font-size:18px">${fN(p.target)}</div></div>
+    <div class="mc c-gr" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Selesai</div><div class="mc-val" style="font-size:18px">${fN(p.selesai)}</div></div>
+    <div class="mc c-am" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Draft</div><div class="mc-val" style="font-size:18px">${fN(p.draft)}</div><div class="mc-sub">Belum submit</div></div>
+    <div class="mc c-cy" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Sub. Resp</div><div class="mc-val" style="font-size:18px">${fN(p.sub_resp)}</div><div class="mc-sub">Di responden</div></div>
+    <div class="mc c-bl" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Progres Kini</div><div class="mc-val" style="font-size:18px">${p.pct_now}%</div></div>
+    <div class="mc ${p.status==='Aman'?'c-gr':p.status==='Waspada'?'c-am':p.status==='Terlambat'?'c-or':'c-rd'}" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Proyeksi 25 Ags</div><div class="mc-val" style="font-size:18px">${fr(p.proyeksi)}%</div><div class="mc-sub">${p.status}</div></div>`;
+  $('det-tb').innerHTML=p.sls.map((s,i)=>{
+    const ss=getStatus(s.proyeksi);
+    return`<tr>
+      <td style="color:var(--tx3);font-family:var(--mono)">${i+1}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--tx3)">${s.id}</td>
+      <td style="font-size:11px">${s.nmdesa}</td>
+      <td style="font-family:var(--mono)">${fN(s.target)}</td>
+      <td style="font-family:var(--mono);color:var(--gr)">${fN(s.selesai)}</td>
+      <td style="font-family:var(--mono);color:var(--bl)">${fN(s.open)}</td>
+      <td style="font-family:var(--mono);color:var(--am)">${fN(s.draft)}</td>
+      <td style="font-family:var(--mono);color:var(--cy)">${fN(s.sub_resp)}</td>
+      <td style="font-family:var(--mono);color:var(--rd)">${fN(s.ditolak)}</td>
+      <td>${pb(s.pct_now,ss,90)}</td>
+      <td>${proyBadge(s.proyeksi)}</td>
+      <td>${pill(ss)}</td>
+    </tr>`;
+  }).join('');
+}
+function closeDetail(){CUR_PPL=null;$('ev-list').style.display='block';$('ev-detail').style.display='none'}
+
+// PETA
+function renderPeta(){
+  const d=Object.values(STATE.KEC);
+  $('peta-grid').innerHTML=d.map(k=>{
+    const c=statusColor(k.status);
+    return`<div class="pkard" onclick="drillKec('${k.id}')">
+      <div class="pkard-bar" style="background:${c}"></div>
+      <div class="pkard-kode">Kec. ${k.kdkec}</div>
+      <div class="pkard-nm">${k.nama}</div>
+      <div style="margin-top:4px">${pill(k.status)}</div>
+      <div class="pkard-stats">
+        <div class="pkard-st"><div class="pkard-sv" style="color:${c}">${fr(k.proyeksi)}%</div><div class="pkard-sl">Proyeksi</div></div>
+        <div class="pkard-st"><div class="pkard-sv">${k.pct_now}%</div><div class="pkard-sl">Saat ini</div></div>
+        <div class="pkard-st"><div class="pkard-sv">${k.jumlah_ppl}</div><div class="pkard-sl">PPL</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function drillKec(id){$('kq').value=STATE.KEC[id]?.nama||'';switchTab('rekap',$('tb-rekap'));renderKec()}
+
+let hmC;
+function renderHeatmap(){
+  const d=Object.values(STATE.KEC).sort((a,b)=>a.nama.localeCompare(b.nama));
+  const lbl=d.map(k=>k.nama.length>11?k.nama.slice(0,11)+'…':k.nama);
+  const vals=d.map(k=>Math.min(k.proyeksi,130));
+  const cols=d.map(k=>statusColor(k.status)+'cc');
+  if(hmC)hmC.destroy();
+  hmC=new Chart($('hm-c'),{type:'bar',
+    data:{labels:lbl,datasets:[{data:vals,backgroundColor:cols,borderRadius:3,barThickness:10}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:c=>`Proyeksi: ${fr(d[c.dataIndex].proyeksi)}% (${d[c.dataIndex].status})`}}},
+      scales:{
+        x:{min:0,max:130,ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'}},
+        y:{ticks:{color:'#7090b0',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}}
+      }
+    }
+  });
+}
+
+// Register datalabels plugin
+if(typeof ChartDataLabels!=='undefined')Chart.register(ChartDataLabels);
+
+// CHARTS
+let barC,dntC;
+function renderBar(){
+  const sort=$('bsort')?.value||'nm';
+  let d=Object.values(STATE.KEC);
+  if(sort==='asc')d.sort((a,b)=>a.pct_now-b.pct_now);
+  else if(sort==='desc')d.sort((a,b)=>b.pct_now-a.pct_now);
+  else d.sort((a,b)=>a.nama.localeCompare(b.nama));
+  const lbl=d.map(k=>k.nama.length>8?k.nama.slice(0,8)+'…':k.nama);
+  const vals=d.map(k=>k.pct_now);
+  // Warna solid penuh berdasar status proyeksi
+  const colMap={Aman:'#00e5a0',Waspada:'#ffb830',Terlambat:'#ff8c00',Bahaya:'#ff4060'};
+  const cols=d.map(k=>colMap[k.status]||'#3d9eff');
+  const maxVal=Math.max(...vals,1);
+  if(barC)barC.destroy();
+  barC=new Chart($('bar-c'),{type:'bar',
+    data:{labels:lbl,datasets:[{
+      data:vals,
+      backgroundColor:cols,
+      borderRadius:4,
+      borderSkipped:false,
+      label:'Progres'
+    }]},
+    options:{
+      indexAxis:'y',
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title:c=>`${d[c[0].dataIndex].nama}`,
+          label:c=>[
+            `Progres kini : ${d[c.dataIndex].pct_now}%`,
+            `Proyeksi 25 Ags: ${fr(d[c.dataIndex].proyeksi)}%`,
+            `Status : ${d[c.dataIndex].status}`,
+            `Selesai : ${fN(d[c.dataIndex].selesai)} / ${fN(d[c.dataIndex].target)}`
+          ]
+        }},
+        datalabels:{
+          display:true,
+          anchor:'end',
+          align:'end',
+          color:'#d8e8f8',
+          font:{size:9,family:"'DM Mono',monospace",weight:'500'},
+          formatter:v=>v+'%',
+          clamp:true
+        }
+      },
+      scales:{
+        x:{min:0,max:Math.max(Math.ceil(maxVal/10)*10+12,25),
+          ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},
+          grid:{color:'rgba(255,255,255,.05)'}},
+        y:{ticks:{color:'#7090b0',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}}
+      }
+    }
+  });
+}
+function renderDnt(){
+  const d=Object.values(STATE.KEC);
+  const am=d.filter(k=>k.status==='Aman').length;
+  const wa=d.filter(k=>k.status==='Waspada').length;
+  const tl=d.filter(k=>k.status==='Terlambat').length;
+  const bh=d.filter(k=>k.status==='Bahaya').length;
+  if(dntC)dntC.destroy();
+  dntC=new Chart($('dnt-c'),{type:'doughnut',
+    data:{labels:['Aman','Waspada','Terlambat','Bahaya'],
+      datasets:[{data:[am,wa,tl,bh],
+        backgroundColor:['rgba(0,229,160,.85)','rgba(255,184,48,.85)','rgba(255,140,0,.85)','rgba(255,64,96,.85)'],
+        borderWidth:2,borderColor:'#0c1018',hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} kec`}}}}
+  });
+  $('dnt-leg').innerHTML=[
+    {c:'var(--gr)',l:`Aman (${am})`},{c:'var(--am)',l:`Waspada (${wa})`},
+    {c:'var(--or)',l:`Terlambat (${tl})`},{c:'var(--rd)',l:`Bahaya (${bh})`}
+  ].map(x=>`<span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:2px;background:${x.c};display:inline-block"></span>${x.l}</span>`).join('');
+}
+
+// NOTIF
+function buildNotifKecFilter(){
+  const kecs=[...new Set(
+    Object.values(STATE.PPL).map(p=>STATE.KEC[p.kec_id]?.nama).filter(Boolean)
+  )].sort();
+  const sel=$('nkec');
+  if(!sel)return;
+  sel.innerHTML=`<option value="">Semua Kecamatan</option>`+kecs.map(k=>`<option value="${k}">${k}</option>`).join('');
+}
+
+function refreshNotif(){
+  const n=NOTIFS.filter(x=>!x.read).length;
+  $('nbadge').textContent=n;$('ch-notif').textContent=n;
+  const top=NOTIFS.slice(0,6);
+  $('np-list').innerHTML=top.map((n,i)=>{
+    const c={rd:'var(--rd)',or:'var(--or)',am:'var(--am)',bl:'var(--bl)'}[n.type]||'var(--bl)';
+    return`<div class="np-item" onclick="NOTIFS[${i}].read=true;refreshNotif()">
+      <div class="np-dot" style="background:${c};opacity:${n.read?.4:1}"></div>
+      <div><div style="font-size:12px;font-weight:600;color:${n.read?'var(--tx2)':'var(--tx)'}">${n.title}</div>
+      <div style="font-size:11px;color:var(--tx2);margin-top:2px">${n.sub}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderNotifPane(){
+  const f=$('nfil')?.value||'';
+  const kec=$('nkec')?.value||'';
+
+  // Filter notifs
+  let list=NOTIFS.filter(n=>{
+    if(f&&n.type!==f)return false;
+    if(kec&&!n.sub?.includes(`Kec. ${kec}`)&&!n.title?.includes(kec))return false;
+    return true;
+  });
+
+  // Stats bar
+  const rd=list.filter(n=>n.type==='rd').length;
+  const or=list.filter(n=>n.type==='or').length;
+  const am=list.filter(n=>n.type==='am').length;
+  const bl=list.filter(n=>n.type==='bl').length;
+  $('notif-stats').innerHTML=`
+    <span style="font-size:11px;color:var(--tx3)">Menampilkan <strong style="color:var(--tx)">${list.length}</strong> notifikasi</span>
+    <span style="flex:1"></span>
+    ${rd?`<span style="display:flex;align-items:center;gap:4px;font-size:11px;background:var(--rd-bg);border:1px solid var(--rd-bdr);border-radius:99px;padding:2px 8px;color:var(--rd)">🔴 Bahaya <strong>${rd}</strong></span>`:''}
+    ${or?`<span style="display:flex;align-items:center;gap:4px;font-size:11px;background:var(--or-bg);border:1px solid var(--or-bdr);border-radius:99px;padding:2px 8px;color:var(--or)">🟠 Terlambat <strong>${or}</strong></span>`:''}
+    ${am?`<span style="display:flex;align-items:center;gap:4px;font-size:11px;background:var(--am-bg);border:1px solid var(--am-bdr);border-radius:99px;padding:2px 8px;color:var(--am)">🟡 Waspada <strong>${am}</strong></span>`:''}
+    ${bl?`<span style="display:flex;align-items:center;gap:4px;font-size:11px;background:var(--bl-bg);border:1px solid var(--bl-bdr);border-radius:99px;padding:2px 8px;color:var(--bl)">🔵 Info <strong>${bl}</strong></span>`:''}
+  `;
+
+  const cM={rd:'var(--rd)',or:'var(--or)',am:'var(--am)',bl:'var(--bl)'};
+  const bM={rd:'var(--rd-bg)',or:'var(--or-bg)',am:'var(--am-bg)',bl:'var(--bl-bg)'};
+
+  // Group by kecamatan for better readability
+  if(kec){
+    // Single kec view — flat list
+    $('notif-body').innerHTML=list.length?list.map((n,i)=>{
+      const realIdx=NOTIFS.indexOf(n);
+      return`<div style="background:${n.read?'var(--s3)':bM[n.type]||'var(--s3)'};border:1px solid ${n.read?'var(--bdr)':'transparent'};border-radius:var(--r6);padding:.625rem .875rem;display:flex;gap:8px;opacity:${n.read?.55:1}">
+        <div style="width:6px;height:6px;border-radius:50%;background:${cM[n.type]||'var(--bl)'};flex-shrink:0;margin-top:5px"></div>
+        <div style="flex:1"><div style="font-size:12px;font-weight:700;margin-bottom:2px">${n.title}</div><div style="font-size:11px;color:var(--tx2)">${n.sub}</div></div>
+        ${!n.read&&realIdx>=0?`<button class="btn" style="font-size:10px;flex-shrink:0;padding:2px 7px" onclick="NOTIFS[${realIdx}].read=true;refreshNotif();renderNotifPane()">Dibaca</button>`:''}
+      </div>`;
+    }).join(''):`<div style="padding:1.5rem;text-align:center;color:var(--tx3);font-size:12px">Tidak ada notifikasi untuk Kec. ${kec}</div>`;
+  } else {
+    // Group by kecamatan
+    const byKec={};
+    list.forEach(n=>{
+      // extract kec name from sub or use 'Umum'
+      const m=n.sub?.match(/Kec\. ([^.]+)/);
+      const kn=m?m[1].trim():'Umum / Sistem';
+      if(!byKec[kn])byKec[kn]=[];
+      byKec[kn].push(n);
+    });
+    // sort kec: Bahaya first
+    const order={rd:0,or:1,am:2,bl:3};
+    const sorted=Object.entries(byKec).sort((a,b)=>{
+      const wa=Math.min(...a[1].map(x=>order[x.type]??9));
+      const wb=Math.min(...b[1].map(x=>order[x.type]??9));
+      return wa-wb||a[0].localeCompare(b[0]);
+    });
+    $('notif-body').innerHTML=sorted.map(([kn,items])=>{
+      const worst=items.reduce((a,b)=>(order[a.type]??9)<=(order[b.type]??9)?a:b);
+      const wc=cM[worst.type]||'var(--bl)';
+      return`<div style="border:1px solid var(--bdr);border-radius:var(--r10);overflow:hidden;margin-bottom:2px">
+        <div style="background:var(--s2);padding:.5rem .875rem;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bdr)">
+          <span style="width:8px;height:8px;border-radius:50%;background:${wc};display:inline-block;flex-shrink:0"></span>
+          <span style="font-size:12px;font-weight:700;color:var(--tx)">${kn}</span>
+          <span style="font-size:10px;font-family:var(--mono);color:var(--tx3);margin-left:auto">${items.length} notifikasi</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          ${items.map((n,i)=>{
+            const realIdx=NOTIFS.indexOf(n);
+            return`<div style="padding:.5rem .875rem;display:flex;gap:8px;border-bottom:1px solid var(--bdr);opacity:${n.read?.5:1};background:${n.read?'transparent':bM[n.type]||'transparent'}">
+              <div style="width:6px;height:6px;border-radius:50%;background:${cM[n.type]||'var(--bl)'};flex-shrink:0;margin-top:5px"></div>
+              <div style="flex:1"><div style="font-size:12px;font-weight:600;margin-bottom:1px">${n.title}</div><div style="font-size:11px;color:var(--tx2)">${n.sub}</div></div>
+              ${!n.read&&realIdx>=0?`<button class="btn" style="font-size:10px;flex-shrink:0;padding:2px 7px;align-self:center" onclick="NOTIFS[${realIdx}].read=true;refreshNotif();renderNotifPane()">✓</button>`:''}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('')||`<div style="padding:1.5rem;text-align:center;color:var(--tx3);font-size:12px">Tidak ada notifikasi</div>`;
+  }
+}
+function markAll(){NOTIFS.forEach(n=>n.read=true);refreshNotif();renderNotifPane()}
+function toggleNp(){$('np').classList.toggle('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('#np')&&!e.target.closest('#nbtn'))$('np').classList.remove('open')});
+
+// ============================================================
+// LAPORAN PIMPINAN
+// ============================================================
+function openLaporan(){
+  const {KEC,PML,PPL,tSel,tTgt,tPctNow,tProy,tStat,SISA,LAJU}=STATE;
+  const m=ST.meta;
+  const upd=PY.tanggal_update;
+  const now=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  // Aggregate status
+  const kecArr=Object.values(KEC).sort((a,b)=>a.nama.localeCompare(b.nama));
+  const aman=kecArr.filter(k=>k.status==='Aman');
+  const waspada=kecArr.filter(k=>k.status==='Waspada');
+  const terlambat=kecArr.filter(k=>k.status==='Terlambat');
+  const bahaya=kecArr.filter(k=>k.status==='Bahaya');
+
+  // PPL issues
+  const pplBahaya=Object.values(PPL).filter(p=>p.status==='Bahaya'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
+  const pplTerlambat=Object.values(PPL).filter(p=>p.status==='Terlambat'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
+  const pplAman=Object.values(PPL).filter(p=>p.status==='Aman'&&p.target>0).sort((a,b)=>b.proyeksi-a.proyeksi);
+
+  const statColor={Aman:'#00c47a',Waspada:'#d4900a',Terlambat:'#cc6600',Bahaya:'#cc2040'};
+  const statBg={Aman:'#e6fff5',Waspada:'#fff8e6',Terlambat:'#fff3e6',Bahaya:'#ffe6eb'};
+  const pctBar=(v,color='#00c47a')=>`<div style="display:inline-flex;align-items:center;gap:6px;width:100%">
+    <div style="flex:1;height:5px;background:#e0e8f0;border-radius:3px;overflow:hidden">
+      <div style="width:${Math.min(v,100)}%;height:100%;background:${color};border-radius:3px"></div>
+    </div>
+    <span style="font-size:11px;font-weight:700;color:${color};min-width:35px;text-align:right">${v}%</span>
+  </div>`;
+
+  const tbl=(headers,rows,note)=>`
+    <div style="overflow-x:auto;margin-bottom:${note?'4px':'16px'}">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr>${headers.map(h=>`<th style="background:#f0f4f8;padding:6px 8px;text-align:left;font-size:10px;font-weight:700;color:#4a6080;border:1px solid #dce4ee;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px">${h}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map((r,ri)=>`<tr>${r.map(c=>`<td style="padding:6px 8px;border:1px solid #dce4ee;vertical-align:middle;background:${ri%2?'#f8fafc':'#fff'}">${c}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>${note?`<div style="font-size:10px;color:#778899;margin-bottom:16px">${note}</div>`:''}`;
+
+  const section=(title,icon,content,color='#1a2a4a')=>`
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid ${color}20">
+        <span style="font-size:15px">${icon}</span>
+        <span style="font-size:13px;font-weight:700;color:${color}">${title}</span>
+      </div>
+      ${content}
+    </div>`;
+
+  const statPill=(s)=>`<span style="display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:${statBg[s]};color:${statColor[s]};border:1px solid ${statColor[s]}40">${s}</span>`;
+
+  // Top 5 performer & needs attention PPL
+  const top5ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>b.pct_now-a.pct_now).slice(0,5);
+  const bot5ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>a.pct_now-b.pct_now).slice(0,5);
+
+  $('lap-body').innerHTML=`
+  <div style="font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#1a2a4a;max-width:760px;margin:0 auto" id="lap-content">
+
+    <!-- KOPSURAT -->
+    <div style="text-align:center;padding-bottom:14px;border-bottom:3px solid #1a3a6a;margin-bottom:20px">
+      <div style="font-size:10px;color:#4a6080;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">BADAN PUSAT STATISTIK</div>
+      <div style="font-size:17px;font-weight:800;color:#1a3a6a;line-height:1.2">Laporan Kinerja Petugas Lapangan</div>
+      <div style="font-size:14px;font-weight:600;color:#2a5aa0;margin-top:2px">Sensus Ekonomi 2026 — ${m.nama_kabupaten}</div>
+      <div style="font-size:11px;color:#4a6080;margin-top:6px;display:flex;justify-content:center;gap:16px">
+        <span>📅 Dibuat: ${now}</span>
+        <span>📊 Data per: <strong>${upd}</strong></span>
+        <span>⏳ Sisa: <strong style="color:#cc6600">${SISA} hari</strong> s.d. 25 Agustus 2026</span>
+      </div>
+    </div>
+
+    <!-- RINGKASAN EKSEKUTIF -->
+    ${section('I. RINGKASAN EKSEKUTIF','📋',`
+      <div style="background:#f0f6ff;border:1px solid #c0d8f0;border-radius:8px;padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:1.8">
+        Berdasarkan data pemutakhiran terakhir tanggal <strong>${upd}</strong>, pelaksanaan Sensus Ekonomi 2026 di ${m.nama_kabupaten} telah mencapai progres 
+        <strong style="color:${statColor[tStat]}">${tPctNow}%</strong> dari total target 
+        <strong>${fN(tTgt)}</strong> usaha. Dengan laju penyelesaian rata-rata 
+        <strong>${LAJU}%/hari</strong> dan sisa waktu <strong style="color:#cc6600">${SISA} hari</strong>, 
+        proyeksi perolehan pada tanggal 25 Agustus 2026 adalah 
+        <strong style="color:${statColor[tStat]};font-size:15px">${fr(tProy)}%</strong> — 
+        Status: <strong style="color:${statColor[tStat]}">${tStat}</strong>.
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+        ${[
+          {l:'Total PML',v:m.total_pml,c:'#2a5aa0',bg:'#e8f0fb'},
+          {l:'Total PPL',v:m.total_ppl,c:'#6040a0',bg:'#f0ebfb'},
+          {l:'Total SLS',v:fN(m.total_sls),c:'#1a6a7a',bg:'#e6f8fb'},
+          {l:'SLS Dilaporkan',v:fN(PY.total_sls_dilaporkan),c:'#1a7a4a',bg:'#e6faf2'},
+        ].map(x=>`<div style="background:${x.bg};border-radius:8px;padding:10px 12px;text-align:center">
+          <div style="font-size:11px;color:#4a6080;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">${x.l}</div>
+          <div style="font-size:20px;font-weight:800;color:${x.c};font-family:monospace">${x.v}</div>
+        </div>`).join('')}
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+        ${[
+          {l:'Usaha Selesai',v:fN(tSel),sub:`dari target ${fN(tTgt)}`,c:'#1a7a4a',bg:'#e6faf2'},
+          {l:'Proyeksi 25 Agustus',v:fr(tProy)+'%',sub:`Status: ${tStat}`,c:statColor[tStat],bg:statBg[tStat]},
+        ].map(x=>`<div style="background:${x.bg};border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px">
+          <div style="font-size:22px;font-weight:800;color:${x.c};font-family:monospace">${x.v}</div>
+          <div><div style="font-size:12px;font-weight:700;color:${x.c}">${x.l}</div><div style="font-size:11px;color:#4a6080">${x.sub}</div></div>
+        </div>`).join('')}
+      </div>
+    `,'#1a3a6a')}
+
+    <!-- STATUS KECAMATAN -->
+    ${section('II. STATUS PROYEKSI PER KECAMATAN','🗺️',`
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
+        ${[
+          {s:'Aman',n:aman.length,c:statColor.Aman,bg:statBg.Aman,icon:'✅'},
+          {s:'Waspada',n:waspada.length,c:statColor.Waspada,bg:statBg.Waspada,icon:'🟡'},
+          {s:'Terlambat',n:terlambat.length,c:statColor.Terlambat,bg:statBg.Terlambat,icon:'🟠'},
+          {s:'Bahaya',n:bahaya.length,c:statColor.Bahaya,bg:statBg.Bahaya,icon:'🔴'},
+        ].map(x=>`<div style="background:${x.bg};border:1px solid ${x.c}30;border-radius:8px;padding:10px 12px;text-align:center">
+          <div style="font-size:18px;margin-bottom:4px">${x.icon}</div>
+          <div style="font-size:22px;font-weight:800;color:${x.c};font-family:monospace">${x.n}</div>
+          <div style="font-size:11px;color:#4a6080;font-weight:600">${x.s}</div>
+        </div>`).join('')}
+      </div>
+
+      ${tbl(['No','Kecamatan','PPL','Target','Selesai','Progres Kini','Proyeksi 25 Ags','Status'],
+        kecArr.map((k,i)=>[
+          `<span style="color:#778899">${i+1}</span>`,
+          `<strong>${k.nama}</strong>`,
+          k.jumlah_ppl,
+          fN(k.target),
+          `<strong style="color:${statColor[k.status]}">${fN(k.selesai)}</strong>`,
+          pctBar(k.pct_now,statColor[k.status]),
+          `<strong style="color:${statColor[k.status]};font-family:monospace">${fr(k.proyeksi)}%</strong>`,
+          statPill(k.status)
+        ])
+      )}
+    `,'#1a5a2a')}
+
+    <!-- PERHATIAN KHUSUS -->
+    ${(bahaya.length+terlambat.length>0)?section('III. KECAMATAN PERLU PERHATIAN KHUSUS','⚠️',`
+      ${bahaya.length?`
+        <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
+          <strong>🔴 ${bahaya.length} Kecamatan BAHAYA</strong> — Proyeksi perolehan &lt;80%. Diperlukan intervensi segera.
+        </div>
+        ${tbl(['Kecamatan','PPL','Selesai/Target','Progres Kini','Proyeksi 25 Ags'],
+          bahaya.map(k=>[
+            `<strong style="color:#cc2040">${k.nama}</strong>`,
+            k.jumlah_ppl,
+            `${fN(k.selesai)} / ${fN(k.target)}`,
+            pctBar(k.pct_now,'#cc2040'),
+            `<strong style="color:#cc2040;font-family:monospace">${fr(k.proyeksi)}%</strong>`
+          ])
+        )}`:''}
+      ${terlambat.length?`
+        <div style="background:#fff3e6;border:1px solid #cc660040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc6600">
+          <strong>🟠 ${terlambat.length} Kecamatan TERLAMBAT</strong> — Proyeksi 80–94%. Perlu percepatan signifikan.
+        </div>
+        ${tbl(['Kecamatan','PPL','Selesai/Target','Progres Kini','Proyeksi 25 Ags'],
+          terlambat.map(k=>[
+            `<strong style="color:#cc6600">${k.nama}</strong>`,
+            k.jumlah_ppl,
+            `${fN(k.selesai)} / ${fN(k.target)}`,
+            pctBar(k.pct_now,'#cc6600'),
+            `<strong style="color:#cc6600;font-family:monospace">${fr(k.proyeksi)}%</strong>`
+          ])
+        )}`:''}
+    `,'#aa2020'):''}
+
+    <!-- PPL BERMASALAH -->
+    ${section('IV. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
+      ${pplBahaya.length?`
+        <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
+          <strong>🔴 ${pplBahaya.length} PPL Proyeksi BAHAYA (&lt;80%)</strong>
+        </div>
+        ${tbl(['Nama PPL','Kecamatan','Desa','Target','Selesai','Progres','Proyeksi'],
+          pplBahaya.slice(0,10).map(p=>[
+            `<strong style="color:#cc2040">${p.nama}</strong>`,
+            STATE.KEC[p.kec_id]?.nama||'—',
+            p.desa,
+            fN(p.target),
+            fN(p.selesai),
+            pctBar(p.pct_now,'#cc2040'),
+            `<strong style="color:#cc2040;font-family:monospace">${fr(p.proyeksi)}%</strong>`
+          ]),
+          pplBahaya.length>10?`*Menampilkan 10 dari ${pplBahaya.length} PPL bahaya`:''
+        )}`:''}
+      ${pplTerlambat.length?`
+        <div style="background:#fff3e6;border:1px solid #cc660040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc6600">
+          <strong>🟠 ${pplTerlambat.length} PPL Proyeksi TERLAMBAT (80–94%)</strong>
+        </div>
+        ${tbl(['Nama PPL','Kecamatan','Desa','Target','Selesai','Progres','Proyeksi'],
+          pplTerlambat.slice(0,10).map(p=>[
+            `<strong style="color:#cc6600">${p.nama}</strong>`,
+            STATE.KEC[p.kec_id]?.nama||'—',
+            p.desa,
+            fN(p.target),
+            fN(p.selesai),
+            pctBar(p.pct_now,'#cc6600'),
+            `<strong style="color:#cc6600;font-family:monospace">${fr(p.proyeksi)}%</strong>`
+          ]),
+          pplTerlambat.length>10?`*Menampilkan 10 dari ${pplTerlambat.length} PPL terlambat`:''
+        )}`:''}
+      ${(!pplBahaya.length&&!pplTerlambat.length)?`<div style="background:#e6faf2;border:1px solid #00c47a40;border-radius:6px;padding:10px 14px;font-size:12px;color:#1a7a4a">✅ Seluruh PPL dalam status Aman atau Waspada. Tidak ada PPL yang memerlukan perhatian khusus.</div>`:''}
+    `,'#804020')}
+
+    <!-- TOP PERFORMER -->
+    ${section('V. PETUGAS LAPANGAN TERBAIK','🏆',`
+      ${tbl(['Peringkat','Nama PPL','Kecamatan','Target','Selesai','Progres','Proyeksi'],
+        top5ppl.map((p,i)=>[
+          `<span style="font-size:16px">${['🥇','🥈','🥉','4','5'][i]}</span>`,
+          `<strong>${p.nama}</strong>`,
+          STATE.KEC[p.kec_id]?.nama||'—',
+          fN(p.target),
+          `<strong style="color:#1a7a4a">${fN(p.selesai)}</strong>`,
+          pctBar(p.pct_now,'#00c47a'),
+          `<strong style="color:#00c47a;font-family:monospace">${fr(p.proyeksi)}%</strong>`
+        ])
+      )}
+    `,'#806000')}
+
+    <!-- REKOMENDASI -->
+    ${section('VI. REKOMENDASI','📌',`
+      <ol style="font-size:12px;line-height:2;padding-left:18px;color:#2a3a5a">
+        ${bahaya.length?`<li>Lakukan koordinasi intensif dengan PML di <strong style="color:#cc2040">${bahaya.map(k=>k.nama).join(', ')}</strong> yang berstatus BAHAYA untuk mengejar ketertinggalan secara mendesak.</li>`:''}
+        ${terlambat.length?`<li>Tingkatkan pengawasan dan pendampingan pada PPL di wilayah <strong style="color:#cc6600">${terlambat.map(k=>k.nama).join(', ')}</strong> agar laju harian meningkat.</li>`:''}
+        ${pplBahaya.length?`<li>Sebanyak <strong>${pplBahaya.length} PPL</strong> berisiko tidak mencapai target. Pimpinan perlu segera mengevaluasi kendala di lapangan dan mempertimbangkan redistribusi beban kerja bila memungkinkan.</li>`:''}
+        <li>Dengan laju saat ini <strong>${LAJU}%/hari</strong> dan sisa <strong>${SISA} hari</strong>, proyeksi global mencapai <strong>${fr(tProy)}%</strong>. ${tProy>=100?'Pertahankan kinerja untuk memastikan seluruh target terpenuhi.':'Diperlukan peningkatan laju agar target 100% terpenuhi sebelum deadline.'}</li>
+        <li>Jadwalkan rapat evaluasi mingguan antara PML dan PPL untuk memantau perkembangan dan menyelesaikan kendala teknis di lapangan.</li>
+      </ol>
+    `,'#3a2a7a')}
+
+    <!-- FOOTER -->
+    <div style="margin-top:24px;padding-top:12px;border-top:1px solid #dce4ee;display:flex;justify-content:space-between;align-items:flex-end;font-size:10px;color:#778899">
+      <div>
+        <div>Laporan dibuat otomatis dari Dashboard SE2026</div>
+        <div>BPS Kabupaten Pasuruan — Sensus Ekonomi 2026</div>
+      </div>
+      <div style="text-align:right">
+        <div>Data terakhir: <strong>${upd}</strong></div>
+        <div>Dicetak: ${now}</div>
+        <div style="margin-top:8px;font-size:11px;color:#4a6080">Mengetahui,</div>
+        <div style="margin-top:40px;border-top:1px solid #4a6080;padding-top:4px;min-width:180px;text-align:center">
+          <div style="font-weight:700;font-size:11px;color:#1a2a4a">Kepala BPS Kab. Pasuruan</div>
+        </div>
+      </div>
+    </div>
+
+  </div>`;
+
+  $('lap-modal').classList.add('open');
+}
+
+function closeLaporan(){$('lap-modal').classList.remove('open')}
+$('lap-modal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)closeLaporan()});
+
+function printLaporan(){
+  const content=document.getElementById('lap-content');
+  if(!content)return;
+  const w=window.open('','_blank','width=900,height=700');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>Laporan Pimpinan SE2026</title>
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:#fff;color:#1a2a4a;padding:16mm;font-size:12px;line-height:1.6}
+      @page{size:A4;margin:16mm}
+      @media print{body{padding:0}}
+    </style>
+  </head><body>${content.outerHTML}</body></html>`);
+  w.document.close();
+  setTimeout(()=>{w.focus();w.print();},600);
+}
+
+// EXPORT
+function exportXL(type){
+  const wb=XLSX.utils.book_new(),upd=PY.tanggal_update;
+  if(type==='kec'||type==='all'){
+    const rows=Object.values(STATE.KEC).map(k=>({Kecamatan:k.nama,PML:k.jumlah_pml,PPL:k.jumlah_ppl,'Total SLS':k.jumlah_sls,Target:k.target,Selesai:k.selesai,'Progres Kini (%)':k.pct_now,'Proyeksi 25 Ags (%)':fr(k.proyeksi),Status:k.status}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Kecamatan');
+  }
+  if(type==='pml'||type==='all'){
+    const rows=Object.values(STATE.PML).map(p=>({Nama:p.nama,Email:p.email,Kecamatan:STATE.KEC[p.kec_id]?.nama||'',' Jml PPL':p.ppl_ids.length,Target:p.target,Selesai:p.selesai,'Progres Kini (%)':p.pct_now,'Proyeksi 25 Ags (%)':fr(p.proyeksi),Status:p.status}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'PML');
+  }
+  if(type==='ppl'||type==='all'){
+    const rows=Object.values(STATE.PPL).map(p=>({Nama:p.nama,Email:p.email,PML:STATE.PML[p.pml_id]?.nama||'',Kecamatan:STATE.KEC[p.kec_id]?.nama||'',Desa:p.desa,'Jml SLS':p.sls.length,Target:p.target,Selesai:p.selesai,Open:p.open,'Progres Kini (%)':p.pct_now,'Proyeksi 25 Ags (%)':fr(p.proyeksi),Status:p.status}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'PPL');
+  }
+  if(type==='eval'||type==='all'){
+    const rows=[];
+    Object.values(STATE.PPL).forEach(p=>p.sls.forEach(s=>{
+      rows.push({regionCode:s.id,PPL:p.nama,PML:STATE.PML[p.pml_id]?.nama||'',Kecamatan:STATE.KEC[p.kec_id]?.nama||'',Desa:s.nmdesa,Target:s.target,Selesai:s.selesai,Open:s.open,Ditolak:s.ditolak,'Progres Kini (%)':s.pct_now,'Proyeksi 25 Ags (%)':fr(s.proyeksi),Status:getStatus(s.proyeksi)});
+    }));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'SLS');
+  }
+  if(type==='detail'&&CUR_PPL){
+    const p=STATE.PPL[CUR_PPL];
+    const rows=p.sls.map((s,i)=>({No:i+1,regionCode:s.id,Desa:s.nmdesa,Target:s.target,Selesai:s.selesai,Open:s.open,Ditolak:s.ditolak,'Progres Kini (%)':s.pct_now,'Proyeksi 25 Ags (%)':fr(s.proyeksi),Status:getStatus(s.proyeksi)}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),`SLS_${p.nama.slice(0,18)}`);
+  }
+  XLSX.writeFile(wb,`SE2026_${type}_${upd}.xlsx`);
+  toast('File Excel berhasil diunduh');
+}
+function exportCSV(type){
+  let hdr,rows;
+  if(type==='kec'){
+    hdr=['Kecamatan','PML','PPL','Total SLS','Target','Selesai','Progres Kini (%)','Proyeksi 25 Ags (%)','Status'];
+    rows=Object.values(STATE.KEC).map(k=>[k.nama,k.jumlah_pml,k.jumlah_ppl,k.jumlah_sls,k.target,k.selesai,k.pct_now,fr(k.proyeksi),k.status]);
+  }else{
+    hdr=['Nama PPL','Email','PML','Kecamatan','Desa','Jml SLS','Target','Selesai','Open','Progres Kini (%)','Proyeksi 25 Ags (%)','Status'];
+    rows=Object.values(STATE.PPL).map(p=>[p.nama,p.email,STATE.PML[p.pml_id]?.nama||'',STATE.KEC[p.kec_id]?.nama||'',p.desa,p.sls.length,p.target,p.selesai,p.open,p.pct_now,fr(p.proyeksi),p.status]);
+  }
+  const csv=[hdr,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`SE2026_${type}_${PY.tanggal_update}.csv`;a.click();
+  toast('File CSV berhasil diunduh');
+}
+
+// TABS & NAV
+const PANES=['rekap','pml','ppl','eval','peta','notif'];
+function switchTab(id,btn){
+  PANES.forEach(p=>{$(`pane-${p}`).classList.toggle('on',p===id);$(`tb-${p}`).classList.toggle('on',p===id)});
+  if(id==='peta'){renderPeta();setTimeout(renderHeatmap,120)}
+  if(id==='notif')renderNotifPane();
+}
+function goPane(id,el){
+  switchTab(id,null);
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  if(el)el.classList.add('on');
+}
+function openModal(){$('exp-modal').classList.add('open')}
+function closeModal(){$('exp-modal').classList.remove('open')}
+$('exp-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+
+boot();
+</script>
+</body>
+</html>
