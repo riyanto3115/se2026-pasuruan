@@ -1140,55 +1140,54 @@ function openLaporan(){
   const statBg={Aman:'#e6fff5',Waspada:'#fff8e6',Terlambat:'#fff3e6',Bahaya:'#ffe6eb'};
 
   // Progress bar dengan label nilai %
-  const pctBar=(v,color='#00c47a')=>`<div style="display:inline-flex;align-items:center;gap:6px;width:100%">
-    <div style="flex:1;height:5px;background:#e0e8f0;border-radius:3px;overflow:hidden">
-      <div style="width:${Math.min(v,100)}%;height:100%;background:${color};border-radius:3px"></div>
+  const pctBar=(v,color='#00c47a')=>`<div style="display:inline-flex;align-items:center;gap:5px;width:100%;min-width:80px">
+    <div style="flex:1;height:4px;background:#e0e8f0;border-radius:2px;overflow:hidden">
+      <div style="width:${Math.min(v,100)}%;height:100%;background:${color};border-radius:2px"></div>
     </div>
-    <span style="font-size:11px;font-weight:700;color:${color};min-width:35px;text-align:right">${v}%</span>
+    <span style="font-size:10px;font-weight:700;color:${color};min-width:28px;text-align:right;white-space:nowrap">${v}%</span>
   </div>`;
 
+  // Tabel kompak — padding kecil, font lebih kecil
   const tbl=(headers,rows,note)=>`
-    <div style="overflow-x:auto;margin-bottom:${note?'4px':'16px'}">
-    <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr>${headers.map(h=>`<th style="background:#f0f4f8;padding:6px 8px;text-align:left;font-size:10px;font-weight:700;color:#4a6080;border:1px solid #dce4ee;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px">${h}</th>`).join('')}</tr></thead>
-      <tbody>${rows.map((r,ri)=>`<tr>${r.map(c=>`<td style="padding:6px 8px;border:1px solid #dce4ee;vertical-align:middle;background:${ri%2?'#f8fafc':'#fff'}">${c}</td>`).join('')}</tr>`).join('')}</tbody>
-    </table></div>${note?`<div style="font-size:10px;color:#778899;margin-bottom:16px">${note}</div>`:''}`;
+    <div style="overflow-x:auto;margin-bottom:${note?'4px':'14px'}">
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead><tr>${headers.map(h=>`<th style="background:#eef2f7;padding:5px 7px;text-align:left;font-size:9.5px;font-weight:700;color:#4a6080;border:1px solid #dce4ee;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px">${h}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map((r,ri)=>`<tr>${r.map(c=>`<td style="padding:4px 7px;border:1px solid #dce4ee;vertical-align:middle;background:${ri%2?'#f8fafc':'#fff'};white-space:nowrap">${c}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>${note?`<div style="font-size:10px;color:#778899;margin-bottom:12px">${note}</div>`:''}`;
 
   const section=(title,icon,content,color='#1a2a4a')=>`
-    <div style="margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid ${color}20">
-        <span style="font-size:15px">${icon}</span>
-        <span style="font-size:13px;font-weight:700;color:${color}">${title}</span>
+    <div style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid ${color}20">
+        <span style="font-size:14px">${icon}</span>
+        <span style="font-size:12px;font-weight:700;color:${color}">${title}</span>
       </div>
       ${content}
     </div>`;
 
-  const statPill=(s)=>`<span style="display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:${statBg[s]};color:${statColor[s]};border:1px solid ${statColor[s]}40">${s}</span>`;
+  const statPill=(s)=>`<span style="display:inline-block;padding:1px 6px;border-radius:99px;font-size:9.5px;font-weight:700;background:${statBg[s]};color:${statColor[s]};border:1px solid ${statColor[s]}40">${s}</span>`;
 
-  // Top 10 PPL terbaik
+  // Top 10 PPL terbaik berdasarkan pct_now
   const top10ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>b.pct_now-a.pct_now).slice(0,10);
   const rankIcon=i=>['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]||String(i+1);
 
-  // Bar chart SVG per kecamatan — diurutkan proyeksi tertinggi, label nilai di ujung batang
-  const maxProy=Math.max(...kecArr.map(k=>k.proyeksi),100);
-  const barH=22, barGap=4, chartW=460, labelW=110, numW=52;
+  // Bar chart SVG — diurutkan berdasarkan pct_now TERTINGGI → terendah, batang lebih ramping
+  const kecByPct=Object.values(KEC).sort((a,b)=>b.pct_now-a.pct_now);
+  const maxPct=Math.max(...kecByPct.map(k=>k.pct_now),1);
+  const barH=14, barGap=3, chartW=400, labelW=120, numW=48;
   const totalW=labelW+chartW+numW;
-  const svgH=kecArr.length*(barH+barGap)+20;
+  const svgH=kecByPct.length*(barH+barGap)+16;
   const barSvg=`<svg viewBox="0 0 ${totalW} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:Arial,sans-serif">
-    ${kecArr.map((k,i)=>{
-      const y=i*(barH+barGap)+10;
-      const barW=Math.max((k.proyeksi/maxProy)*chartW,2);
+    ${kecByPct.map((k,i)=>{
+      const y=i*(barH+barGap)+8;
+      const barW=Math.max((k.pct_now/maxPct)*chartW,2);
       const c=statColor[k.status];
-      const bg=statBg[k.status];
-      const labelX=labelW-4;
-      const barX=labelW;
       return`<g>
-        <text x="${labelX}" y="${y+barH/2+4}" text-anchor="end" font-size="9.5" fill="#4a6080">${k.nama.length>14?k.nama.slice(0,13)+'…':k.nama}</text>
-        <rect x="${barX}" y="${y}" width="${barW}" height="${barH}" rx="3" fill="${c}" opacity="0.85"/>
-        <text x="${barX+barW+5}" y="${y+barH/2+4}" text-anchor="start" font-size="9.5" font-weight="700" fill="${c}">${fr(k.proyeksi)}%</text>
+        <text x="${labelW-5}" y="${y+barH/2+3.5}" text-anchor="end" font-size="8.5" fill="#4a6080">${k.nama.length>16?k.nama.slice(0,15)+'…':k.nama}</text>
+        <rect x="${labelW}" y="${y}" width="${barW}" height="${barH}" rx="2" fill="${c}" opacity="0.82"/>
+        <text x="${labelW+barW+4}" y="${y+barH/2+3.5}" text-anchor="start" font-size="8.5" font-weight="700" fill="${c}">${k.pct_now}%</text>
       </g>`;
     }).join('')}
-    <line x1="${labelW}" y1="0" x2="${labelW}" y2="${svgH}" stroke="#dce4ee" stroke-width="1"/>
+    <line x1="${labelW}" y1="0" x2="${labelW}" y2="${svgH}" stroke="#dce4ee" stroke-width="0.8"/>
   </svg>`;
 
   $('lap-body').innerHTML=`
@@ -1256,9 +1255,9 @@ function openLaporan(){
         </div>`).join('')}
       </div>
 
-      <!-- Bar chart SVG proyeksi per kecamatan (tertinggi → terendah) -->
+      <!-- Bar chart SVG perolehan per kecamatan (tertinggi → terendah) -->
       <div style="margin-bottom:10px">
-        <div style="font-size:10px;font-weight:700;color:#4a6080;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Proyeksi Perolehan per Kecamatan (%) — diurutkan tertinggi</div>
+        <div style="font-size:10px;font-weight:700;color:#4a6080;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Perolehan Kini per Kecamatan (%) — diurutkan tertinggi</div>
         ${barSvg}
       </div>
 
@@ -1379,7 +1378,7 @@ function openLaporan(){
         <div>Data terakhir: <strong>${updFmt}</strong></div>
         <div>Dicetak: ${now}</div>
         <div style="margin-top:8px;font-size:11px;color:#4a6080">Mengetahui,</div>
-        <div style="margin-top:48px;border-top:1px solid #4a6080;padding-top:5px;min-width:220px;text-align:center">
+        <div style="margin-top:48px;padding-top:5px;min-width:220px;text-align:center">
           <div style="font-weight:700;font-size:12px;color:#1a2a4a">Bagas Susilo, SST., M.Si.</div>
           <div style="font-size:10px;color:#4a6080;margin-top:2px">Kepala BPS Kabupaten Pasuruan</div>
         </div>
