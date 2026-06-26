@@ -238,7 +238,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
     <div style="margin-top:4px" id="sb-proy-wrap">
       Proyeksi: <span id="sb-proy">—</span>
     </div>
-    <div style="margin-top:4px;font-size:9px;color:var(--tx3)">data_static.json · data_penyelesaian.json</div>
+    <div style="margin-top:4px;font-size:9px;color:var(--tx3)">data_static.json · data_penyelesaian.json · Perolehan = Submit + Approve + Reject</div>
   </div>
 
   <!-- ABOUT PANEL -->
@@ -343,7 +343,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <select id="kof" onchange="renderKec()"><option value="">Urutkan…</option><option value="pd">Proyeksi ↓</option><option value="pa">Proyeksi ↑</option><option value="sd">SLS terbanyak</option></select>
       </div>
       <div class="tscroll"><table><thead><tr>
-        <th>Kecamatan</th><th>PML</th><th>PPL</th><th>SLS</th><th>Target</th><th>Selesai</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th>
+        <th>Kecamatan</th><th>PML</th><th>PPL</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th>
       </tr></thead><tbody id="kec-tb"></tbody></table></div>
     </div>
   </div>
@@ -358,7 +358,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <select id="pmlsf" onchange="renderPml()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
       </div>
       <div class="tscroll"><table><thead><tr>
-        <th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Selesai</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th></th>
+        <th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th></th>
       </tr></thead><tbody id="pml-tb"></tbody></table></div>
     </div>
   </div>
@@ -375,7 +375,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <select id="pplsf" onchange="renderPpl()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
       </div>
       <div class="tscroll"><table><thead><tr>
-        <th>PPL</th><th>PML</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Selesai</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th></th>
+        <th>PPL</th><th>PML</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th></th>
       </tr></thead><tbody id="ppl-tb"></tbody></table></div>
     </div>
   </div>
@@ -392,7 +392,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
           <select id="evsf" onchange="renderEval()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
         </div>
         <div class="tscroll"><table><thead><tr>
-          <th>PPL</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Selesai</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th>Detail</th>
+          <th>PPL</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th>Detail</th>
         </tr></thead><tbody id="ev-tb"></tbody></table></div>
       </div>
     </div>
@@ -407,7 +407,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
       <div class="card">
         <div class="ch"><div class="ct">Rincian per SLS</div></div>
         <div class="tscroll"><table><thead><tr>
-          <th>No</th><th>regionCode</th><th>Desa</th><th>Target</th><th>Selesai</th><th>Open</th><th>Draft</th><th>Sub Resp</th><th>Ditolak</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th>
+          <th>No</th><th>regionCode</th><th>Desa</th><th>Target</th><th>Perolehan</th><th>Open</th><th>Draft</th><th>Sub Resp</th><th>Ditolak</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th>
         </tr></thead><tbody id="det-tb"></tbody></table></div>
       </div>
     </div>
@@ -508,6 +508,7 @@ const avC=n=>{const c=(n?.charCodeAt(0)??0)%5;return['av-bl','av-gr','av-am','av
 const fr=v=>v!=null?v.toFixed(1):'—';
 
 // STATUS PROYEKSI (berdasarkan perkiraan perolehan 25 Agustus)
+// Perolehan = Submit + Approve + Reject
 function getStatus(proyeksi){
   if(proyeksi>100) return'Aman';
   if(proyeksi>=95) return'Waspada';
@@ -725,7 +726,7 @@ function renderMetrics(){
     <div class="mc c-pu"><div class="mc-glow"></div><div class="mc-lbl">PML / PPL</div><div class="mc-val">${ST.meta.total_pml}/${ST.meta.total_ppl}</div><div class="mc-sub">${ST.kecamatan.length} kecamatan</div></div>
     <div class="mc c-cy"><div class="mc-glow"></div><div class="mc-lbl">Total SLS</div><div class="mc-val">${fN(ST.meta.total_sls)}</div><div class="mc-sub">Satuan cacah</div></div>
     <div class="mc c-bl"><div class="mc-glow"></div><div class="mc-lbl">Target Usaha</div><div class="mc-val">${fN(tTgt)}</div><div class="mc-sub">Total di SLS</div></div>
-    <div class="mc c-gr"><div class="mc-glow"></div><div class="mc-lbl">Selesai</div><div class="mc-val">${fN(tSel)}</div><div class="mc-sub">Progres kini: ${tPctNow}%</div></div>
+    <div class="mc c-gr"><div class="mc-glow"></div><div class="mc-lbl">Perolehan</div><div class="mc-val">${fN(tSel)}</div><div class="mc-sub">Progres kini: ${tPctNow}%</div></div>
     <div class="mc ${statC}"><div class="mc-glow"></div><div class="mc-lbl">Proyeksi 25 Ags</div><div class="mc-val">${fr(tProy)}%</div><div class="mc-sub">${tStat} · sisa ${SISA}h × ${LAJU}%</div></div>
     <div class="mc c-rd"><div class="mc-glow"></div><div class="mc-lbl">Perlu Perhatian</div><div class="mc-val">${bad+late}</div><div class="mc-sub">${bad} bahaya · ${late} terlambat kec.</div></div>`;
 }
@@ -861,7 +862,7 @@ function openDetail(pid){
   $('ev-mets').innerHTML=`
     <div class="mc c-cy" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Jml SLS</div><div class="mc-val" style="font-size:18px">${p.sls.length}</div></div>
     <div class="mc c-bl" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Target</div><div class="mc-val" style="font-size:18px">${fN(p.target)}</div></div>
-    <div class="mc c-gr" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Selesai</div><div class="mc-val" style="font-size:18px">${fN(p.selesai)}</div></div>
+    <div class="mc c-gr" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Perolehan</div><div class="mc-val" style="font-size:18px">${fN(p.selesai)}</div></div>
     <div class="mc c-am" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Draft</div><div class="mc-val" style="font-size:18px">${fN(p.draft)}</div><div class="mc-sub">Belum submit</div></div>
     <div class="mc c-cy" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Sub. Resp</div><div class="mc-val" style="font-size:18px">${fN(p.sub_resp)}</div><div class="mc-sub">Di responden</div></div>
     <div class="mc c-bl" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Progres Kini</div><div class="mc-val" style="font-size:18px">${p.pct_now}%</div></div>
@@ -1261,7 +1262,7 @@ function openLaporan(){
         ${barSvg}
       </div>
 
-      ${tbl(['No','Kecamatan','PPL','Target','Selesai','Progres Kini','Proyeksi 25 Ags','Status'],
+      ${tbl(['No','Kecamatan','PPL','Target','Perolehan','Progres Kini','Proyeksi 25 Ags','Status'],
         kecArr.map((k,i)=>[
           `<span style="color:#778899;font-weight:700">${i+1}</span>`,
           `<strong>${k.nama}</strong>`,
@@ -1311,7 +1312,7 @@ function openLaporan(){
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${pplBahaya.length} PPL Proyeksi BAHAYA (&lt;80%)</strong> — Ditampilkan semua ${pplBahaya.length}/${pplBahaya.length} PPL
         </div>
-        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Selesai','Progres','Proyeksi'],
+        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Perolehan','Progres','Proyeksi'],
           pplBahaya.map((p,i)=>[
             `<span style="color:#778899">${i+1}</span>`,
             `<strong style="color:#cc2040">${p.nama}</strong>`,
@@ -1327,7 +1328,7 @@ function openLaporan(){
         <div style="background:#fff3e6;border:1px solid #cc660040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc6600">
           <strong>🟠 ${pplTerlambat.length} PPL Proyeksi TERLAMBAT (80–94%)</strong> — Ditampilkan semua ${pplTerlambat.length}/${pplTerlambat.length} PPL
         </div>
-        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Selesai','Progres','Proyeksi'],
+        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Perolehan','Progres','Proyeksi'],
           pplTerlambat.map((p,i)=>[
             `<span style="color:#778899">${i+1}</span>`,
             `<strong style="color:#cc6600">${p.nama}</strong>`,
@@ -1344,7 +1345,7 @@ function openLaporan(){
 
     <!-- TOP 10 PERFORMER -->
     ${section('V. PETUGAS LAPANGAN TERBAIK (TOP 10)','🏆',`
-      ${tbl(['#','Nama PPL','Kecamatan','Target','Selesai','Progres','Proyeksi'],
+      ${tbl(['#','Nama PPL','Kecamatan','Target','Perolehan','Progres','Proyeksi'],
         top10ppl.map((p,i)=>[
           `<span style="font-size:${i<3?'16':'12'}px">${rankIcon(i)}</span>`,
           `<strong>${p.nama}</strong>`,
@@ -1443,10 +1444,10 @@ function exportXL(type){
 function exportCSV(type){
   let hdr,rows;
   if(type==='kec'){
-    hdr=['Kecamatan','PML','PPL','Total SLS','Target','Selesai','Progres Kini (%)','Proyeksi 25 Ags (%)','Status'];
+    hdr=['Kecamatan','PML','PPL','Total SLS','Target','Perolehan','Progres Kini (%)','Proyeksi 25 Ags (%)','Status'];
     rows=Object.values(STATE.KEC).map(k=>[k.nama,k.jumlah_pml,k.jumlah_ppl,k.jumlah_sls,k.target,k.selesai,k.pct_now,fr(k.proyeksi),k.status]);
   }else{
-    hdr=['Nama PPL','Email','PML','Kecamatan','Desa','Jml SLS','Target','Selesai','Open','Progres Kini (%)','Proyeksi 25 Ags (%)','Status'];
+    hdr=['Nama PPL','Email','PML','Kecamatan','Desa','Jml SLS','Target','Perolehan','Open','Progres Kini (%)','Proyeksi 25 Ags (%)','Status'];
     rows=Object.values(STATE.PPL).map(p=>[p.nama,p.email,STATE.PML[p.pml_id]?.nama||'',STATE.KEC[p.kec_id]?.nama||'',p.desa,p.sls.length,p.target,p.selesai,p.open,p.pct_now,fr(p.proyeksi),p.status]);
   }
   const csv=[hdr,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
