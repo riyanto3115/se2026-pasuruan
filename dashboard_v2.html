@@ -1152,14 +1152,14 @@ function openLaporan(){
 
   // Tabel kompak — padding kecil, font lebih kecil
   const tbl=(headers,rows,note)=>`
-    <div style="overflow-x:auto;margin-bottom:${note?'4px':'14px'}">
-    <table style="width:100%;border-collapse:collapse;font-size:11px">
-      <thead><tr>${headers.map(h=>`<th style="background:#eef2f7;padding:5px 7px;text-align:left;font-size:9.5px;font-weight:700;color:#4a6080;border:1px solid #dce4ee;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px">${h}</th>`).join('')}</tr></thead>
-      <tbody>${rows.map((r,ri)=>`<tr>${r.map(c=>`<td style="padding:4px 7px;border:1px solid #dce4ee;vertical-align:middle;background:${ri%2?'#f8fafc':'#fff'};white-space:nowrap">${c}</td>`).join('')}</tr>`).join('')}</tbody>
+    <div style="margin-bottom:${note?'4px':'14px'}">
+    <table style="width:100%;border-collapse:collapse;font-size:11px;page-break-inside:auto">
+      <thead><tr>${headers.map(h=>`<th style="background:#eef2f7;padding:4px 6px;text-align:left;font-size:9px;font-weight:700;color:#4a6080;border:1px solid #dce4ee;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px">${h}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map((r,ri)=>`<tr style="page-break-inside:avoid">${r.map(c=>`<td style="padding:3px 6px;border:1px solid #dce4ee;vertical-align:middle;background:${ri%2?'#f8fafc':'#fff'};white-space:nowrap">${c}</td>`).join('')}</tr>`).join('')}</tbody>
     </table></div>${note?`<div style="font-size:10px;color:#778899;margin-bottom:12px">${note}</div>`:''}`;
 
   const section=(title,icon,content,color='#1a2a4a')=>`
-    <div style="margin-bottom:18px">
+    <div style="margin-bottom:18px;page-break-inside:auto">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid ${color}20">
         <span style="font-size:14px">${icon}</span>
         <span style="font-size:12px;font-weight:700;color:${color}">${title}</span>
@@ -1404,9 +1404,21 @@ function printLaporan(){
     <title>Laporan Pimpinan SE2026</title>
     <style>
       *{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:#fff;color:#1a2a4a;padding:16mm;font-size:12px;line-height:1.6}
-      @page{size:A4;margin:16mm}
-      @media print{body{padding:0}}
+      body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:#fff;color:#1a2a4a;padding:10mm 12mm;font-size:11px;line-height:1.45}
+      @page{size:A4 portrait;margin:10mm 12mm}
+      @media print{
+        body{padding:0}
+        table{border-collapse:collapse;width:100%;page-break-inside:auto}
+        tr{page-break-inside:avoid;page-break-after:auto}
+        thead{display:table-header-group}
+        tfoot{display:table-footer-group}
+        td,th{page-break-inside:avoid}
+        div{overflow:visible!important}
+      }
+      table{border-collapse:collapse;width:100%;page-break-inside:auto}
+      tr{page-break-inside:avoid;page-break-after:auto}
+      thead{display:table-header-group}
+      td,th{page-break-inside:avoid}
     </style>
   </head><body>${content.outerHTML}</body></html>`);
   w.document.close();
