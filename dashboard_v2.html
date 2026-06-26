@@ -320,8 +320,8 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <div class="cb">
           <div class="cwrap"><canvas id="bar-c"></canvas></div>
           <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;font-size:10px;color:var(--tx2)">
-            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#00e5a0;display:inline-block"></span>Aman (proyeksi &gt;100%)</span>
-            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ffb830;display:inline-block"></span>Waspada (95–100%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#00e5a0;display:inline-block"></span>Aman (proyeksi = 100%)</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ffb830;display:inline-block"></span>Waspada (95–99%)</span>
             <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ff8c00;display:inline-block"></span>Terlambat (80–94%)</span>
             <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:#ff4060;display:inline-block"></span>Bahaya (&lt;80%)</span>
           </div>
@@ -426,7 +426,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
       <div class="cb">
         <div style="background:var(--bl-bg);border:1px solid var(--bl-bdr);border-radius:var(--r6);padding:6px 10px;font-size:11px;color:var(--bl);display:flex;gap:5px;align-items:center;margin-bottom:10px">
           <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><circle cx="6.5" cy="6.5" r="5"/><path d="M6.5 4v3l1.5 1"/></svg>
-          Status = proyeksi perolehan 25 Agustus 2026. Klik kartu untuk filter ke tabel Rekap.
+          Status = proyeksi perolehan 25 Agustus 2026 (maksimal 100%). Klik kartu untuk filter ke tabel Rekap.
         </div>
         <div class="peta-grid" id="peta-grid"></div>
       </div>
@@ -465,9 +465,9 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
     </div>
     <div class="mb">
       <div class="mopt" onclick="exportXL('all');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Semua Data</div><div class="mos">Kec + PML + PPL + SLS dalam sheet terpisah</div></div></div>
-      <div class="mopt" onclick="exportXL('kec');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Rekap Kecamatan</div><div class="mos">Dengan kolom proyeksi + target 100%</div></div></div>
-      <div class="mopt" onclick="exportXL('ppl');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Data PPL</div><div class="mos">Semua PPL + proyeksi + target 100%</div></div></div>
-      <div class="mopt" onclick="exportXL('eval');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Semua SLS</div><div class="mos">Detail tiap regionCode + proyeksi + target 100%</div></div></div>
+      <div class="mopt" onclick="exportXL('kec');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Rekap Kecamatan</div><div class="mos">Dengan kolom proyeksi + target 100% (maks 100%)</div></div></div>
+      <div class="mopt" onclick="exportXL('ppl');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Data PPL</div><div class="mos">Semua PPL + proyeksi + target 100% (maks 100%)</div></div></div>
+      <div class="mopt" onclick="exportXL('eval');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Semua SLS</div><div class="mos">Detail tiap regionCode + proyeksi + target 100% (maks 100%)</div></div></div>
       <div class="mopt" onclick="exportCSV('kec');closeModal()"><svg viewBox="0 0 18 18" fill="none" stroke="var(--bl)" stroke-width="1.5" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path d="M5.5 7h7M5.5 10h5"/></svg><div><div class="mot">CSV — Rekap Kecamatan</div><div class="mos">Format teks</div></div></div>
     </div>
   </div>
@@ -513,27 +513,31 @@ const avC=n=>{const c=(n?.charCodeAt(0)??0)%5;return['av-bl','av-gr','av-am','av
 const fr2=v=>v!=null?v.toFixed(2):'—';
 
 // ============================================================
-// FUNGSI PERHITUNGAN TANGGAL CAPAI 100%
+// FUNGSI PROYEKSI DENGAN CAP 100%
 // ============================================================
 // Deadline 25 Agustus 2026
-const DEADLINE = new Date(2026, 7, 25); // bulan 0-based (Agustus = 7)
+const DEADLINE = new Date(2026, 7, 25);
 
-function formatTanggal(date) {
-  const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  return `${date.getDate()} ${bulan[date.getMonth()]} ${date.getFullYear()}`;
+/**
+ * Menghitung proyeksi dengan batas maksimal 100%
+ * @param {number} pctNow - Progres saat ini (%)
+ * @param {number} lajuPerHari - Laju per hari (%)
+ * @param {number} sisaHari - Sisa hari sampai deadline
+ * @returns {number} Proyeksi (maks 100%)
+ */
+function hitungProyeksi(pctNow, lajuPerHari, sisaHari) {
+  const proyeksi = pctNow + (lajuPerHari * sisaHari);
+  return Math.min(proyeksi, 100);
 }
 
 /**
- * MENGHITUNG TANGGAL CAPAI 100% DENGAN LOGIKA YANG BENAR:
- * 
- * 1. Progres kini = pencapaian hari ini (dalam %)
- * 2. Setiap hari bertambah LAJU% (misal 1.5%) sampai mencapai 100%
- * 3. Setelah mencapai 100%, hari berikutnya tetap 100% (tidak bertambah)
- * 4. Proyeksi 25 Agustus 2026 = progres kini + (LAJU × sisa hari)
+ * Menghitung tanggal capai 100% dengan LOGIKA YANG BENAR:
+ * - Progres kini = pencapaian hari ini
+ * - Setiap hari bertambah LAJU% sampai mencapai 100%
+ * - Setelah mencapai 100%, hari berikutnya tetap 100%
  */
 function hitungTanggalCapai100(pctNow, lajuPerHari) {
   if (pctNow >= 100) {
-    // Sudah mencapai 100% → tanggal hari ini
     return {
       tanggal: new Date(),
       hari_dibutuhkan: 0,
@@ -542,10 +546,8 @@ function hitungTanggalCapai100(pctNow, lajuPerHari) {
   }
   
   const sisa = 100 - pctNow;
-  // Hari yang dibutuhkan untuk mencapai 100% dengan laju harian
   const hariDibutuhkan = Math.ceil(sisa / lajuPerHari);
   
-  // Tanggal sekarang + hari yang dibutuhkan
   const targetDate = new Date();
   targetDate.setDate(targetDate.getDate() + hariDibutuhkan);
   
@@ -556,9 +558,11 @@ function hitungTanggalCapai100(pctNow, lajuPerHari) {
   };
 }
 
-/**
- * Render tanggal capai 100% ke HTML
- */
+function formatTanggal(date) {
+  const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  return `${date.getDate()} ${bulan[date.getMonth()]} ${date.getFullYear()}`;
+}
+
 function renderTanggalCapai(pctNow, lajuPerHari) {
   const result = hitungTanggalCapai100(pctNow, lajuPerHari);
   
@@ -569,7 +573,6 @@ function renderTanggalCapai(pctNow, lajuPerHari) {
   const dateStr = formatTanggal(result.tanggal);
   const days = result.hari_dibutuhkan;
   
-  // Tentukan kelas warna berdasarkan jumlah hari
   let cls = 'aman';
   let label = `${days} hari lagi`;
   let icon = '📅';
@@ -593,9 +596,10 @@ function renderTanggalCapai(pctNow, lajuPerHari) {
 // STATUS PROYEKSI (berdasarkan proyeksi 25 Agustus 2026)
 // ============================================================
 function getStatus(proyeksi){
-  if(proyeksi>100) return'Aman';
-  if(proyeksi>=95) return'Waspada';
-  if(proyeksi>=80) return'Terlambat';
+  // Proyeksi sudah di-cap 100%, jadi Aman jika =100%
+  if(proyeksi >= 100) return'Aman';
+  if(proyeksi >= 95) return'Waspada';
+  if(proyeksi >= 80) return'Terlambat';
   return'Bahaya';
 }
 function statusColor(s){
@@ -612,11 +616,12 @@ const pb=(p,s,w=100)=>{
   const pStr = typeof p === 'number' ? p.toFixed(2) : p;
   return`<div class="prog" style="min-width:${w}px"><div class="pbg"><div class="pf" style="width:${Math.min(p,100)}%;background:${c}"></div></div><span class="plbl" style="color:${c}">${pStr}%</span></div>`;
 };
-// Proyeksi badge dengan dua angka desimal
+// Proyeksi badge dengan dua angka desimal (maks 100%)
 const proyBadge=p=>{
-  const s=getStatus(p);
+  const proyeksiCap = Math.min(p, 100);
+  const s=getStatus(proyeksiCap);
   const c=statusColor(s);
-  return`<span style="font-family:var(--mono);font-size:11px;font-weight:600;color:${c}">${fr2(p)}%</span>`;
+  return`<span style="font-family:var(--mono);font-size:11px;font-weight:600;color:${c}">${fr2(proyeksiCap)}%</span>`;
 };
 
 function toast(msg){const t=$('toast');$('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
@@ -682,13 +687,14 @@ function buildState(){
     const tgt=py?py.target:0;
     const sel=py?py.selesai:0;
     const pctNow=tgt>0?sel/tgt*100:0;
-    // Proyeksi = progres kini + (laju × sisa hari)
-    const proy=parseFloat((pctNow + LAJU * SISA).toFixed(4));
+    // Proyeksi dengan CAP 100%
+    const proyeksiRaw = pctNow + LAJU * SISA;
+    const proyeksiCap = Math.min(proyeksiRaw, 100);
     const slsDraft=py?py.draft:0, slsSub=py?py.sub_resp:0;
     pp.sls.push({id:s.id,nmdesa:s.nmdesa,kdsls:s.kdsls,kdsubsls:s.kdsubsls,
       target:tgt,selesai:sel,open:py?py.open:0,ditolak:py?py.ditolak:0,
       draft:slsDraft,sub_resp:slsSub,
-      pct_now:pctNow,proyeksi:proy,detail:py?py.detail:{}});
+      pct_now:pctNow,proyeksi:proyeksiCap,proyeksi_raw:proyeksiRaw,detail:py?py.detail:{}});
     pp.target+=tgt; pp.selesai+=sel; pp.open+=py?py.open:0;
     pp.ditolak+=py?py.ditolak:0; pp.draft+=slsDraft; pp.sub_resp+=slsSub;
   });
@@ -708,17 +714,23 @@ function buildState(){
 
   Object.values(PPL).forEach(p=>{
     p.pct_now=p.target>0?p.selesai/p.target*100:0;
-    p.proyeksi=parseFloat((p.pct_now + LAJU * SISA).toFixed(4));
+    const proyeksiRaw = p.pct_now + LAJU * SISA;
+    p.proyeksi = Math.min(proyeksiRaw, 100);
+    p.proyeksi_raw = proyeksiRaw;
     p.status=getStatus(p.proyeksi);
   });
   Object.values(PML).forEach(p=>{
     p.pct_now=p.target>0?p.selesai/p.target*100:0;
-    p.proyeksi=parseFloat((p.pct_now + LAJU * SISA).toFixed(4));
+    const proyeksiRaw = p.pct_now + LAJU * SISA;
+    p.proyeksi = Math.min(proyeksiRaw, 100);
+    p.proyeksi_raw = proyeksiRaw;
     p.status=getStatus(p.proyeksi);
   });
   Object.values(KEC).forEach(k=>{
     k.pct_now=k.target>0?k.selesai/k.target*100:0;
-    k.proyeksi=parseFloat((k.pct_now + LAJU * SISA).toFixed(4));
+    const proyeksiRaw = k.pct_now + LAJU * SISA;
+    k.proyeksi = Math.min(proyeksiRaw, 100);
+    k.proyeksi_raw = proyeksiRaw;
     k.status=getStatus(k.proyeksi);
   });
 
@@ -726,7 +738,8 @@ function buildState(){
   const tTgt=Object.values(PPL).reduce((a,p)=>a+p.target,0);
   const tOpn=Object.values(PPL).reduce((a,p)=>a+p.open,0);
   const tPctNow=tTgt>0?tSel/tTgt*100:0;
-  const tProy=parseFloat((tPctNow + LAJU * SISA).toFixed(4));
+  const tProyeksiRaw = tPctNow + LAJU * SISA;
+  const tProy = Math.min(tProyeksiRaw, 100);
   const tStat=getStatus(tProy);
 
   STATE={KEC,PML,PPL,tSel,tTgt,tOpn,tPctNow,tProy,tStat,SISA,LAJU};
@@ -776,7 +789,6 @@ function initUI(){
   const bdrc={Aman:'var(--gr-bdr)',Waspada:'var(--am-bdr)',Terlambat:'var(--or-bdr)',Bahaya:'var(--rd-bdr)'}[tStat];
   const ico={Aman:'✅',Waspada:'🟡',Terlambat:'🟠',Bahaya:'🔴'}[tStat];
   
-  // Tanggal capai 100% GLOBAL menggunakan LOGIKA YANG BENAR
   const capaiGlobal = hitungTanggalCapai100(tPctNow, LAJU);
   const capaiStr = capaiGlobal.sudah_capai ? 
     `✅ ${formatTanggal(new Date())} (Tercapai!)` : 
@@ -790,7 +802,7 @@ function initUI(){
       <span style="font-size:10px;font-weight:400;color:var(--tx2);font-family:var(--mono);margin-left:4px">(data: ${fmtUpd(PY.tanggal_update,PY.jam_update)})</span>
     </span>
     <span style="color:var(--tx2);font-weight:400">·</span>
-    <span>Proyeksi 25 Agustus 2026: <strong style="font-family:var(--mono)">${fr2(tProy)}%</strong></span>
+    <span>Proyeksi 25 Agustus 2026: <strong style="font-family:var(--mono)">${fr2(tProy)}%</strong> ${tProy < 100 ? `(proyeksi awal ${fr2(tProy)}%)` : ''}</span>
     <span style="color:var(--tx2);font-weight:400">·</span>
     <span style="color:var(--tx2);font-weight:400">Sisa <strong style="color:${bc}">${SISA} hari</strong> × ${LAJU}%/hari = +${fr2(LAJU*SISA)}%</span>
     <span style="color:var(--tx2);font-weight:400">·</span>
@@ -1015,7 +1027,7 @@ let hmC;
 function renderHeatmap(){
   const d=Object.values(STATE.KEC).sort((a,b)=>a.nama.localeCompare(b.nama));
   const lbl=d.map(k=>k.nama.length>11?k.nama.slice(0,11)+'…':k.nama);
-  const vals=d.map(k=>Math.min(k.proyeksi,130));
+  const vals=d.map(k=>k.proyeksi); // sudah di-cap 100%
   const cols=d.map(k=>statusColor(k.status)+'cc');
   if(hmC)hmC.destroy();
   hmC=new Chart($('hm-c'),{type:'bar',
@@ -1023,7 +1035,7 @@ function renderHeatmap(){
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:c=>`Proyeksi: ${fr2(d[c.dataIndex].proyeksi)}% (${d[c.dataIndex].status})`}}},
       scales:{
-        x:{min:0,max:130,ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'}},
+        x:{min:0,max:105,ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'}},
         y:{ticks:{color:'#7090b0',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}}
       }
     }
@@ -1042,6 +1054,7 @@ function renderBar(){
   else d.sort((a,b)=>a.nama.localeCompare(b.nama));
   const lbl=d.map(k=>k.nama.length>8?k.nama.slice(0,8)+'…':k.nama);
   const vals=d.map(k=>k.pct_now);
+  // Warna berdasarkan status proyeksi (sudah di-cap)
   const colMap={Aman:'#00e5a0',Waspada:'#ffb830',Terlambat:'#ff8c00',Bahaya:'#ff4060'};
   const cols=d.map(k=>colMap[k.status]||'#3d9eff');
   const maxVal=Math.max(...vals,1);
@@ -1283,7 +1296,6 @@ function openLaporan(){
     <line x1="${labelW}" y1="0" x2="${labelW}" y2="${svgH}" stroke="#dce4ee" stroke-width="0.8"/>
   </svg>`;
 
-  // Fungsi render tanggal capai di laporan dengan LOGIKA YANG BENAR
   const renderTglCapaiLap = (pctNow) => {
     const result = hitungTanggalCapai100(pctNow, LAJU);
     if (result.sudah_capai || pctNow >= 100) {
@@ -1295,7 +1307,6 @@ function openLaporan(){
     return `<span style="color:${color};font-weight:600">📅 ${formatTanggal(result.tanggal)} (${label})</span>`;
   };
 
-  // Tanggal capai global dengan LOGIKA YANG BENAR
   const capaiGlobal = hitungTanggalCapai100(tPctNow, LAJU);
   const capaiStrGlobal = capaiGlobal.sudah_capai ? 
     `✅ ${formatTanggal(new Date())} (Tercapai!)` : 
@@ -1327,6 +1338,7 @@ function openLaporan(){
         proyeksi perolehan pada tanggal 25 Agustus 2026 adalah 
         <strong style="color:${statColor[tStat]};font-size:15px">${fr2(tProy)}%</strong> — 
         Status: <strong style="color:${statColor[tStat]}">${tStat}</strong>.
+        ${tProy < 100 ? `<br><span style="font-size:11px;color:#4a6080">(Proyeksi awal sebelum dibatasi: ${fr2(tProy + LAJU * SISA)}%)</span>` : ''}
         <br><br>
         🎯 <strong>Target 100% diperkirakan tercapai pada:</strong> <strong style="color:${capaiGlobal.sudah_capai?'#1a7a4a':'#1a6a7a'};font-size:14px">${capaiStrGlobal}</strong>
       </div>
