@@ -539,9 +539,11 @@ function toast(msg){const t=$('toast');$('toast-msg').textContent=msg;t.classLis
 function step(s){$('lstep').textContent=s}
 
 // Format tanggal update: dd/mm/yyyy hh:mm (24 jam)
-function fmtUpd(s){
+function fmtUpd(s,jam){
   if(!s)return'—';
-  const d=new Date(s.includes('T')?s:s+'T00:00:00');
+  // Jika ada jam_update terpisah, gabungkan
+  const jamStr=jam?(jam.replace('.',':')):'00:00';
+  const d=new Date(s.includes('T')?s:s+'T'+jamStr+':00');
   if(isNaN(d))return s;
   const dd=String(d.getDate()).padStart(2,'0');
   const mm=String(d.getMonth()+1).padStart(2,'0');
@@ -667,7 +669,7 @@ function buildState(){
       NOTIFS.push({type:'am',title:`🟡 Waspada — Kec. ${k.nama} (${fr(k.proyeksi)}%)`,sub:'Proyeksi mendekati batas aman.',read:false});
   });
   NOTIFS.push({type:'bl',title:'Data berhasil dimuat',
-    sub:`Update ${fmtUpd(PY.tanggal_update)}. Sisa ${SISA} hari ke deadline. Proyeksi global: ${fr(tProy)}% → ${tStat}.`,read:false});
+    sub:`Update ${fmtUpd(PY.tanggal_update,PY.jam_update)}. Sisa ${SISA} hari ke deadline. Proyeksi global: ${fr(tProy)}% → ${tStat}.`,read:false});
 }
 
 // ============================================================
@@ -677,9 +679,9 @@ function initUI(){
   const m=ST.meta;
   const {tSel,tTgt,tOpn,tPctNow,tProy,tStat,SISA}=STATE;
   $('hd-kab').textContent=`${m.nama_kabupaten} · SE ${m.tahun}`;
-  $('hd-date').textContent=fmtUpd(PY.tanggal_update);
+  $('hd-date').textContent=fmtUpd(PY.tanggal_update,PY.jam_update);
   $('hd-sisa').textContent=SISA;
-  $('sb-upd').textContent=fmtUpd(PY.tanggal_update);
+  $('sb-upd').textContent=fmtUpd(PY.tanggal_update,PY.jam_update);
   $('sb-sisa').textContent=SISA;
   $('sb-lap').textContent=`${PY.total_sls_dilaporkan}/${m.total_sls}`;
   $('sb-proy').textContent=`${fr(tProy)}% → ${tStat}`;
@@ -699,7 +701,7 @@ function initUI(){
     <span>Status Global: <strong>${tStat}</strong></span>
     <span style="color:var(--tx2);font-weight:400">·</span>
     <span>Progres saat ini: <strong style="font-family:var(--mono)">${tPctNow}%</strong>
-      <span style="font-size:10px;font-weight:400;color:var(--tx2);font-family:var(--mono);margin-left:4px">(data: ${fmtUpd(PY.tanggal_update)})</span>
+      <span style="font-size:10px;font-weight:400;color:var(--tx2);font-family:var(--mono);margin-left:4px">(data: ${fmtUpd(PY.tanggal_update,PY.jam_update)})</span>
     </span>
     <span style="color:var(--tx2);font-weight:400">·</span>
     <span>Proyeksi 25 Agustus: <strong style="font-family:var(--mono)">${fr(tProy)}%</strong></span>
@@ -1122,7 +1124,7 @@ function openLaporan(){
   const upd=PY.tanggal_update;
 
   // Format tanggal update sudah tersedia via fmtUpd() global
-  const updFmt=fmtUpd(upd);
+  const updFmt=PY.label_update||fmtUpd(upd,PY.jam_update);
 
   const now=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
