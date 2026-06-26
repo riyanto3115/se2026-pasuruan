@@ -477,7 +477,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
 
 <!-- LAPORAN PIMPINAN MODAL -->
 <div class="moverlay" id="lap-modal" style="align-items:flex-start;overflow-y:auto;padding:1rem">
-  <div class="modal" style="width:820px;max-width:96vw;max-height:none">
+  <div class="modal" style="width:860px;max-width:96vw;max-height:none">
     <div class="mh" style="position:sticky;top:0;z-index:10;background:var(--s1)">
       <span style="font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px">
         <svg viewBox="0 0 14 14" fill="none" stroke="var(--pu)" stroke-width="1.5" width="14" height="14"><rect x="2" y="1" width="10" height="12" rx="1.5"/><path d="M4.5 4.5h5M4.5 7h5M4.5 9.5h3"/></svg>
@@ -515,27 +515,13 @@ const fr2=v=>v!=null?v.toFixed(2):'—';
 // ============================================================
 // FUNGSI PROYEKSI DENGAN CAP 100%
 // ============================================================
-// Deadline 25 Agustus 2026
 const DEADLINE = new Date(2026, 7, 25);
 
-/**
- * Menghitung proyeksi dengan batas maksimal 100%
- * @param {number} pctNow - Progres saat ini (%)
- * @param {number} lajuPerHari - Laju per hari (%)
- * @param {number} sisaHari - Sisa hari sampai deadline
- * @returns {number} Proyeksi (maks 100%)
- */
 function hitungProyeksi(pctNow, lajuPerHari, sisaHari) {
   const proyeksi = pctNow + (lajuPerHari * sisaHari);
   return Math.min(proyeksi, 100);
 }
 
-/**
- * Menghitung tanggal capai 100% dengan LOGIKA YANG BENAR:
- * - Progres kini = pencapaian hari ini
- * - Setiap hari bertambah LAJU% sampai mencapai 100%
- * - Setelah mencapai 100%, hari berikutnya tetap 100%
- */
 function hitungTanggalCapai100(pctNow, lajuPerHari) {
   if (pctNow >= 100) {
     return {
@@ -592,11 +578,7 @@ function renderTanggalCapai(pctNow, lajuPerHari) {
   return `<span class="tgl-capai ${cls}">${icon} ${dateStr} (${label})</span>`;
 }
 
-// ============================================================
-// STATUS PROYEKSI (berdasarkan proyeksi 25 Agustus 2026)
-// ============================================================
 function getStatus(proyeksi){
-  // Proyeksi sudah di-cap 100%, jadi Aman jika =100%
   if(proyeksi >= 100) return'Aman';
   if(proyeksi >= 95) return'Waspada';
   if(proyeksi >= 80) return'Terlambat';
@@ -610,13 +592,12 @@ function pillCls(s){
 }
 const pill=s=>`<span class="pill ${pillCls(s)}">${s}</span>`;
 
-// Progress bar dengan dua angka desimal
 const pb=(p,s,w=100)=>{
   const c=statusColor(s);
   const pStr = typeof p === 'number' ? p.toFixed(2) : p;
   return`<div class="prog" style="min-width:${w}px"><div class="pbg"><div class="pf" style="width:${Math.min(p,100)}%;background:${c}"></div></div><span class="plbl" style="color:${c}">${pStr}%</span></div>`;
 };
-// Proyeksi badge dengan dua angka desimal (maks 100%)
+
 const proyBadge=p=>{
   const proyeksiCap = Math.min(p, 100);
   const s=getStatus(proyeksiCap);
@@ -687,7 +668,6 @@ function buildState(){
     const tgt=py?py.target:0;
     const sel=py?py.selesai:0;
     const pctNow=tgt>0?sel/tgt*100:0;
-    // Proyeksi dengan CAP 100%
     const proyeksiRaw = pctNow + LAJU * SISA;
     const proyeksiCap = Math.min(proyeksiRaw, 100);
     const slsDraft=py?py.draft:0, slsSub=py?py.sub_resp:0;
@@ -1027,7 +1007,7 @@ let hmC;
 function renderHeatmap(){
   const d=Object.values(STATE.KEC).sort((a,b)=>a.nama.localeCompare(b.nama));
   const lbl=d.map(k=>k.nama.length>11?k.nama.slice(0,11)+'…':k.nama);
-  const vals=d.map(k=>k.proyeksi); // sudah di-cap 100%
+  const vals=d.map(k=>k.proyeksi);
   const cols=d.map(k=>statusColor(k.status)+'cc');
   if(hmC)hmC.destroy();
   hmC=new Chart($('hm-c'),{type:'bar',
@@ -1054,7 +1034,6 @@ function renderBar(){
   else d.sort((a,b)=>a.nama.localeCompare(b.nama));
   const lbl=d.map(k=>k.nama.length>8?k.nama.slice(0,8)+'…':k.nama);
   const vals=d.map(k=>k.pct_now);
-  // Warna berdasarkan status proyeksi (sudah di-cap)
   const colMap={Aman:'#00e5a0',Waspada:'#ffb830',Terlambat:'#ff8c00',Bahaya:'#ff4060'};
   const cols=d.map(k=>colMap[k.status]||'#3d9eff');
   const maxVal=Math.max(...vals,1);
@@ -1243,6 +1222,13 @@ function openLaporan(){
   const pplBahaya=Object.values(PPL).filter(p=>p.status==='Bahaya'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
   const pplTerlambat=Object.values(PPL).filter(p=>p.status==='Terlambat'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
 
+  // ============================================================
+  // PML TERBAIK (5 teratas) & PML TERENDAH (5 terbawah)
+  // ============================================================
+  const pmlList = Object.values(PML);
+  const pmlTerbaik = [...pmlList].sort((a,b) => b.pct_now - a.pct_now).slice(0, 5);
+  const pmlTerendah = [...pmlList].sort((a,b) => a.pct_now - b.pct_now).slice(0, 5);
+
   const statColor={Aman:'#00c47a',Waspada:'#d4900a',Terlambat:'#cc6600',Bahaya:'#cc2040'};
   const statBg={Aman:'#e6fff5',Waspada:'#fff8e6',Terlambat:'#fff3e6',Bahaya:'#ffe6eb'};
 
@@ -1311,6 +1297,9 @@ function openLaporan(){
   const capaiStrGlobal = capaiGlobal.sudah_capai ? 
     `✅ ${formatTanggal(new Date())} (Tercapai!)` : 
     `📅 ${formatTanggal(capaiGlobal.tanggal)} (${capaiGlobal.hari_dibutuhkan} hari lagi)`;
+
+  // Ranking icon untuk PML
+  const rankIconMedal = i => ['🥇','🥈','🥉','4','5'][i] || String(i+1);
 
   $('lap-body').innerHTML=`
   <div style="font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#1a2a4a;max-width:760px;margin:0 auto" id="lap-content">
@@ -1402,8 +1391,42 @@ function openLaporan(){
       )}
     `,'#1a5a2a')}
 
+    <!-- ========================================================== -->
+    <!-- PML TERBAIK & TERENDAH -->
+    <!-- ========================================================== -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;page-break-inside:auto">
+      <div>
+        ${section('III. PML PEROLEHAN TERTINGGI (TOP 5)','🏆',`
+          ${pmlTerbaik.length ? tbl(['#','Nama PML','Kecamatan','Target','Perolehan','Progres'],
+            pmlTerbaik.map((p,i)=>[
+              `<span style="font-size:${i<3?'16':'12'}px">${rankIconMedal(i)}</span>`,
+              `<strong>${p.nama}</strong>`,
+              STATE.KEC[p.kec_id]?.nama||'—',
+              fN(p.target),
+              `<strong style="color:#1a7a4a">${fN(p.selesai)}</strong>`,
+              pctBar(p.pct_now,'#00c47a')
+            ])
+          ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
+        `,'#1a6a2a')}
+      </div>
+      <div>
+        ${section('IV. PML PEROLEHAN TERENDAH (BOTTOM 5)','📉',`
+          ${pmlTerendah.length ? tbl(['#','Nama PML','Kecamatan','Target','Perolehan','Progres'],
+            pmlTerendah.map((p,i)=>[
+              `<span style="color:#778899;font-weight:700">${i+1}</span>`,
+              `<strong style="color:#cc6600">${p.nama}</strong>`,
+              STATE.KEC[p.kec_id]?.nama||'—',
+              fN(p.target),
+              `<strong style="color:#cc6600">${fN(p.selesai)}</strong>`,
+              pctBar(p.pct_now,'#cc6600')
+            ])
+          ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
+        `,'#aa4020')}
+      </div>
+    </div>
+
     <!-- PERHATIAN KHUSUS -->
-    ${(bahaya.length+terlambat.length>0)?section('III. KECAMATAN PERLU PERHATIAN KHUSUS','⚠️',`
+    ${(bahaya.length+terlambat.length>0)?section('V. KECAMATAN PERLU PERHATIAN KHUSUS','⚠️',`
       ${bahaya.length?`
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${bahaya.length} Kecamatan BAHAYA</strong> — Proyeksi perolehan &lt;80%. Diperlukan intervensi segera.
@@ -1435,7 +1458,7 @@ function openLaporan(){
     `,'#aa2020'):''}
 
     <!-- PPL BERMASALAH -->
-    ${section('IV. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
+    ${section('VI. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
       ${pplBahaya.length?`
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${pplBahaya.length} PPL Proyeksi BAHAYA (&lt;80%)</strong> — Ditampilkan semua ${pplBahaya.length}/${pplBahaya.length} PPL
@@ -1473,8 +1496,8 @@ function openLaporan(){
       ${(!pplBahaya.length&&!pplTerlambat.length)?`<div style="background:#e6faf2;border:1px solid #00c47a40;border-radius:6px;padding:10px 14px;font-size:12px;color:#1a7a4a">✅ Seluruh PPL dalam status Aman atau Waspada. Tidak ada PPL yang memerlukan perhatian khusus.</div>`:''}
     `,'#804020')}
 
-    <!-- TOP 10 PERFORMER -->
-    ${section('V. PETUGAS LAPANGAN TERBAIK (TOP 10)','🏆',`
+    <!-- TOP 10 PPL PERFORMER -->
+    ${section('VII. PPL TERBAIK (TOP 10)','🏆',`
       ${tbl(['#','Nama PPL','Kecamatan','Target','Perolehan','Progres','Proyeksi','🎯 Target 100%'],
         top10ppl.map((p,i)=>[
           `<span style="font-size:${i<3?'16':'12'}px">${rankIcon(i)}</span>`,
@@ -1490,11 +1513,12 @@ function openLaporan(){
     `,'#806000')}
 
     <!-- REKOMENDASI -->
-    ${section('VI. REKOMENDASI','📌',`
+    ${section('VIII. REKOMENDASI','📌',`
       <ol style="font-size:12px;line-height:2;padding-left:18px;color:#2a3a5a">
         ${bahaya.length?`<li>Lakukan koordinasi intensif dengan PML di <strong style="color:#cc2040">${bahaya.map(k=>k.nama).join(', ')}</strong> yang berstatus BAHAYA untuk mengejar ketertinggalan secara mendesak.</li>`:''}
         ${terlambat.length?`<li>Tingkatkan pengawasan dan pendampingan pada PPL di wilayah <strong style="color:#cc6600">${terlambat.map(k=>k.nama).join(', ')}</strong> agar laju harian meningkat.</li>`:''}
         ${pplBahaya.length?`<li>Sebanyak <strong>${pplBahaya.length} PPL</strong> berisiko tidak mencapai target. Pimpinan perlu segera mengevaluasi kendala di lapangan dan mempertimbangkan redistribusi beban kerja bila memungkinkan.</li>`:''}
+        ${pmlTerendah.length?`<li>Perhatikan <strong>${pmlTerendah.length} PML</strong> dengan perolehan terendah: <strong style="color:#cc6600">${pmlTerendah.map(p=>p.nama).join(', ')}</strong>. Berikan pendampingan intensif untuk meningkatkan kinerja.</li>`:''}
         <li>Dengan laju saat ini <strong>${LAJU}%/hari</strong> dan sisa <strong>${SISA} hari</strong>, proyeksi global mencapai <strong>${fr2(tProy)}%</strong>. ${tProy>=100?'Pertahankan kinerja untuk memastikan seluruh target terpenuhi.':'Diperlukan peningkatan laju agar target 100% terpenuhi sebelum deadline.'}</li>
         <li>Jadwalkan rapat evaluasi mingguan antara PML dan PPL untuk memantau perkembangan dan menyelesaikan kendala teknis di lapangan.</li>
         <li>🎯 Target 100% global diperkirakan tercapai pada <strong style="color:#1a6a7a">${formatTanggal(capaiGlobal.tanggal)}</strong> ${capaiGlobal.sudah_capai?'✅ sudah tercapai!':`(${capaiGlobal.hari_dibutuhkan} hari lagi)`}</li>
