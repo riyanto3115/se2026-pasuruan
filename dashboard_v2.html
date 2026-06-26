@@ -618,15 +618,16 @@ function step(s){$('lstep').textContent=s}
 
 function fmtUpd(s,jam){
   if(!s)return'—';
+  const BULAN_ID_L=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
   const jamStr=jam?(jam.replace('.',':')):'00:00';
   const d=new Date(s.includes('T')?s:s+'T'+jamStr+':00');
   if(isNaN(d))return s;
-  const dd=String(d.getDate()).padStart(2,'0');
-  const mm=String(d.getMonth()+1).padStart(2,'0');
-  const yyyy=d.getFullYear();
+  const tgl=`${d.getDate()} ${BULAN_ID_L[d.getMonth()]} ${d.getFullYear()}`;
   const hh=String(d.getHours()).padStart(2,'0');
   const mi=String(d.getMinutes()).padStart(2,'0');
-  return`${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+  // Jika jam tersedia (bukan 00:00), tampilkan jam dengan format hh.mm
+  const hasJam=jam&&jam!=='00.00'&&jam!=='00:00';
+  return hasJam?`${tgl} ${hh}.${mi}`:tgl;
 }
 
 // ============================================================
@@ -1303,7 +1304,8 @@ function openLaporan(){
   const m=ST.meta;
   const upd=PY.tanggal_update;
 
-  const updFmt=PY.label_update||fmtUpd(upd,PY.jam_update);
+  // updFmt untuk LAPORAN: tanggal panjang + jam "26 Juni 2026 20.20"
+  const updFmt=fmtUpd(PY.tanggal_update,PY.jam_update);
 
   const now=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
@@ -1392,7 +1394,11 @@ function openLaporan(){
 
   const statPill=(s)=>`<span style="display:inline-block;padding:1px 6px;border-radius:99px;font-size:9.5px;font-weight:700;background:${statBg[s]};color:${statColor[s]};border:1px solid ${statColor[s]}40">${s}</span>`;
 
-  const top10ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>b.pct_now-a.pct_now).slice(0,10);
+  // Exclude PPL anomali data (nama mengandung kata yang ditandai tidak valid)
+  const PPL_ANOMALI=['mahmudah'];
+  const top10ppl=Object.values(PPL)
+    .filter(p=>p.target>0 && !PPL_ANOMALI.some(x=>p.nama.toLowerCase().includes(x)))
+    .sort((a,b)=>b.pct_now-a.pct_now).slice(0,10);
   const rankIcon=i=>['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]||String(i+1);
 
   const kecByPct=Object.values(KEC).sort((a,b)=>b.pct_now-a.pct_now);
