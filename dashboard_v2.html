@@ -1614,84 +1614,50 @@ function openLaporan(){
           <span style="background:#ffe6eb;padding:2px 8px;border-radius:99px;font-size:10px;color:#cc2040">🔴 Perlu Perhatian &lt;45</span>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;page-break-inside:auto">
-        <div>
-          ${section('III. SKOR KEPEMIMPINAN TERTINGGI (TOP 5)','🏆',`
-            ${pmlTerbaik.length ? tbl(['#','Nama PML & Komponen Skor','Kec','PPL','Rata','σ','Min','Max','⭐ Skor'],
-              pmlTerbaik.map((p,i)=>{
-                const sk=p.skor_kepemimpinan;
-                const sc=skorColor(sk);
-                return[
-                  `<span style="font-size:${i<3?'16':'12'}px">${rankIconMedal(i)}</span>`,
-                  `<div><strong>${p.nama}</strong>${komponenBreakdown(p)}</div>`,
-                  STATE.KEC[p.kec_id]?.nama||'—',
-                  p.ppl_ids.length,
-                  `<span style="color:#2a5aa0;font-weight:600">${fr2(p.rata_rata_ppl)}%</span>`,
-                  `<span style="color:${p.std_dev_ppl<=10?'#1a7a4a':'#cc6600'}">${fr2(p.std_dev_ppl)}</span>`,
-                  `<span style="color:#804020;font-weight:600">${fr2(p.min_ppl)}%</span>`,
-                  `${fr2(p.max_ppl)}%`,
-                  `<div>${skorBar(sk,sc)}<div style="font-size:9px;font-weight:700;color:${sc};text-align:right">${skorLabel(sk)}</div></div>`
-                ];
-              })
-            ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
-          `,'#1a6a2a')}
-        </div>
-        <div>
-          ${section('IV. SKOR KEPEMIMPINAN TERENDAH (BOTTOM 5)','📉',`
-            ${pmlTerendah.length ? tbl(['#','Nama PML & Komponen Skor','Kec','PPL','Rata','σ','Min','Max','⭐ Skor'],
-              pmlTerendah.map((p,i)=>{
-                const sk=p.skor_kepemimpinan;
-                const sc=skorColor(sk);
-                return[
-                  `<span style="color:#778899;font-weight:700">${i+1}</span>`,
-                  `<div><strong style="color:#cc2040">${p.nama}</strong>${komponenBreakdown(p)}</div>`,
-                  STATE.KEC[p.kec_id]?.nama||'—',
-                  p.ppl_ids.length,
-                  `<span style="color:#2a5aa0;font-weight:600">${fr2(p.rata_rata_ppl)}%</span>`,
-                  `<span style="color:${p.std_dev_ppl<=10?'#1a7a4a':'#cc6600'}">${fr2(p.std_dev_ppl)}</span>`,
-                  `<span style="color:#804020;font-weight:600">${fr2(p.min_ppl)}%</span>`,
-                  `${fr2(p.max_ppl)}%`,
-                  `<div>${skorBar(sk,sc)}<div style="font-size:9px;font-weight:700;color:${sc};text-align:right">${skorLabel(sk)}</div></div>`
-                ];
-              })
-            ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
-          `,'#aa4020')}
-        </div>
-      </div>
+      ${section('III. SKOR KEPEMIMPINAN TERTINGGI (TOP 5)','🏆',`
+        ${pmlTerbaik.length ? tbl(['#','Nama PML & Komponen Skor','Kecamatan','PPL','Rata','σ','Min','Max','⭐ Skor'],
+          pmlTerbaik.map((p,i)=>{
+            const sk=p.skor_kepemimpinan;
+            const sc=skorColor(sk);
+            return[
+              `<span style="font-size:${i<3?'16':'12'}px">${rankIconMedal(i)}</span>`,
+              `<div><strong>${p.nama}</strong>${komponenBreakdown(p)}</div>`,
+              STATE.KEC[p.kec_id]?.nama||'—',
+              p.ppl_ids.length,
+              `<span style="color:#2a5aa0;font-weight:600">${fr2(p.rata_rata_ppl)}%</span>`,
+              `<span style="color:${p.std_dev_ppl<=10?'#1a7a4a':'#cc6600'}">${fr2(p.std_dev_ppl)}</span>`,
+              `<span style="color:#804020;font-weight:600">${fr2(p.min_ppl)}%</span>`,
+              `${fr2(p.max_ppl)}%`,
+              `<div>${skorBar(sk,sc)}<div style="font-size:9px;font-weight:700;color:${sc};text-align:right">${skorLabel(sk)}</div></div>`
+            ];
+          })
+        ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
+      `,'#1a6a2a')}
+
+      ${section('IV. SKOR KEPEMIMPINAN TERENDAH (BOTTOM 5)','📉',`
+        ${pmlTerendah.length ? tbl(['#','Nama PML & Komponen Skor','Kecamatan','PPL','Rata','σ','Min','Max','⭐ Skor'],
+          pmlTerendah.map((p,i)=>{
+            const sk=p.skor_kepemimpinan;
+            const sc=skorColor(sk);
+            return[
+              `<span style="color:#778899;font-weight:700">${i+1}</span>`,
+              `<div><strong style="color:#cc2040">${p.nama}</strong>${komponenBreakdown(p)}</div>`,
+              STATE.KEC[p.kec_id]?.nama||'—',
+              p.ppl_ids.length,
+              `<span style="color:#2a5aa0;font-weight:600">${fr2(p.rata_rata_ppl)}%</span>`,
+              `<span style="color:${p.std_dev_ppl<=10?'#1a7a4a':'#cc6600'}">${fr2(p.std_dev_ppl)}</span>`,
+              `<span style="color:#804020;font-weight:600">${fr2(p.min_ppl)}%</span>`,
+              `${fr2(p.max_ppl)}%`,
+              `<div>${skorBar(sk,sc)}<div style="font-size:9px;font-weight:700;color:${sc};text-align:right">${skorLabel(sk)}</div></div>`
+            ];
+          })
+        ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
+      `,'#aa4020')}
       `;
     })()}
 
-    <!-- ========================================================== -->
-    <!-- KATEGORISASI PML BERDASARKAN METRIK -->
-    <!-- ========================================================== -->
-    ${section('V. ANALISIS KINERJA PML BERDASARKAN METRIK PPL','📊',`
-      <div style="font-size:12px;color:#4a6080;margin-bottom:12px;line-height:1.8">
-        <strong>Keterangan:</strong><br>
-        • <strong style="color:#1a7a4a">Rata-rata tinggi & Std Dev rendah</strong> → Kinerja PPL merata dan bagus<br>
-        • <strong style="color:#cc6600">Rata-rata tinggi tapi Std Dev tinggi</strong> → Ada PPL sangat bagus tapi ada juga yang tertinggal<br>
-        • <strong style="color:#cc2040">Rata-rata rendah & Std Dev rendah</strong> → Semua PPL-nya sama-sama rendah (perlu perhatian)<br>
-        • <strong style="color:#2a5aa0">Rata-rata rendah tapi Std Dev tinggi</strong> → Ada PPL bagus tapi banyak yang tertinggal
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        ${[
-          {key:'merataBagus',label:'✅ Rata-rata Tinggi & Std Dev Rendah',color:'#1a7a4a',bg:'#e6faf2'},
-          {key:'variatifBagus',label:'⚡ Rata-rata Tinggi & Std Dev Tinggi',color:'#cc6600',bg:'#fff8e6'},
-          {key:'merataRendah',label:'⚠️ Rata-rata Rendah & Std Dev Rendah',color:'#cc2040',bg:'#ffe6eb'},
-          {key:'variatifRendah',label:'🔄 Rata-rata Rendah & Std Dev Tinggi',color:'#2a5aa0',bg:'#e8f0fb'}
-        ].map(kat=>{
-          const items = pmlKategori[kat.key] || [];
-          return `<div style="border:1px solid ${kat.color}40;border-radius:8px;padding:10px 12px;background:${kat.bg};margin-bottom:8px">
-            <div style="font-weight:700;color:${kat.color};font-size:11px;margin-bottom:4px">${kat.label} (${items.length} PML)</div>
-            ${items.length ? items.map(p => 
-              `<span style="display:inline-block;background:${kat.color}20;color:${kat.color};padding:1px 8px;border-radius:99px;font-size:10px;margin:2px 3px;border:1px solid ${kat.color}30">${p.nama} (${fr2(p.rata_rata_ppl)}%)</span>`
-            ).join('') : '<span style="font-size:10px;color:#778899">Tidak ada PML dalam kategori ini</span>'}
-          </div>`;
-        }).join('')}
-      </div>
-    `,'#1a3a6a')}
-
     <!-- PERHATIAN KHUSUS -->
-    ${(bahaya.length+terlambat.length>0)?section('VI. KECAMATAN PERLU PERHATIAN KHUSUS','⚠️',`
+    ${(bahaya.length+terlambat.length>0)?section('V. KECAMATAN PERLU PERHATIAN KHUSUS','⚠️',`
       ${bahaya.length?`
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${bahaya.length} Kecamatan BAHAYA</strong> — Proyeksi perolehan &lt;80%. Diperlukan intervensi segera.
@@ -1723,7 +1689,7 @@ function openLaporan(){
     `,'#aa2020'):''}
 
     <!-- PPL BERMASALAH -->
-    ${section('VII. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
+    ${section('VI. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
       ${pplBahaya.length?`
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${pplBahaya.length} PPL Proyeksi BAHAYA (&lt;80%)</strong> — Ditampilkan semua ${pplBahaya.length}/${pplBahaya.length} PPL
@@ -1762,7 +1728,7 @@ function openLaporan(){
     `,'#804020')}
 
     <!-- TOP 10 PPL PERFORMER -->
-    ${section('VIII. PPL TERBAIK (TOP 10)','🏆',`
+    ${section('VII. PPL TERBAIK (TOP 10)','🏆',`
       ${tbl(['#','Nama PPL','Kecamatan','Target','Perolehan','Progres','Proyeksi','🎯 Target 100%'],
         top10ppl.map((p,i)=>[
           `<span style="font-size:${i<3?'16':'12'}px">${rankIcon(i)}</span>`,
@@ -1778,12 +1744,8 @@ function openLaporan(){
     `,'#806000')}
 
     <!-- REKOMENDASI -->
-    ${section('IX. REKOMENDASI','📌',`
+    ${section('VIII. REKOMENDASI','📌',`
       <ol style="font-size:12px;line-height:2;padding-left:18px;color:#2a3a5a">
-        ${bahaya.length?`<li>Lakukan koordinasi intensif dengan PML di <strong style="color:#cc2040">${bahaya.map(k=>k.nama).join(', ')}</strong> yang berstatus BAHAYA untuk mengejar ketertinggalan secara mendesak.</li>`:''}
-        ${terlambat.length?`<li>Tingkatkan pengawasan dan pendampingan pada PPL di wilayah <strong style="color:#cc6600">${terlambat.map(k=>k.nama).join(', ')}</strong> agar laju harian meningkat.</li>`:''}
-        ${pplBahaya.length?`<li>Sebanyak <strong>${pplBahaya.length} PPL</strong> berisiko tidak mencapai target. Pimpinan perlu segera mengevaluasi kendala di lapangan dan mempertimbangkan redistribusi beban kerja bila memungkinkan.</li>`:''}
-        ${pmlKategori.merataRendah.length?`<li>⚠️ <strong>${pmlKategori.merataRendah.length} PML</strong> memiliki rata-rata rendah dan standar deviasi rendah: <strong style="color:#cc2040">${pmlKategori.merataRendah.map(p=>p.nama).join(', ')}</strong>. Seluruh PPL di bawah koordinasi mereka berkinerja rendah. Diperlukan intervensi menyeluruh.</li>`:''}
         ${pmlKategori.variatifRendah.length?`<li>🔄 <strong>${pmlKategori.variatifRendah.length} PML</strong> memiliki rata-rata rendah tapi standar deviasi tinggi: <strong style="color:#2a5aa0">${pmlKategori.variatifRendah.map(p=>p.nama).join(', ')}</strong>. Ada PPL berkinerja baik namun banyak yang tertinggal. Identifikasi PPL berprestasi untuk menjadi contoh.</li>`:''}
         ${pmlKategori.variatifBagus.length?`<li>⚡ <strong>${pmlKategori.variatifBagus.length} PML</strong> memiliki rata-rata tinggi tapi standar deviasi tinggi: <strong style="color:#cc6600">${pmlKategori.variatifBagus.map(p=>p.nama).join(', ')}</strong>. Perhatikan PPL yang tertinggal agar tidak semakin jauh.</li>`:''}
         ${pmlKategori.merataBagus.length?`<li>✅ <strong>${pmlKategori.merataBagus.length} PML</strong> memiliki rata-rata tinggi dan standar deviasi rendah: <strong style="color:#1a7a4a">${pmlKategori.merataBagus.map(p=>p.nama).join(', ')}</strong>. Pertahankan kinerja dan jadikan role model.</li>`:''}
