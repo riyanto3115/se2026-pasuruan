@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring & Laporan Analitis v2</title>
+    <style>
+        /* Gaya dasar dashboard tetap dipertahankan sesuai struktur Anda */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; }
+        .btn { padding: 8px 16px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h2>Dashboard Monitoring Progres</h2>
+        <button class="btn" onclick="openLaporan()">📊 Buka Laporan Pimpinan</button>
+    </div>
+
+    <!-- SCRIPT UTAMA -->
+    <script>
+        // Simulasi STATE Data dan Konstanta Laju
+        const LAJU = 1.5; 
+        const SISA = 5;
+        
+        // Data STATE contoh (Pastikan diisikan dari kedua file JSON Anda di GitHub)
+        let STATE = {
+            KEC: {}, // Akan diisi otomatis di buildState
+            PML: {}, // Isikan data dari JSON PML Anda
+            PPL: {}  // Isikan data dari JSON PPL Anda
+        };
+
+        // Fungsi pembantu penentu status proyeksi
+        function getStatus(proyeksi) {
+            if (proyeksi >= 95) return 'Aman';
+            if (proyeksi >= 85) return 'Waspada';
+            if (proyeksi >= 70) return 'Terlambat';
+            return 'Bahaya';
+        }
+
+        // Format Angka 2 Desimal
+        function fr2(num) {
+            return (num || 0).toFixed(2);
+        }
+
+        // Icon Medal untuk Ranking
+        function rankIconMedal(index) {
+            if (index === 0) return '🥇';
+            if (index === 1) return '🥈';
+            if (index === 2) return '🥉';
+            return index + 1;
+        }
+
+        // Prosedur Build State Utama (Mengatasi BUG 1 & 2)
+        function buildState() {
+            // 1. Inisialisasi awal akumulasi KEC dari data PML & PPL
+            Object.values(STATE.PML).forEach(pml => {
+                const kecId = pml.kec_id;
+                if (!STATE.KEC[kecId]) {
+                    STATE.KEC[kecId] = {
+                        id: kecId,
+                        nama: pml.kec_nama || 'Kecamatan',
+                        target: 0, selesai: 0, open: 0,
+                        pml_ids: []
+                    };
+                }
+                if (!STATE.KEC[kecId].pml_ids.includes(pml.id)) {
+                    STATE.KEC[kecId].pml_ids.push(pml.id);
+                }
+            });
+
+            // 2. PERBAIKAN BUG 1: Hitung status, jumlah PPL, dan proyeksi untuk tiap KEC
+            Object.values(STATE.KEC).forEach(k => {
+                // Hitung total PPL di bawah PML kecamatan ini
+                k.jumlah_ppl = k.pml_ids.reduce((sum, pmlId) => {
+                    return sum + (STATE.PML[pmlId]?.ppl_ids?.length || 0);
+                }, 0);
+
+                // Akumulasi target dan realisasi dari PPL terkait
+                k.target = 0; k.selesai = 0; k.open = 0;
+                k.pml_ids.forEach(pmlId => {
+                    const pml = STATE.PML[pmlId];
+                    if (pml && pml.ppl_ids) {
+                        pml.ppl_ids.forEach(pplId => {
+                            const ppl = STATE.PPL[pplId];
+                            if (ppl) {
+                                k.target += (ppl.target || 0);
+                                k.selesai += (ppl.selesai || 0);
+                                k.open += (ppl.open || 0);
+                            }
+                        });
+                    }
+                });
+
+                // Perhitungan persentase dan proyeksi akhir
+                k.pct_now = k.target > 0 ? (k.selesai / k.target) * 100 : 0;
+                const proyeksiRaw = k.pct_now + (LAJU * SISA);
+                k.proyeksi = Math.min(proyeksiRaw, 100);
+                k.status = getStatus(k.proyeksi);
+            });
+
+            // Jalankan fungsi render dashboard Anda di sini (misal: renderRekapTab())
+        }
+
+        // Fungsi Render Bagian Tabel Laporan
+        function tbl(headers, rows) {
+            return `<table>
+                <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                <tbody>${rows.map(r => `<tr>${r.map(td => `<td>${td}</td>`).join('')}</tr>`).join('')}</tbody>
+            </table>`;
+        }
+
+        function section(title, icon, content, color) {
+            return `<div style="border-top: 4px solid ${color}; background:#fff; padding:15px; margin-bottom:15px; border-radius:4px;">
+                <h3 style="margin-top:0; color:${color}">${icon} ${title}</h3>
+                ${content}
+            </div>`;
+        }
+
+        // FUNGSI LAPORAN PIMPINAN (Menggunakan Scoring Komposit 4 Metrik)
+        function openLaporan() {
+            // Pastikan data diproses ulang agar valid
+            buildState();
+
+            // Sediakan kontainer pengolah metrik PML
+            let pmlList = Object.values(STATE.PML).map(p => {
+                let pplPctList = (p.ppl_ids || []).map(id => {
+                    const ppl = STATE.PPL[id];
+                    return ppl && ppl.target > 0 ? (ppl.selesai / ppl.target) * 100 : 0;
+                });
+
+                if (pplPctList.length === 0) pplPctList = [0];
+
+                const avg = pplPctList.reduce((a, b) => a + b, 0) / pplPctList.length;
+                const min = Math.min(...pplPctList);
+                const max = Math.max(...pplPctList);
+                
+                // Hitung Standar Deviasi
+                const variance = pplPctList.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / pplPctList.length;
+                const stdDev = Math.sqrt(variance);
+
+                return {
+                    ...p,
+                    rata_rata_ppl: avg,
+                    min_ppl: min,
+                    max_ppl: max,
+                    std_dev_ppl: stdDev
+                };
+            });
+
+            // Normalisasi Min-Max untuk keperluan Scoring Komposit (0 - 100)
+            const getBounds = (key) => {
+                const values = pmlList.map(p => p[key]);
+                return { min: Math.min(...values), max: Math.max(...values) };
+            };
+
+            const bAvg = getBounds('rata_rata_ppl');
+            const bMin = getBounds('min_ppl');
+            const bMax = getBounds('max_ppl');
+            const bStd = getBounds('std_dev_ppl');
+
+            // Menghitung Skor Komposit Akhir Berbobot
+            pmlList.forEach(p => {
+                const nAvg = (bAvg.max - bAvg.min) > 0 ? ((p.rata_rata_ppl - bAvg.min) / (bAvg.max - bAvg.min)) * 100 : 0;
+                const nMin = (bMin.max - bMin.min) > 0 ? ((p.min_ppl - bMin.min) / (bMin.max - bMin.min)) * 100 : 0;
+                const nMax = (bMax.max - bMax.min) > 0 ? ((p.max_ppl - bMax.min) / (bMax.max - bMax.min)) * 100 : 0;
+                // Standar deviasi dibalik (invers), karena deviasi kecil = sebaran rata = lebih baik
+                const nStd = (bStd.max - bStd.min) > 0 ? ((bStd.max - p.std_dev_ppl) / (bStd.max - bStd.min)) * 100 : 100;
+
+                // Rumus pembobotan komposit sesuai instruksi: 40% Avg, 25% Min, 20% Invers StdDev, 15% Max
+                p._score = (nAvg * 0.40) + (nMin * 0.25) + (nStd * 0.20) + (nMax * 0.15);
+            });
+
+            // Sortir Hasil Berdasarkan Skor Terbesar (Top 5) & Terkecil (Bottom 5)
+            const pmlTerbaik = [...pmlList].sort((a, b) => b._score - a._score).slice(0, 5);
+            const pmlTerendah = [...pmlList].sort((a, b) => a._score - b._score).slice(0, 5);
+
+            // Ambang batas indikator visual Std Dev
+            const stdRangeLimit = bStd.min + ((bStd.max - bStd.min) * 0.4);
+            const stdBadLimit = bStd.min + ((bStd.max - bStd.min) * 0.6);
+
+            // Cetak HTML Laporan Revisi Komposit
+            const laporanHTML = `
+                <div style="padding:20px; font-family:sans-serif; background:#f4f6f9;">
+                    <!-- Kotak penjelasan metodologi -->
+                    <div style="background:#f0f6ff;border:1px solid #b0cce8;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:11px;color:#2a3a5a;line-height:1.85">
+                        <strong style="font-size:12px;color:#1a3a6a">📐 Metodologi Pemeringkatan PML (Scoring Komposit 4 Metrik)</strong><br>
+                        Setiap PML dinilai dari empat indikator perolehan PPL-nya, masing-masing ternormalisasi 0–100 (min-max), lalu digabung dengan bobot:<br>
+                        <span style="display:inline-flex;gap:14px;flex-wrap:wrap;margin-top:4px">
+                            <span>📊 <strong>Rata-rata %</strong> — 40%</span>
+                            <span>⬇️ <strong>Min % PPL</strong> — 25%</span>
+                            <span>📉 <strong>Std Dev (invers)</strong> — 20%</span>
+                            <span>⬆️ <strong>Max % PPL</strong> — 15%</span>
+                        </span><br>
+                        <span style="color:#4a6080">Skor komposit tinggi = rata-rata tinggi, PPL paling rendah tidak terlalu jauh tertinggal, penyebaran merata, dan PPL terbaik juga unggul.</span>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+                        <!-- SECTION III: TOP 5 PML -->
+                        <div>
+                            \${section('III. PML KINERJA TERBAIK (TOP 5)','🏆',\`
+                                <div style="font-size:10px;color:#1a6a2a;margin-bottom:8px;background:#e6faf2;border-radius:5px;padding:5px 8px">
+                                    ✅ Rata-rata tinggi · PPL terendah tidak tertinggal jauh · Persebaran merata · PPL tertinggi unggul
+                                </div>
+                                \${pmlTerbaik.length ? tbl(
+                                    ['#','Nama PML','Kecamatan','Jml PPL','Rata-rata %','Std Dev','Min %','Max %','Skor'],
+                                    pmlTerbaik.map((p,i)=>{
+                                        const stdOk = p.std_dev_ppl <= stdRangeLimit;
+                                        return [
+                                            \`<span style="font-size:\${i<3?'15':'12'}px">\${rankIconMedal(i)}</span>\`,
+                                            \`<strong>\${p.nama}</strong><div style="font-size:9px;color:#778899">\${p.email||''}</div>\`,
+                                            STATE.KEC[p.kec_id]?.nama||'—',
+                                            p.ppl_ids.length,
+                                            \`<strong style="color:#1a7a4a">\${fr2(p.rata_rata_ppl)}%</strong>\`,
+                                            \`<span style="color:\${stdOk?'#1a7a4a':'#cc6600'};font-weight:700">\${fr2(p.std_dev_ppl)}\${stdOk?' ✅':' ⚠️'}</span>\`,
+                                            \`<span style="color:#1a6a7a">\${fr2(p.min_ppl)}%</span>\`,
+                                            \`<span style="color:#1a7a4a">\${fr2(p.max_ppl)}%</span>\`,
+                                            \`<strong style="color:#1a3a6a;font-family:monospace">\${fr2(p._score)}</strong>\`
+                                        ];
+                                    })
+                                ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
+                            \`,'#1a6a2a')}
+                        </div>
+
+                        <!-- SECTION IV: BOTTOM 5 PML -->
+                        <div>
+                            \${section('IV. PML KINERJA TERBAWAH (BOTTOM 5)','📉',\`
+                                <div style="font-size:10px;color:#cc2040;margin-bottom:8px;background:#ffe6eb;border-radius:5px;padding:5px 8px">
+                                    ⚠️ Rata-rata rendah · PPL terendah sangat tertinggal · Persebaran tidak merata · Perlu intervensi
+                                </div>
+                                \${pmlTerendah.length ? tbl(
+                                    ['#','Nama PML','Kecamatan','Jml PPL','Rata-rata %','Std Dev','Min %','Max %','Skor'],
+                                    pmlTerendah.map((p,i)=>{
+                                        const stdBuruk = p.std_dev_ppl > stdBadLimit;
+                                        return [
+                                            \`<span style="color:#cc2040;font-weight:700">\${i+1}</span>\`,
+                                            \`<strong style="color:#cc2040">\${p.nama}</strong><div style="font-size:9px;color:#778899">\${p.email||''}</div>\`,
+                                            STATE.KEC[p.kec_id]?.nama||'—',
+                                            p.ppl_ids.length,
+                                            \`<strong style="color:#cc6600">\${fr2(p.rata_rata_ppl)}%</strong>\`,
+                                            \`<span style="color:\${stdBuruk?'#cc2040':'#cc6600'};font-weight:700">\${fr2(p.std_dev_ppl)}\${stdBuruk?' 🔴':' 🟡'}</span>\`,
+                                            \`<span style="color:#cc2040;font-weight:700">\${fr2(p.min_ppl)}%</span>\`,
+                                            \`<span style="color:#cc6600">\${fr2(p.max_ppl)}%</span>\`,
+                                            \`<strong style="color:#cc2040;font-family:monospace">\${fr2(p._score)}</strong>\`
+                                        ];
+                                    })
+                                ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
+                            \`,'#aa4020')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Buka di jendela baru untuk cetak laporan
+            const win = window.open('', '_blank');
+            win.document.write(laporanHTML);
+            win.document.close();
+        }
+    </script>
+</div>
+
+</body>
+</html>
