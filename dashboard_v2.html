@@ -1746,9 +1746,9 @@ function openLaporan(){
     <!-- REKOMENDASI -->
     ${section('VIII. REKOMENDASI','📌',`
       <ol style="font-size:12px;line-height:2;padding-left:18px;color:#2a3a5a">
-        ${pmlKategori.variatifRendah.length?`<li>🔄 <strong>${pmlKategori.variatifRendah.length} PML</strong> memiliki rata-rata rendah tapi standar deviasi tinggi: <strong style="color:#2a5aa0">${pmlKategori.variatifRendah.map(p=>p.nama).join(', ')}</strong>. Ada PPL berkinerja baik namun banyak yang tertinggal. Identifikasi PPL berprestasi untuk menjadi contoh.</li>`:''}
-        ${pmlKategori.variatifBagus.length?`<li>⚡ <strong>${pmlKategori.variatifBagus.length} PML</strong> memiliki rata-rata tinggi tapi standar deviasi tinggi: <strong style="color:#cc6600">${pmlKategori.variatifBagus.map(p=>p.nama).join(', ')}</strong>. Perhatikan PPL yang tertinggal agar tidak semakin jauh.</li>`:''}
-        ${pmlKategori.merataBagus.length?`<li>✅ <strong>${pmlKategori.merataBagus.length} PML</strong> memiliki rata-rata tinggi dan standar deviasi rendah: <strong style="color:#1a7a4a">${pmlKategori.merataBagus.map(p=>p.nama).join(', ')}</strong>. Pertahankan kinerja dan jadikan role model.</li>`:''}
+        ${pmlKategori.variatifRendah.length?`<li>🔄 ${pmlKategori.variatifRendah.map(p=>`<strong style="color:#2a5aa0">${STATE.KEC[p.kec_id]?.nama||'—'}</strong> (${p.nama})`).join(', ')} — <strong>Identifikasi PPL berprestasi di wilayah ini untuk dijadikan contoh bagi rekan yang tertinggal.</strong> Rata-rata tim cukup rendah namun sebaran tinggi menandakan potensi belum merata.</li>`:''}
+        ${pmlKategori.variatifBagus.length?`<li>⚡ ${pmlKategori.variatifBagus.length?pmlKategori.variatifBagus.map(p=>`<strong style="color:#cc6600">${STATE.KEC[p.kec_id]?.nama||'—'}</strong> (${p.nama})`).join(', '):''} — <strong>Berikan perhatian khusus pada PPL yang tertinggal agar kesenjangan kinerja dalam tim tidak semakin melebar.</strong> Rata-rata tinggi namun sebaran lebar menunjukkan tidak semua PPL terbawa optimal.</li>`:''}
+        ${pmlKategori.merataBagus.length?`<li>✅ ${pmlKategori.merataBagus.map(p=>`<strong style="color:#1a7a4a">${STATE.KEC[p.kec_id]?.nama||'—'}</strong> (${p.nama})`).join(', ')} — <strong>Pertahankan pola kepemimpinan yang ada dan jadikan referensi metode pembinaan bagi PML lain.</strong> Seluruh PPL berkinerja tinggi dan merata.</li>`:''}
         <li>Dengan laju saat ini <strong>${LAJU}%/hari</strong> dan sisa <strong>${SISA} hari</strong>, proyeksi global mencapai <strong>${fr2(tProy)}%</strong>. ${tProy>=100?'Pertahankan kinerja untuk memastikan seluruh target terpenuhi.':'Diperlukan peningkatan laju agar target 100% terpenuhi sebelum deadline.'}</li>
         <li>Jadwalkan rapat evaluasi mingguan antara PML dan PPL untuk memantau perkembangan dan menyelesaikan kendala teknis di lapangan.</li>
         <li>🎯 Target 100% global diperkirakan tercapai pada <strong style="color:#1a6a7a">${formatTanggal(capaiGlobal.tanggal)}</strong> ${capaiGlobal.sudah_capai?'✅ sudah tercapai!':`(${capaiGlobal.hari_dibutuhkan} hari lagi)`}</li>
@@ -1756,19 +1756,13 @@ function openLaporan(){
     `,'#3a2a7a')}
 
     <!-- FOOTER -->
-    <div style="margin-top:24px;padding-top:12px;border-top:1px solid #dce4ee;display:flex;justify-content:space-between;align-items:flex-end;font-size:10px;color:#778899">
-      <div>
-        <div>Laporan dibuat otomatis dari Dashboard SE2026</div>
-        <div>BPS Kabupaten Pasuruan — Sensus Ekonomi 2026</div>
-      </div>
-      <div style="text-align:right">
-        <div>Data terakhir: <strong>${updFmt}</strong></div>
-        <div>Dicetak: ${now}</div>
-        <div style="margin-top:8px;font-size:11px;color:#4a6080">Mengetahui,</div>
-        <div style="margin-top:48px;padding-top:5px;min-width:220px;text-align:center">
-          <div style="font-weight:700;font-size:12px;color:#1a2a4a">Bagas Susilo, SST., M.Si.</div>
-          <div style="font-size:10px;color:#4a6080;margin-top:2px">Kepala BPS Kabupaten Pasuruan</div>
-        </div>
+    <div style="margin-top:24px;padding-top:12px;border-top:1px solid #dce4ee;font-size:10px;color:#778899;text-align:center">
+      <div style="margin-bottom:4px">Laporan dibuat otomatis dari Dashboard SE2026 &nbsp;·&nbsp; BPS Kabupaten Pasuruan — Sensus Ekonomi 2026</div>
+      <div>Data terakhir: <strong>${updFmt}</strong> &nbsp;·&nbsp; Dicetak: ${now}</div>
+      <div style="margin-top:20px;font-size:11px;color:#4a6080">Mengetahui,</div>
+      <div style="margin-top:56px;padding-top:5px;border-top:1px solid #1a2a4a;display:inline-block;min-width:220px;text-align:center">
+        <div style="font-weight:700;font-size:12px;color:#1a2a4a">Bagas Susilo, SST., M.Si.</div>
+        <div style="font-size:10px;color:#4a6080;margin-top:2px">Kepala BPS Kabupaten Pasuruan</div>
       </div>
     </div>
 
