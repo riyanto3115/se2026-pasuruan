@@ -158,6 +158,12 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
 .leg-proy{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:var(--tx2);margin-top:6px}
 .leg-proy span{display:flex;align-items:center;gap:3px}
 .leg-dot{width:7px;height:7px;border-radius:2px;display:inline-block}
+/* TANGGAL CAPAI 100% */
+.tgl-capai{font-size:10px;font-family:var(--mono);color:var(--tx3);white-space:nowrap}
+.tgl-capai.aman{color:var(--gr)}
+.tgl-capai.waspada{color:var(--am)}
+.tgl-capai.terlambat{color:var(--or)}
+.tgl-capai.bahaya{color:var(--rd)}
 </style>
 </head>
 <body>
@@ -175,7 +181,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
   <div class="hspace"></div>
   <div style="font-family:var(--mono);font-size:10px;color:var(--tx3);text-align:right;line-height:1.6">
     <div>Sisa: <span id="hd-sisa" style="color:var(--am)">—</span> hari</div>
-    <div>Deadline: <span style="color:var(--tx2)">25 Ags 2026</span></div>
+    <div>Deadline: <span style="color:var(--tx2)">25 Agustus 2026</span></div>
   </div>
   <div class="upd-pill"><div class="upd-dot"></div>Update: <span id="hd-date" style="color:var(--tx)">—</span></div>
   <button class="hbtn" onclick="openLaporan()" style="background:var(--pu-bg);border-color:var(--pu-bdr);color:var(--pu)">
@@ -231,7 +237,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
   </div>
   <div class="sb-meta">
     <div>Update: <span id="sb-upd">—</span></div>
-    <div>Deadline: <span style="color:var(--am)">25 Ags 2026</span></div>
+    <div>Deadline: <span style="color:var(--am)">25 Agustus 2026</span></div>
     <div>Sisa: <span id="sb-sisa">—</span> hari</div>
     <div>Laju asumsi: <span style="color:var(--bl)">1.5%/hari</span></div>
     <div style="margin-top:4px">SLS lapor: <span id="sb-lap">—</span></div>
@@ -343,7 +349,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <select id="kof" onchange="renderKec()"><option value="">Urutkan…</option><option value="pd">Proyeksi ↓</option><option value="pa">Proyeksi ↑</option><option value="sd">SLS terbanyak</option></select>
       </div>
       <div class="tscroll"><table><thead><tr>
-        <th>Kecamatan</th><th>PML</th><th>PPL</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th>
+        <th>Kecamatan</th><th>PML</th><th>PPL</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 AGS 2026</th><th>Status</th><th>Target 100%</th>
       </tr></thead><tbody id="kec-tb"></tbody></table></div>
     </div>
   </div>
@@ -358,7 +364,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <select id="pmlsf" onchange="renderPml()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
       </div>
       <div class="tscroll"><table><thead><tr>
-        <th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th></th>
+        <th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 AGS 2026</th><th>Status</th><th>Target 100%</th><th></th>
       </tr></thead><tbody id="pml-tb"></tbody></table></div>
     </div>
   </div>
@@ -375,7 +381,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <select id="pplsf" onchange="renderPpl()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
       </div>
       <div class="tscroll"><table><thead><tr>
-        <th>PPL</th><th>PML</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th></th>
+        <th>PPL</th><th>PML</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 AGS 2026</th><th>Status</th><th>Target 100%</th><th></th>
       </tr></thead><tbody id="ppl-tb"></tbody></table></div>
     </div>
   </div>
@@ -392,7 +398,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
           <select id="evsf" onchange="renderEval()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
         </div>
         <div class="tscroll"><table><thead><tr>
-          <th>PPL</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th><th>Detail</th>
+          <th>PPL</th><th>Kecamatan</th><th>Desa</th><th>SLS</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Proyeksi 25 AGS 2026</th><th>Status</th><th>Target 100%</th><th>Detail</th>
         </tr></thead><tbody id="ev-tb"></tbody></table></div>
       </div>
     </div>
@@ -407,7 +413,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
       <div class="card">
         <div class="ch"><div class="ct">Rincian per SLS</div></div>
         <div class="tscroll"><table><thead><tr>
-          <th>No</th><th>regionCode</th><th>Desa</th><th>Target</th><th>Perolehan</th><th>Open</th><th>Draft</th><th>Sub Resp</th><th>Ditolak</th><th>Progres kini</th><th>Proyeksi 25 Ags</th><th>Status</th>
+          <th>No</th><th>regionCode</th><th>Desa</th><th>Target</th><th>Perolehan</th><th>Open</th><th>Draft</th><th>Sub Resp</th><th>Ditolak</th><th>Progres kini</th><th>Proyeksi 25 AGS 2026</th><th>Status</th><th>Target 100%</th>
         </tr></thead><tbody id="det-tb"></tbody></table></div>
       </div>
     </div>
@@ -459,9 +465,9 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
     </div>
     <div class="mb">
       <div class="mopt" onclick="exportXL('all');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Semua Data</div><div class="mos">Kec + PML + PPL + SLS dalam sheet terpisah</div></div></div>
-      <div class="mopt" onclick="exportXL('kec');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Rekap Kecamatan</div><div class="mos">Dengan kolom proyeksi</div></div></div>
-      <div class="mopt" onclick="exportXL('ppl');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Data PPL</div><div class="mos">Semua PPL + proyeksi</div></div></div>
-      <div class="mopt" onclick="exportXL('eval');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Semua SLS</div><div class="mos">Detail tiap regionCode + proyeksi</div></div></div>
+      <div class="mopt" onclick="exportXL('kec');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Rekap Kecamatan</div><div class="mos">Dengan kolom proyeksi + target 100%</div></div></div>
+      <div class="mopt" onclick="exportXL('ppl');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Data PPL</div><div class="mos">Semua PPL + proyeksi + target 100%</div></div></div>
+      <div class="mopt" onclick="exportXL('eval');closeModal()"><svg viewBox="0 0 18 18" fill="#1D6F42" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path fill="#fff" d="M6 6l2 3-2 3h1.5l1.5-2.2L10.5 12H12l-2-3 2-3h-1.5L9 8.2 7.5 6z"/></svg><div><div class="mot">Excel — Semua SLS</div><div class="mos">Detail tiap regionCode + proyeksi + target 100%</div></div></div>
       <div class="mopt" onclick="exportCSV('kec');closeModal()"><svg viewBox="0 0 18 18" fill="none" stroke="var(--bl)" stroke-width="1.5" width="18" height="18"><rect x="2" y="1" width="14" height="16" rx="2"/><path d="M5.5 7h7M5.5 10h5"/></svg><div><div class="mot">CSV — Rekap Kecamatan</div><div class="mos">Format teks</div></div></div>
     </div>
   </div>
@@ -503,12 +509,93 @@ let ST=null,PY=null,STATE={},NOTIFS=[],CUR_PPL=null;
 const $=id=>document.getElementById(id);
 const fN=n=>n!=null?n.toLocaleString('id-ID'):'—';
 const pct=(a,b)=>b>0?Math.round(a/b*100):0;
+const pct2=(a,b)=>b>0?((a/b)*100).toFixed(2):'0.00';  // dua angka di belakang koma
 const ini=n=>n?n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase():'?';
 const avC=n=>{const c=(n?.charCodeAt(0)??0)%5;return['av-bl','av-gr','av-am','av-rd','av-pu'][c]};
 const fr=v=>v!=null?v.toFixed(1):'—';
+const fr2=v=>v!=null?v.toFixed(2):'—';  // dua angka di belakang koma
 
-// STATUS PROYEKSI (berdasarkan perkiraan perolehan 25 Agustus)
-// Perolehan = Submit + Approve + Reject
+// ============================================================
+// FUNGSI PERHITUNGAN TANGGAL CAPAI 100%
+// ============================================================
+// Deadline 25 Agustus 2026
+const DEADLINE = new Date(2026, 7, 25); // bulan 0-based (Agustus = 7)
+
+function formatTanggal(date) {
+  const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  return `${date.getDate()} ${bulan[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+function formatTanggalPendek(date) {
+  const d=String(date.getDate()).padStart(2,'0');
+  const m=String(date.getMonth()+1).padStart(2,'0');
+  const y=date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+function hitungTanggalCapai100(proyeksiSaatIni, pctNow, lajuPerHari) {
+  if (proyeksiSaatIni >= 100) {
+    const now = new Date();
+    return {
+      tanggal: now,
+      hari_tersisa: 0,
+      status: 'capai'
+    };
+  }
+  
+  const sisa = 100 - proyeksiSaatIni;
+  const hariDibutuhkan = sisa / lajuPerHari;
+  
+  const now = new Date();
+  const targetDate = new Date(now);
+  targetDate.setDate(targetDate.getDate() + Math.ceil(hariDibutuhkan));
+  
+  const melewatiDeadline = targetDate > DEADLINE;
+  
+  return {
+    tanggal: targetDate,
+    hari_tersisa: Math.ceil(hariDibutuhkan),
+    status: melewatiDeadline ? 'melewati_deadline' : 'dalam_jangkauan'
+  };
+}
+
+function renderTanggalCapai(pctNow, proyeksi, lajuPerHari) {
+  const result = hitungTanggalCapai100(proyeksi, pctNow, lajuPerHari);
+  
+  if (proyeksi >= 100) {
+    return `<span class="tgl-capai aman">✅ ${formatTanggal(result.tanggal)} (Tercapai!)</span>`;
+  }
+  
+  const dateStr = formatTanggal(result.tanggal);
+  const daysLeft = result.hari_tersisa;
+  
+  let cls = 'aman';
+  if (result.status === 'melewati_deadline') {
+    cls = 'bahaya';
+  } else if (daysLeft > 30) {
+    cls = 'aman';
+  } else if (daysLeft > 14) {
+    cls = 'waspada';
+  } else {
+    cls = 'terlambat';
+  }
+  
+  let icon = '';
+  let label = '';
+  if (result.status === 'melewati_deadline') {
+    icon = '⚠️';
+    label = '> Deadline';
+  } else {
+    icon = '📅';
+    label = `${daysLeft} hari lagi`;
+  }
+  
+  return `<span class="tgl-capai ${cls}">${icon} ${dateStr} (${label})</span>`;
+}
+
+// ============================================================
+// STATUS PROYEKSI
+// ============================================================
 function getStatus(proyeksi){
   if(proyeksi>100) return'Aman';
   if(proyeksi>=95) return'Waspada';
@@ -523,25 +610,24 @@ function pillCls(s){
 }
 const pill=s=>`<span class="pill ${pillCls(s)}">${s}</span>`;
 
-// Progress bar — warna berdasarkan status proyeksi bukan progres
+// Progress bar — dengan dua angka desimal di label
 const pb=(p,s,w=100)=>{
   const c=statusColor(s);
-  return`<div class="prog" style="min-width:${w}px"><div class="pbg"><div class="pf" style="width:${Math.min(p,100)}%;background:${c}"></div></div><span class="plbl" style="color:${c}">${p}%</span></div>`;
+  const pStr = typeof p === 'number' ? p.toFixed(2) : p;
+  return`<div class="prog" style="min-width:${w}px"><div class="pbg"><div class="pf" style="width:${Math.min(p,100)}%;background:${c}"></div></div><span class="plbl" style="color:${c}">${pStr}%</span></div>`;
 };
-// Proyeksi badge
+// Proyeksi badge dengan dua angka desimal
 const proyBadge=p=>{
   const s=getStatus(p);
   const c=statusColor(s);
-  return`<span style="font-family:var(--mono);font-size:11px;font-weight:600;color:${c}">${fr(p)}%</span>`;
+  return`<span style="font-family:var(--mono);font-size:11px;font-weight:600;color:${c}">${fr2(p)}%</span>`;
 };
 
 function toast(msg){const t=$('toast');$('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 function step(s){$('lstep').textContent=s}
 
-// Format tanggal update: dd/mm/yyyy hh:mm (24 jam)
 function fmtUpd(s,jam){
   if(!s)return'—';
-  // Jika ada jam_update terpisah, gabungkan
   const jamStr=jam?(jam.replace('.',':')):'00:00';
   const d=new Date(s.includes('T')?s:s+'T'+jamStr+':00');
   if(isNaN(d))return s;
@@ -586,7 +672,6 @@ function buildState(){
   const SISA=PY.sisa_hari;
   const LAJU=PY.laju_per_hari||1.5;
 
-  // map regionCode → penyelesaian
   const pm={};
   (PY.penyelesaian||[]).forEach(p=>{pm[p.regionCode]=p});
 
@@ -601,12 +686,12 @@ function buildState(){
     const tgt=py?py.target:0;
     const sel=py?py.selesai:0;
     const pctNow=tgt>0?sel/tgt*100:0;
-    const proy=parseFloat((pctNow+LAJU*SISA).toFixed(2));
+    const proy=parseFloat((pctNow+LAJU*SISA).toFixed(4));
     const slsDraft=py?py.draft:0, slsSub=py?py.sub_resp:0;
     pp.sls.push({id:s.id,nmdesa:s.nmdesa,kdsls:s.kdsls,kdsubsls:s.kdsubsls,
       target:tgt,selesai:sel,open:py?py.open:0,ditolak:py?py.ditolak:0,
       draft:slsDraft,sub_resp:slsSub,
-      pct_now:Math.round(pctNow),proyeksi:proy,detail:py?py.detail:{}});
+      pct_now:pctNow,proyeksi:proy,detail:py?py.detail:{}});
     pp.target+=tgt; pp.selesai+=sel; pp.open+=py?py.open:0;
     pp.ditolak+=py?py.ditolak:0; pp.draft+=slsDraft; pp.sub_resp+=slsSub;
   });
@@ -624,52 +709,50 @@ function buildState(){
     k.target+=pm2.target; k.selesai+=pm2.selesai; k.open+=pm2.open;
   });
 
-  // Hitung pct_now dan proyeksi per entitas
   Object.values(PPL).forEach(p=>{
-    p.pct_now=p.target>0?Math.round(p.selesai/p.target*100):0;
-    p.proyeksi=parseFloat((p.pct_now+LAJU*SISA).toFixed(2));
+    p.pct_now=p.target>0?p.selesai/p.target*100:0;
+    p.proyeksi=parseFloat((p.pct_now+LAJU*SISA).toFixed(4));
     p.status=getStatus(p.proyeksi);
   });
   Object.values(PML).forEach(p=>{
-    p.pct_now=p.target>0?Math.round(p.selesai/p.target*100):0;
-    p.proyeksi=parseFloat((p.pct_now+LAJU*SISA).toFixed(2));
+    p.pct_now=p.target>0?p.selesai/p.target*100:0;
+    p.proyeksi=parseFloat((p.pct_now+LAJU*SISA).toFixed(4));
     p.status=getStatus(p.proyeksi);
   });
   Object.values(KEC).forEach(k=>{
-    k.pct_now=k.target>0?Math.round(k.selesai/k.target*100):0;
-    k.proyeksi=parseFloat((k.pct_now+LAJU*SISA).toFixed(2));
+    k.pct_now=k.target>0?k.selesai/k.target*100:0;
+    k.proyeksi=parseFloat((k.pct_now+LAJU*SISA).toFixed(4));
     k.status=getStatus(k.proyeksi);
   });
 
   const tSel=Object.values(PPL).reduce((a,p)=>a+p.selesai,0);
   const tTgt=Object.values(PPL).reduce((a,p)=>a+p.target,0);
   const tOpn=Object.values(PPL).reduce((a,p)=>a+p.open,0);
-  const tPctNow=tTgt>0?Math.round(tSel/tTgt*100):0;
-  const tProy=parseFloat((tPctNow+LAJU*SISA).toFixed(2));
+  const tPctNow=tTgt>0?tSel/tTgt*100:0;
+  const tProy=parseFloat((tPctNow+LAJU*SISA).toFixed(4));
   const tStat=getStatus(tProy);
 
   STATE={KEC,PML,PPL,tSel,tTgt,tOpn,tPctNow,tProy,tStat,SISA,LAJU};
 
-  // Build notifs
   NOTIFS=[];
   Object.values(PPL).forEach(p=>{
     if(p.status==='Bahaya'&&p.target>0)
-      NOTIFS.push({type:'rd',title:`🔴 BAHAYA — PPL ${p.nama} (${fr(p.proyeksi)}%)`,
+      NOTIFS.push({type:'rd',title:`🔴 BAHAYA — PPL ${p.nama} (${fr2(p.proyeksi)}%)`,
         sub:`${p.desa}, Kec. ${STATE.KEC[p.kec_id]?.nama}. Selesai ${fN(p.selesai)} / ${fN(p.target)}.`,read:false});
     else if(p.status==='Terlambat'&&p.target>0)
-      NOTIFS.push({type:'or',title:`🟠 Terlambat — PPL ${p.nama} (${fr(p.proyeksi)}%)`,
+      NOTIFS.push({type:'or',title:`🟠 Terlambat — PPL ${p.nama} (${fr2(p.proyeksi)}%)`,
         sub:`${p.desa}, Kec. ${STATE.KEC[p.kec_id]?.nama}. Perlu percepatan.`,read:false});
   });
   Object.values(KEC).forEach(k=>{
     if(k.status==='Bahaya')
-      NOTIFS.push({type:'rd',title:`🔴 BAHAYA — Kec. ${k.nama} (${fr(k.proyeksi)}%)`,sub:'Proyeksi jauh di bawah target.',read:false});
+      NOTIFS.push({type:'rd',title:`🔴 BAHAYA — Kec. ${k.nama} (${fr2(k.proyeksi)}%)`,sub:'Proyeksi jauh di bawah target.',read:false});
     else if(k.status==='Terlambat')
-      NOTIFS.push({type:'or',title:`🟠 Terlambat — Kec. ${k.nama} (${fr(k.proyeksi)}%)`,sub:'Perlu percepatan signifikan.',read:false});
+      NOTIFS.push({type:'or',title:`🟠 Terlambat — Kec. ${k.nama} (${fr2(k.proyeksi)}%)`,sub:'Perlu percepatan signifikan.',read:false});
     else if(k.status==='Waspada')
-      NOTIFS.push({type:'am',title:`🟡 Waspada — Kec. ${k.nama} (${fr(k.proyeksi)}%)`,sub:'Proyeksi mendekati batas aman.',read:false});
+      NOTIFS.push({type:'am',title:`🟡 Waspada — Kec. ${k.nama} (${fr2(k.proyeksi)}%)`,sub:'Proyeksi mendekati batas aman.',read:false});
   });
   NOTIFS.push({type:'bl',title:'Data berhasil dimuat',
-    sub:`Update ${fmtUpd(PY.tanggal_update,PY.jam_update)}. Sisa ${SISA} hari ke deadline. Proyeksi global: ${fr(tProy)}% → ${tStat}.`,read:false});
+    sub:`Update ${fmtUpd(PY.tanggal_update,PY.jam_update)}. Sisa ${SISA} hari ke deadline. Proyeksi global: ${fr2(tProy)}% → ${tStat}.`,read:false});
 }
 
 // ============================================================
@@ -684,29 +767,36 @@ function initUI(){
   $('sb-upd').textContent=fmtUpd(PY.tanggal_update,PY.jam_update);
   $('sb-sisa').textContent=SISA;
   $('sb-lap').textContent=`${PY.total_sls_dilaporkan}/${m.total_sls}`;
-  $('sb-proy').textContent=`${fr(tProy)}% → ${tStat}`;
+  $('sb-proy').textContent=`${fr2(tProy)}% → ${tStat}`;
   $('sb-proy').style.color=statusColor(tStat);
   $('ch-kec').textContent=ST.kecamatan.length;
   $('ch-pml').textContent=m.total_pml;
   $('ch-ppl').textContent=m.total_ppl;
   $('ch-sls').textContent=m.total_sls;
 
-  // Banner proyeksi global
   const bc=statusColor(tStat);
   const bbc={Aman:'var(--gr-bg)',Waspada:'var(--am-bg)',Terlambat:'var(--or-bg)',Bahaya:'var(--rd-bg)'}[tStat];
   const bdrc={Aman:'var(--gr-bdr)',Waspada:'var(--am-bdr)',Terlambat:'var(--or-bdr)',Bahaya:'var(--rd-bdr)'}[tStat];
   const ico={Aman:'✅',Waspada:'🟡',Terlambat:'🟠',Bahaya:'🔴'}[tStat];
-  $('proy-banner').style.cssText=`background:${bbc};border-color:${bdrc};color:${bc};margin-bottom:.875rem;padding:.625rem 1rem;border-radius:var(--r10);border:1px solid;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600`;
+  
+  const capaiGlobal = hitungTanggalCapai100(tProy, tPctNow, STATE.LAJU);
+  const capaiStr = tProy >= 100 ? 
+    `✅ ${formatTanggal(capaiGlobal.tanggal)} (Tercapai!)` : 
+    `📅 ${formatTanggal(capaiGlobal.tanggal)} (${capaiGlobal.hari_tersisa} hari lagi)`;
+  
+  $('proy-banner').style.cssText=`background:${bbc};border-color:${bdrc};color:${bc};margin-bottom:.875rem;padding:.625rem 1rem;border-radius:var(--r10);border:1px solid;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;flex-wrap:wrap`;
   $('proy-banner').innerHTML=`<span style="font-size:16px">${ico}</span>
     <span>Status Global: <strong>${tStat}</strong></span>
     <span style="color:var(--tx2);font-weight:400">·</span>
-    <span>Progres saat ini: <strong style="font-family:var(--mono)">${tPctNow}%</strong>
+    <span>Progres saat ini: <strong style="font-family:var(--mono)">${fr2(tPctNow)}%</strong>
       <span style="font-size:10px;font-weight:400;color:var(--tx2);font-family:var(--mono);margin-left:4px">(data: ${fmtUpd(PY.tanggal_update,PY.jam_update)})</span>
     </span>
     <span style="color:var(--tx2);font-weight:400">·</span>
-    <span>Proyeksi 25 Agustus: <strong style="font-family:var(--mono)">${fr(tProy)}%</strong></span>
+    <span>Proyeksi 25 Agustus 2026: <strong style="font-family:var(--mono)">${fr2(tProy)}%</strong></span>
     <span style="color:var(--tx2);font-weight:400">·</span>
-    <span style="color:var(--tx2);font-weight:400">Sisa <strong style="color:${bc}">${SISA} hari</strong> × 1,5%/hari = +${fr(1.5*SISA)}%</span>`;
+    <span style="color:var(--tx2);font-weight:400">Sisa <strong style="color:${bc}">${SISA} hari</strong> × ${STATE.LAJU}%/hari = +${fr2(STATE.LAJU*SISA)}%</span>
+    <span style="color:var(--tx2);font-weight:400">·</span>
+    <span style="font-weight:400">🎯 Target 100%: <strong style="color:${bc}">${capaiStr}</strong></span>`;
 
   renderMetrics();
   buildFilters();
@@ -724,13 +814,19 @@ function renderMetrics(){
   const bad=Object.values(KEC).filter(k=>k.status==='Bahaya').length;
   const late=Object.values(KEC).filter(k=>k.status==='Terlambat').length;
   const statC=tStat==='Aman'?'c-gr':tStat==='Waspada'?'c-am':tStat==='Terlambat'?'c-or':'c-rd';
+  
+  const capaiGlobal = hitungTanggalCapai100(tProy, tPctNow, LAJU);
+  const capaiStr = tProy >= 100 ? 
+    `✅ ${formatTanggal(capaiGlobal.tanggal)}` : 
+    `${formatTanggal(capaiGlobal.tanggal)} (${capaiGlobal.hari_tersisa} hr)`;
+  
   $('metrics-row').innerHTML=`
     <div class="mc c-pu"><div class="mc-glow"></div><div class="mc-lbl">PML / PPL</div><div class="mc-val">${ST.meta.total_pml}/${ST.meta.total_ppl}</div><div class="mc-sub">${ST.kecamatan.length} kecamatan</div></div>
     <div class="mc c-cy"><div class="mc-glow"></div><div class="mc-lbl">Total SLS</div><div class="mc-val">${fN(ST.meta.total_sls)}</div><div class="mc-sub">Satuan cacah</div></div>
     <div class="mc c-bl"><div class="mc-glow"></div><div class="mc-lbl">Target Usaha</div><div class="mc-val">${fN(tTgt)}</div><div class="mc-sub">Total di SLS</div></div>
-    <div class="mc c-gr"><div class="mc-glow"></div><div class="mc-lbl">Perolehan</div><div class="mc-val">${fN(tSel)}</div><div class="mc-sub">Progres kini: ${tPctNow}%</div></div>
-    <div class="mc ${statC}"><div class="mc-glow"></div><div class="mc-lbl">Proyeksi 25 Ags</div><div class="mc-val">${fr(tProy)}%</div><div class="mc-sub">${tStat} · sisa ${SISA}h × ${LAJU}%</div></div>
-    <div class="mc c-rd"><div class="mc-glow"></div><div class="mc-lbl">Perlu Perhatian</div><div class="mc-val">${bad+late}</div><div class="mc-sub">${bad} bahaya · ${late} terlambat kec.</div></div>`;
+    <div class="mc c-gr"><div class="mc-glow"></div><div class="mc-lbl">Perolehan</div><div class="mc-val">${fN(tSel)}</div><div class="mc-sub">Progres kini: ${fr2(tPctNow)}%</div></div>
+    <div class="mc ${statC}"><div class="mc-glow"></div><div class="mc-lbl">Proyeksi 25 AGS 2026</div><div class="mc-val">${fr2(tProy)}%</div><div class="mc-sub">${tStat} · sisa ${SISA}h × ${LAJU}%</div></div>
+    <div class="mc c-rd"><div class="mc-glow"></div><div class="mc-lbl">Target 100%</div><div class="mc-val" style="font-size:14px">${capaiStr}</div><div class="mc-sub">${bad} bahaya · ${late} terlambat kec.</div></div>`;
 }
 
 // ============================================================
@@ -765,6 +861,7 @@ function renderKec(){
     <td>${pb(k.pct_now,k.status)}</td>
     <td>${proyBadge(k.proyeksi)}</td>
     <td>${pill(k.status)}</td>
+    <td>${renderTanggalCapai(k.pct_now, k.proyeksi, STATE.LAJU)}</td>
   </tr>`).join('');
 }
 
@@ -784,6 +881,7 @@ function renderPml(){
     <td>${pb(p.pct_now,p.status)}</td>
     <td>${proyBadge(p.proyeksi)}</td>
     <td>${pill(p.status)}</td>
+    <td>${renderTanggalCapai(p.pct_now, p.proyeksi, STATE.LAJU)}</td>
     <td><button class="btn btn-bl" style="font-size:10px" onclick="drillPML('${p.id}')">PPL →</button></td>
   </tr>`).join('');
 }
@@ -817,6 +915,7 @@ function renderPpl(){
     <td>${pb(p.pct_now,p.status)}</td>
     <td>${proyBadge(p.proyeksi)}</td>
     <td>${pill(p.status)}</td>
+    <td>${renderTanggalCapai(p.pct_now, p.proyeksi, STATE.LAJU)}</td>
     <td><button class="btn btn-bl" style="font-size:10px" onclick="openDetail('${p.id}')">SLS →</button></td>
   </tr>`).join('');
 }
@@ -841,6 +940,7 @@ function renderEval(){
     <td>${pb(p.pct_now,p.status)}</td>
     <td>${proyBadge(p.proyeksi)}</td>
     <td>${pill(p.status)}</td>
+    <td>${renderTanggalCapai(p.pct_now, p.proyeksi, STATE.LAJU)}</td>
     <td><button class="btn btn-bl" style="font-size:10px" onclick="openDetail('${p.id}')">Rincian ↗</button></td>
   </tr>`).join('');
 }
@@ -867,8 +967,9 @@ function openDetail(pid){
     <div class="mc c-gr" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Perolehan</div><div class="mc-val" style="font-size:18px">${fN(p.selesai)}</div></div>
     <div class="mc c-am" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Draft</div><div class="mc-val" style="font-size:18px">${fN(p.draft)}</div><div class="mc-sub">Belum submit</div></div>
     <div class="mc c-cy" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Sub. Resp</div><div class="mc-val" style="font-size:18px">${fN(p.sub_resp)}</div><div class="mc-sub">Di responden</div></div>
-    <div class="mc c-bl" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Progres Kini</div><div class="mc-val" style="font-size:18px">${p.pct_now}%</div></div>
-    <div class="mc ${p.status==='Aman'?'c-gr':p.status==='Waspada'?'c-am':p.status==='Terlambat'?'c-or':'c-rd'}" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Proyeksi 25 Ags</div><div class="mc-val" style="font-size:18px">${fr(p.proyeksi)}%</div><div class="mc-sub">${p.status}</div></div>`;
+    <div class="mc c-bl" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Progres Kini</div><div class="mc-val" style="font-size:18px">${fr2(p.pct_now)}%</div></div>
+    <div class="mc ${p.status==='Aman'?'c-gr':p.status==='Waspada'?'c-am':p.status==='Terlambat'?'c-or':'c-rd'}" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">Proyeksi 25 AGS 2026</div><div class="mc-val" style="font-size:18px">${fr2(p.proyeksi)}%</div><div class="mc-sub">${p.status}</div></div>
+    <div class="mc c-pu" style="margin:0"><div class="mc-glow"></div><div class="mc-lbl">🎯 Target 100%</div><div class="mc-val" style="font-size:14px">${renderTanggalCapai(p.pct_now, p.proyeksi, STATE.LAJU)}</div></div>`;
   $('det-tb').innerHTML=p.sls.map((s,i)=>{
     const ss=getStatus(s.proyeksi);
     return`<tr>
@@ -884,6 +985,7 @@ function openDetail(pid){
       <td>${pb(s.pct_now,ss,90)}</td>
       <td>${proyBadge(s.proyeksi)}</td>
       <td>${pill(ss)}</td>
+      <td>${renderTanggalCapai(s.pct_now, s.proyeksi, STATE.LAJU)}</td>
     </tr>`;
   }).join('');
 }
@@ -894,15 +996,19 @@ function renderPeta(){
   const d=Object.values(STATE.KEC);
   $('peta-grid').innerHTML=d.map(k=>{
     const c=statusColor(k.status);
+    const capai = hitungTanggalCapai100(k.proyeksi, k.pct_now, STATE.LAJU);
+    const capaiStr = k.proyeksi >= 100 ? 
+      `✅ ${formatTanggalPendek(capai.tanggal)}` : 
+      `${formatTanggalPendek(capai.tanggal)} (${capai.hari_tersisa}h)`;
     return`<div class="pkard" onclick="drillKec('${k.id}')">
       <div class="pkard-bar" style="background:${c}"></div>
       <div class="pkard-kode">Kec. ${k.kdkec}</div>
       <div class="pkard-nm">${k.nama}</div>
       <div style="margin-top:4px">${pill(k.status)}</div>
       <div class="pkard-stats">
-        <div class="pkard-st"><div class="pkard-sv" style="color:${c}">${fr(k.proyeksi)}%</div><div class="pkard-sl">Proyeksi</div></div>
-        <div class="pkard-st"><div class="pkard-sv">${k.pct_now}%</div><div class="pkard-sl">Saat ini</div></div>
-        <div class="pkard-st"><div class="pkard-sv">${k.jumlah_ppl}</div><div class="pkard-sl">PPL</div></div>
+        <div class="pkard-st"><div class="pkard-sv" style="color:${c}">${fr2(k.proyeksi)}%</div><div class="pkard-sl">Proyeksi</div></div>
+        <div class="pkard-st"><div class="pkard-sv">${fr2(k.pct_now)}%</div><div class="pkard-sl">Saat ini</div></div>
+        <div class="pkard-st"><div class="pkard-sv" style="font-size:10px">${capaiStr}</div><div class="pkard-sl">Target 100%</div></div>
       </div>
     </div>`;
   }).join('');
@@ -919,7 +1025,7 @@ function renderHeatmap(){
   hmC=new Chart($('hm-c'),{type:'bar',
     data:{labels:lbl,datasets:[{data:vals,backgroundColor:cols,borderRadius:3,barThickness:10}]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:c=>`Proyeksi: ${fr(d[c.dataIndex].proyeksi)}% (${d[c.dataIndex].status})`}}},
+      plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:c=>`Proyeksi: ${fr2(d[c.dataIndex].proyeksi)}% (${d[c.dataIndex].status})`}}},
       scales:{
         x:{min:0,max:130,ticks:{color:'#405878',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'}},
         y:{ticks:{color:'#7090b0',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}}
@@ -928,7 +1034,6 @@ function renderHeatmap(){
   });
 }
 
-// Register datalabels plugin
 if(typeof ChartDataLabels!=='undefined')Chart.register(ChartDataLabels);
 
 // CHARTS
@@ -941,7 +1046,6 @@ function renderBar(){
   else d.sort((a,b)=>a.nama.localeCompare(b.nama));
   const lbl=d.map(k=>k.nama.length>8?k.nama.slice(0,8)+'…':k.nama);
   const vals=d.map(k=>k.pct_now);
-  // Warna solid penuh berdasar status proyeksi
   const colMap={Aman:'#00e5a0',Waspada:'#ffb830',Terlambat:'#ff8c00',Bahaya:'#ff4060'};
   const cols=d.map(k=>colMap[k.status]||'#3d9eff');
   const maxVal=Math.max(...vals,1);
@@ -962,8 +1066,8 @@ function renderBar(){
         tooltip:{callbacks:{
           title:c=>`${d[c[0].dataIndex].nama}`,
           label:c=>[
-            `Progres kini : ${d[c.dataIndex].pct_now}%`,
-            `Proyeksi 25 Ags: ${fr(d[c.dataIndex].proyeksi)}%`,
+            `Progres kini : ${fr2(d[c.dataIndex].pct_now)}%`,
+            `Proyeksi 25 AGS 2026: ${fr2(d[c.dataIndex].proyeksi)}%`,
             `Status : ${d[c.dataIndex].status}`,
             `Selesai : ${fN(d[c.dataIndex].selesai)} / ${fN(d[c.dataIndex].target)}`
           ]
@@ -974,7 +1078,7 @@ function renderBar(){
           align:'end',
           color:'#d8e8f8',
           font:{size:9,family:"'DM Mono',monospace",weight:'500'},
-          formatter:v=>v+'%',
+          formatter:v=>v.toFixed(2)+'%',
           clamp:true
         }
       },
@@ -1036,14 +1140,12 @@ function renderNotifPane(){
   const f=$('nfil')?.value||'';
   const kec=$('nkec')?.value||'';
 
-  // Filter notifs
   let list=NOTIFS.filter(n=>{
     if(f&&n.type!==f)return false;
     if(kec&&!n.sub?.includes(`Kec. ${kec}`)&&!n.title?.includes(kec))return false;
     return true;
   });
 
-  // Stats bar
   const rd=list.filter(n=>n.type==='rd').length;
   const or=list.filter(n=>n.type==='or').length;
   const am=list.filter(n=>n.type==='am').length;
@@ -1060,9 +1162,7 @@ function renderNotifPane(){
   const cM={rd:'var(--rd)',or:'var(--or)',am:'var(--am)',bl:'var(--bl)'};
   const bM={rd:'var(--rd-bg)',or:'var(--or-bg)',am:'var(--am-bg)',bl:'var(--bl-bg)'};
 
-  // Group by kecamatan for better readability
   if(kec){
-    // Single kec view — flat list
     $('notif-body').innerHTML=list.length?list.map((n,i)=>{
       const realIdx=NOTIFS.indexOf(n);
       return`<div style="background:${n.read?'var(--s3)':bM[n.type]||'var(--s3)'};border:1px solid ${n.read?'var(--bdr)':'transparent'};border-radius:var(--r6);padding:.625rem .875rem;display:flex;gap:8px;opacity:${n.read?.55:1}">
@@ -1072,16 +1172,13 @@ function renderNotifPane(){
       </div>`;
     }).join(''):`<div style="padding:1.5rem;text-align:center;color:var(--tx3);font-size:12px">Tidak ada notifikasi untuk Kec. ${kec}</div>`;
   } else {
-    // Group by kecamatan
     const byKec={};
     list.forEach(n=>{
-      // extract kec name from sub or use 'Umum'
       const m=n.sub?.match(/Kec\. ([^.]+)/);
       const kn=m?m[1].trim():'Umum / Sistem';
       if(!byKec[kn])byKec[kn]=[];
       byKec[kn].push(n);
     });
-    // sort kec: Bahaya first
     const order={rd:0,or:1,am:2,bl:3};
     const sorted=Object.entries(byKec).sort((a,b)=>{
       const wa=Math.min(...a[1].map(x=>order[x.type]??9));
@@ -1123,34 +1220,32 @@ function openLaporan(){
   const m=ST.meta;
   const upd=PY.tanggal_update;
 
-  // Format tanggal update sudah tersedia via fmtUpd() global
   const updFmt=PY.label_update||fmtUpd(upd,PY.jam_update);
 
   const now=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-  // Kecamatan diurutkan berdasarkan proyeksi TERTINGGI → terendah
   const kecArr=Object.values(KEC).sort((a,b)=>b.proyeksi-a.proyeksi);
   const aman=kecArr.filter(k=>k.status==='Aman');
   const waspada=kecArr.filter(k=>k.status==='Waspada');
   const terlambat=kecArr.filter(k=>k.status==='Terlambat');
   const bahaya=kecArr.filter(k=>k.status==='Bahaya');
 
-  // PPL issues — TAMPILKAN SEMUA (hapus slice)
   const pplBahaya=Object.values(PPL).filter(p=>p.status==='Bahaya'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
   const pplTerlambat=Object.values(PPL).filter(p=>p.status==='Terlambat'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
 
   const statColor={Aman:'#00c47a',Waspada:'#d4900a',Terlambat:'#cc6600',Bahaya:'#cc2040'};
   const statBg={Aman:'#e6fff5',Waspada:'#fff8e6',Terlambat:'#fff3e6',Bahaya:'#ffe6eb'};
 
-  // Progress bar dengan label nilai %
-  const pctBar=(v,color='#00c47a')=>`<div style="display:inline-flex;align-items:center;gap:5px;width:100%;min-width:80px">
-    <div style="flex:1;height:4px;background:#e0e8f0;border-radius:2px;overflow:hidden">
-      <div style="width:${Math.min(v,100)}%;height:100%;background:${color};border-radius:2px"></div>
-    </div>
-    <span style="font-size:10px;font-weight:700;color:${color};min-width:28px;text-align:right;white-space:nowrap">${v}%</span>
-  </div>`;
+  const pctBar=(v,color='#00c47a')=>{
+    const vStr = typeof v === 'number' ? v.toFixed(2) : v;
+    return`<div style="display:inline-flex;align-items:center;gap:5px;width:100%;min-width:80px">
+      <div style="flex:1;height:4px;background:#e0e8f0;border-radius:2px;overflow:hidden">
+        <div style="width:${Math.min(v,100)}%;height:100%;background:${color};border-radius:2px"></div>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:${color};min-width:32px;text-align:right;white-space:nowrap">${vStr}%</span>
+    </div>`;
+  };
 
-  // Tabel kompak — padding kecil, font lebih kecil
   const tbl=(headers,rows,note)=>`
     <div style="margin-bottom:${note?'4px':'14px'}">
     <table style="width:100%;border-collapse:collapse;font-size:11px;page-break-inside:auto">
@@ -1169,11 +1264,9 @@ function openLaporan(){
 
   const statPill=(s)=>`<span style="display:inline-block;padding:1px 6px;border-radius:99px;font-size:9.5px;font-weight:700;background:${statBg[s]};color:${statColor[s]};border:1px solid ${statColor[s]}40">${s}</span>`;
 
-  // Top 10 PPL terbaik berdasarkan pct_now
   const top10ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>b.pct_now-a.pct_now).slice(0,10);
   const rankIcon=i=>['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]||String(i+1);
 
-  // Bar chart SVG — diurutkan berdasarkan pct_now TERTINGGI → terendah, batang lebih ramping
   const kecByPct=Object.values(KEC).sort((a,b)=>b.pct_now-a.pct_now);
   const maxPct=Math.max(...kecByPct.map(k=>k.pct_now),1);
   const barH=14, barGap=3, chartW=400, labelW=120, numW=48;
@@ -1187,11 +1280,27 @@ function openLaporan(){
       return`<g>
         <text x="${labelW-5}" y="${y+barH/2+3.5}" text-anchor="end" font-size="8.5" fill="#4a6080">${k.nama.length>16?k.nama.slice(0,15)+'…':k.nama}</text>
         <rect x="${labelW}" y="${y}" width="${barW}" height="${barH}" rx="2" fill="${c}" opacity="0.82"/>
-        <text x="${labelW+barW+4}" y="${y+barH/2+3.5}" text-anchor="start" font-size="8.5" font-weight="700" fill="${c}">${k.pct_now}%</text>
+        <text x="${labelW+barW+4}" y="${y+barH/2+3.5}" text-anchor="start" font-size="8.5" font-weight="700" fill="${c}">${k.pct_now.toFixed(2)}%</text>
       </g>`;
     }).join('')}
     <line x1="${labelW}" y1="0" x2="${labelW}" y2="${svgH}" stroke="#dce4ee" stroke-width="0.8"/>
   </svg>`;
+
+  const renderTglCapaiLap = (pctNow, proyeksi) => {
+    const result = hitungTanggalCapai100(proyeksi, pctNow, LAJU);
+    if (proyeksi >= 100) {
+      return `<span style="color:#1a7a4a;font-weight:600">✅ ${formatTanggal(result.tanggal)}</span>`;
+    }
+    const isMelewati = result.tanggal > DEADLINE;
+    const color = isMelewati ? '#cc2040' : '#1a6a7a';
+    const label = isMelewati ? '⚠️ Melewati Deadline' : `${result.hari_tersisa} hari lagi`;
+    return `<span style="color:${color};font-weight:600">📅 ${formatTanggal(result.tanggal)} (${label})</span>`;
+  };
+
+  const capaiGlobal = hitungTanggalCapai100(tProy, tPctNow, LAJU);
+  const capaiStrGlobal = tProy >= 100 ? 
+    `✅ ${formatTanggal(capaiGlobal.tanggal)} (Tercapai!)` : 
+    `📅 ${formatTanggal(capaiGlobal.tanggal)} (${capaiGlobal.hari_tersisa} hari lagi)`;
 
   $('lap-body').innerHTML=`
   <div style="font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#1a2a4a;max-width:760px;margin:0 auto" id="lap-content">
@@ -1205,6 +1314,7 @@ function openLaporan(){
         <span>📅 Dibuat: ${now}</span>
         <span>📊 Data per: <strong>${updFmt}</strong></span>
         <span>⏳ Sisa: <strong style="color:#cc6600">${SISA} hari</strong> s.d. 25 Agustus 2026</span>
+        <span>🎯 Target 100%: <strong style="color:#1a6a7a">${capaiStrGlobal}</strong></span>
       </div>
     </div>
 
@@ -1212,12 +1322,14 @@ function openLaporan(){
     ${section('I. RINGKASAN EKSEKUTIF','📋',`
       <div style="background:#f0f6ff;border:1px solid #c0d8f0;border-radius:8px;padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:1.8">
         Berdasarkan data pemutakhiran terakhir <strong>${updFmt}</strong>, pelaksanaan Sensus Ekonomi 2026 di ${m.nama_kabupaten} telah mencapai progres 
-        <strong style="color:${statColor[tStat]}">${tPctNow}%</strong> dari total target 
+        <strong style="color:${statColor[tStat]}">${fr2(tPctNow)}%</strong> dari total target 
         <strong>${fN(tTgt)}</strong> usaha. Dengan laju penyelesaian rata-rata 
         <strong>${LAJU}%/hari</strong> dan sisa waktu <strong style="color:#cc6600">${SISA} hari</strong>, 
         proyeksi perolehan pada tanggal 25 Agustus 2026 adalah 
-        <strong style="color:${statColor[tStat]};font-size:15px">${fr(tProy)}%</strong> — 
+        <strong style="color:${statColor[tStat]};font-size:15px">${fr2(tProy)}%</strong> — 
         Status: <strong style="color:${statColor[tStat]}">${tStat}</strong>.
+        <br><br>
+        🎯 <strong>Target 100% diperkirakan tercapai pada:</strong> <strong style="color:${tProy>=100?'#1a7a4a':'#1a6a7a'};font-size:14px">${capaiStrGlobal}</strong>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
@@ -1232,12 +1344,13 @@ function openLaporan(){
         </div>`).join('')}
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
         ${[
           {l:'Usaha Selesai',v:fN(tSel),sub:`dari target ${fN(tTgt)}`,c:'#1a7a4a',bg:'#e6faf2'},
-          {l:'Proyeksi 25 Agustus',v:fr(tProy)+'%',sub:`Status: ${tStat}`,c:statColor[tStat],bg:statBg[tStat]},
+          {l:'Proyeksi 25 AGS 2026',v:fr2(tProy)+'%',sub:`Status: ${tStat}`,c:statColor[tStat],bg:statBg[tStat]},
+          {l:'🎯 Target 100%',v:capaiStrGlobal,sub:`${tProy>=100?'Tercapai!':capaiGlobal.hari_tersisa+' hari lagi'}`,c:'#1a6a7a',bg:'#e6f8fb'},
         ].map(x=>`<div style="background:${x.bg};border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px">
-          <div style="font-size:22px;font-weight:800;color:${x.c};font-family:monospace">${x.v}</div>
+          <div style="font-size:${x.l.includes('Target')?'14px':'22px'};font-weight:800;color:${x.c};font-family:monospace">${x.v}</div>
           <div><div style="font-size:12px;font-weight:700;color:${x.c}">${x.l}</div><div style="font-size:11px;color:#4a6080">${x.sub}</div></div>
         </div>`).join('')}
       </div>
@@ -1258,13 +1371,12 @@ function openLaporan(){
         </div>`).join('')}
       </div>
 
-      <!-- Bar chart SVG perolehan per kecamatan (tertinggi → terendah) -->
       <div style="margin-bottom:10px">
         <div style="font-size:10px;font-weight:700;color:#4a6080;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Perolehan Kini per Kecamatan (%) — diurutkan tertinggi</div>
         ${barSvg}
       </div>
 
-      ${tbl(['No','Kecamatan','PPL','Target','Perolehan','Progres Kini','Proyeksi 25 Ags','Status'],
+      ${tbl(['No','Kecamatan','PPL','Target','Perolehan','Progres Kini','Proyeksi 25 Ags 2026','Status','🎯 Target 100%'],
         kecArr.map((k,i)=>[
           `<span style="color:#778899;font-weight:700">${i+1}</span>`,
           `<strong>${k.nama}</strong>`,
@@ -1272,8 +1384,9 @@ function openLaporan(){
           fN(k.target),
           `<strong style="color:${statColor[k.status]}">${fN(k.selesai)}</strong>`,
           pctBar(k.pct_now,statColor[k.status]),
-          `<strong style="color:${statColor[k.status]};font-family:monospace">${fr(k.proyeksi)}%</strong>`,
-          statPill(k.status)
+          `<strong style="color:${statColor[k.status]};font-family:monospace">${fr2(k.proyeksi)}%</strong>`,
+          statPill(k.status),
+          renderTglCapaiLap(k.pct_now, k.proyeksi)
         ])
       )}
     `,'#1a5a2a')}
@@ -1284,37 +1397,39 @@ function openLaporan(){
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${bahaya.length} Kecamatan BAHAYA</strong> — Proyeksi perolehan &lt;80%. Diperlukan intervensi segera.
         </div>
-        ${tbl(['Kecamatan','PPL','Selesai/Target','Progres Kini','Proyeksi 25 Ags'],
+        ${tbl(['Kecamatan','PPL','Selesai/Target','Progres Kini','Proyeksi 25 Ags 2026','🎯 Target 100%'],
           bahaya.map(k=>[
             `<strong style="color:#cc2040">${k.nama}</strong>`,
             k.jumlah_ppl,
             `${fN(k.selesai)} / ${fN(k.target)}`,
             pctBar(k.pct_now,'#cc2040'),
-            `<strong style="color:#cc2040;font-family:monospace">${fr(k.proyeksi)}%</strong>`
+            `<strong style="color:#cc2040;font-family:monospace">${fr2(k.proyeksi)}%</strong>`,
+            renderTglCapaiLap(k.pct_now, k.proyeksi)
           ])
         )}`:''}
       ${terlambat.length?`
         <div style="background:#fff3e6;border:1px solid #cc660040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc6600">
           <strong>🟠 ${terlambat.length} Kecamatan TERLAMBAT</strong> — Proyeksi 80–94%. Perlu percepatan signifikan.
         </div>
-        ${tbl(['Kecamatan','PPL','Selesai/Target','Progres Kini','Proyeksi 25 Ags'],
+        ${tbl(['Kecamatan','PPL','Selesai/Target','Progres Kini','Proyeksi 25 Ags 2026','🎯 Target 100%'],
           terlambat.map(k=>[
             `<strong style="color:#cc6600">${k.nama}</strong>`,
             k.jumlah_ppl,
             `${fN(k.selesai)} / ${fN(k.target)}`,
             pctBar(k.pct_now,'#cc6600'),
-            `<strong style="color:#cc6600;font-family:monospace">${fr(k.proyeksi)}%</strong>`
+            `<strong style="color:#cc6600;font-family:monospace">${fr2(k.proyeksi)}%</strong>`,
+            renderTglCapaiLap(k.pct_now, k.proyeksi)
           ])
         )}`:''}
     `,'#aa2020'):''}
 
-    <!-- PPL BERMASALAH — TAMPILKAN SEMUA -->
+    <!-- PPL BERMASALAH -->
     ${section('IV. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
       ${pplBahaya.length?`
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${pplBahaya.length} PPL Proyeksi BAHAYA (&lt;80%)</strong> — Ditampilkan semua ${pplBahaya.length}/${pplBahaya.length} PPL
         </div>
-        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Perolehan','Progres','Proyeksi'],
+        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Perolehan','Progres','Proyeksi','🎯 Target 100%'],
           pplBahaya.map((p,i)=>[
             `<span style="color:#778899">${i+1}</span>`,
             `<strong style="color:#cc2040">${p.nama}</strong>`,
@@ -1323,14 +1438,15 @@ function openLaporan(){
             fN(p.target),
             fN(p.selesai),
             pctBar(p.pct_now,'#cc2040'),
-            `<strong style="color:#cc2040;font-family:monospace">${fr(p.proyeksi)}%</strong>`
+            `<strong style="color:#cc2040;font-family:monospace">${fr2(p.proyeksi)}%</strong>`,
+            renderTglCapaiLap(p.pct_now, p.proyeksi)
           ])
         )}`:''}
       ${pplTerlambat.length?`
         <div style="background:#fff3e6;border:1px solid #cc660040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc6600">
           <strong>🟠 ${pplTerlambat.length} PPL Proyeksi TERLAMBAT (80–94%)</strong> — Ditampilkan semua ${pplTerlambat.length}/${pplTerlambat.length} PPL
         </div>
-        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Perolehan','Progres','Proyeksi'],
+        ${tbl(['No','Nama PPL','Kecamatan','Desa','Target','Perolehan','Progres','Proyeksi','🎯 Target 100%'],
           pplTerlambat.map((p,i)=>[
             `<span style="color:#778899">${i+1}</span>`,
             `<strong style="color:#cc6600">${p.nama}</strong>`,
@@ -1339,7 +1455,8 @@ function openLaporan(){
             fN(p.target),
             fN(p.selesai),
             pctBar(p.pct_now,'#cc6600'),
-            `<strong style="color:#cc6600;font-family:monospace">${fr(p.proyeksi)}%</strong>`
+            `<strong style="color:#cc6600;font-family:monospace">${fr2(p.proyeksi)}%</strong>`,
+            renderTglCapaiLap(p.pct_now, p.proyeksi)
           ])
         )}`:''}
       ${(!pplBahaya.length&&!pplTerlambat.length)?`<div style="background:#e6faf2;border:1px solid #00c47a40;border-radius:6px;padding:10px 14px;font-size:12px;color:#1a7a4a">✅ Seluruh PPL dalam status Aman atau Waspada. Tidak ada PPL yang memerlukan perhatian khusus.</div>`:''}
@@ -1347,7 +1464,7 @@ function openLaporan(){
 
     <!-- TOP 10 PERFORMER -->
     ${section('V. PETUGAS LAPANGAN TERBAIK (TOP 10)','🏆',`
-      ${tbl(['#','Nama PPL','Kecamatan','Target','Perolehan','Progres','Proyeksi'],
+      ${tbl(['#','Nama PPL','Kecamatan','Target','Perolehan','Progres','Proyeksi','🎯 Target 100%'],
         top10ppl.map((p,i)=>[
           `<span style="font-size:${i<3?'16':'12'}px">${rankIcon(i)}</span>`,
           `<strong>${p.nama}</strong>`,
@@ -1355,7 +1472,8 @@ function openLaporan(){
           fN(p.target),
           `<strong style="color:#1a7a4a">${fN(p.selesai)}</strong>`,
           pctBar(p.pct_now,'#00c47a'),
-          `<strong style="color:#00c47a;font-family:monospace">${fr(p.proyeksi)}%</strong>`
+          `<strong style="color:#00c47a;font-family:monospace">${fr2(p.proyeksi)}%</strong>`,
+          renderTglCapaiLap(p.pct_now, p.proyeksi)
         ])
       )}
     `,'#806000')}
@@ -1366,8 +1484,9 @@ function openLaporan(){
         ${bahaya.length?`<li>Lakukan koordinasi intensif dengan PML di <strong style="color:#cc2040">${bahaya.map(k=>k.nama).join(', ')}</strong> yang berstatus BAHAYA untuk mengejar ketertinggalan secara mendesak.</li>`:''}
         ${terlambat.length?`<li>Tingkatkan pengawasan dan pendampingan pada PPL di wilayah <strong style="color:#cc6600">${terlambat.map(k=>k.nama).join(', ')}</strong> agar laju harian meningkat.</li>`:''}
         ${pplBahaya.length?`<li>Sebanyak <strong>${pplBahaya.length} PPL</strong> berisiko tidak mencapai target. Pimpinan perlu segera mengevaluasi kendala di lapangan dan mempertimbangkan redistribusi beban kerja bila memungkinkan.</li>`:''}
-        <li>Dengan laju saat ini <strong>${LAJU}%/hari</strong> dan sisa <strong>${SISA} hari</strong>, proyeksi global mencapai <strong>${fr(tProy)}%</strong>. ${tProy>=100?'Pertahankan kinerja untuk memastikan seluruh target terpenuhi.':'Diperlukan peningkatan laju agar target 100% terpenuhi sebelum deadline.'}</li>
+        <li>Dengan laju saat ini <strong>${LAJU}%/hari</strong> dan sisa <strong>${SISA} hari</strong>, proyeksi global mencapai <strong>${fr2(tProy)}%</strong>. ${tProy>=100?'Pertahankan kinerja untuk memastikan seluruh target terpenuhi.':'Diperlukan peningkatan laju agar target 100% terpenuhi sebelum deadline.'}</li>
         <li>Jadwalkan rapat evaluasi mingguan antara PML dan PPL untuk memantau perkembangan dan menyelesaikan kendala teknis di lapangan.</li>
+        <li>🎯 Target 100% global diperkirakan tercapai pada <strong style="color:#1a6a7a">${formatTanggal(capaiGlobal.tanggal)}</strong> ${tProy>=100?'✅ sudah tercapai!':`(${capaiGlobal.hari_tersisa} hari lagi)`}</li>
       </ol>
     `,'#3a2a7a')}
 
@@ -1428,28 +1547,104 @@ function printLaporan(){
 // EXPORT
 function exportXL(type){
   const wb=XLSX.utils.book_new(),upd=PY.tanggal_update;
+  
+  const addTglCapai = (obj) => {
+    const result = hitungTanggalCapai100(obj.proyeksi, obj.pct_now, STATE.LAJU);
+    if (obj.proyeksi >= 100) {
+      return formatTanggal(result.tanggal) + ' (Tercapai!)';
+    }
+    const isMelewati = result.tanggal > DEADLINE;
+    return formatTanggal(result.tanggal) + (isMelewati ? ' (Melewati Deadline)' : ` (${result.hari_tersisa} hari lagi)`);
+  };
+  
   if(type==='kec'||type==='all'){
-    const rows=Object.values(STATE.KEC).map(k=>({Kecamatan:k.nama,PML:k.jumlah_pml,PPL:k.jumlah_ppl,'Total SLS':k.jumlah_sls,Target:k.target,Selesai:k.selesai,'Progres Kini (%)':k.pct_now,'Proyeksi 25 Ags (%)':fr(k.proyeksi),Status:k.status}));
+    const rows=Object.values(STATE.KEC).map(k=>({
+      Kecamatan:k.nama,
+      PML:k.jumlah_pml,
+      PPL:k.jumlah_ppl,
+      'Total SLS':k.jumlah_sls,
+      Target:k.target,
+      Selesai:k.selesai,
+      'Progres Kini (%)':k.pct_now.toFixed(2),
+      'Proyeksi 25 Ags 2026 (%)':fr2(k.proyeksi),
+      Status:k.status,
+      '🎯 Target 100%':addTglCapai(k)
+    }));
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Kecamatan');
   }
   if(type==='pml'||type==='all'){
-    const rows=Object.values(STATE.PML).map(p=>({Nama:p.nama,Email:p.email,Kecamatan:STATE.KEC[p.kec_id]?.nama||'',' Jml PPL':p.ppl_ids.length,Target:p.target,Selesai:p.selesai,'Progres Kini (%)':p.pct_now,'Proyeksi 25 Ags (%)':fr(p.proyeksi),Status:p.status}));
+    const rows=Object.values(STATE.PML).map(p=>({
+      Nama:p.nama,
+      Email:p.email,
+      Kecamatan:STATE.KEC[p.kec_id]?.nama||'',
+      'Jml PPL':p.ppl_ids.length,
+      Target:p.target,
+      Selesai:p.selesai,
+      'Progres Kini (%)':p.pct_now.toFixed(2),
+      'Proyeksi 25 Ags 2026 (%)':fr2(p.proyeksi),
+      Status:p.status,
+      '🎯 Target 100%':addTglCapai(p)
+    }));
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'PML');
   }
   if(type==='ppl'||type==='all'){
-    const rows=Object.values(STATE.PPL).map(p=>({Nama:p.nama,Email:p.email,PML:STATE.PML[p.pml_id]?.nama||'',Kecamatan:STATE.KEC[p.kec_id]?.nama||'',Desa:p.desa,'Jml SLS':p.sls.length,Target:p.target,Selesai:p.selesai,Open:p.open,'Progres Kini (%)':p.pct_now,'Proyeksi 25 Ags (%)':fr(p.proyeksi),Status:p.status}));
+    const rows=Object.values(STATE.PPL).map(p=>({
+      Nama:p.nama,
+      Email:p.email,
+      PML:STATE.PML[p.pml_id]?.nama||'',
+      Kecamatan:STATE.KEC[p.kec_id]?.nama||'',
+      Desa:p.desa,
+      'Jml SLS':p.sls.length,
+      Target:p.target,
+      Selesai:p.selesai,
+      Open:p.open,
+      'Progres Kini (%)':p.pct_now.toFixed(2),
+      'Proyeksi 25 Ags 2026 (%)':fr2(p.proyeksi),
+      Status:p.status,
+      '🎯 Target 100%':addTglCapai(p)
+    }));
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'PPL');
   }
   if(type==='eval'||type==='all'){
     const rows=[];
     Object.values(STATE.PPL).forEach(p=>p.sls.forEach(s=>{
-      rows.push({regionCode:s.id,PPL:p.nama,PML:STATE.PML[p.pml_id]?.nama||'',Kecamatan:STATE.KEC[p.kec_id]?.nama||'',Desa:s.nmdesa,Target:s.target,Selesai:s.selesai,Open:s.open,Ditolak:s.ditolak,'Progres Kini (%)':s.pct_now,'Proyeksi 25 Ags (%)':fr(s.proyeksi),Status:getStatus(s.proyeksi)});
+      const obj = {pct_now:s.pct_now, proyeksi:s.proyeksi};
+      rows.push({
+        regionCode:s.id,
+        PPL:p.nama,
+        PML:STATE.PML[p.pml_id]?.nama||'',
+        Kecamatan:STATE.KEC[p.kec_id]?.nama||'',
+        Desa:s.nmdesa,
+        Target:s.target,
+        Selesai:s.selesai,
+        Open:s.open,
+        Ditolak:s.ditolak,
+        'Progres Kini (%)':s.pct_now.toFixed(2),
+        'Proyeksi 25 Ags 2026 (%)':fr2(s.proyeksi),
+        Status:getStatus(s.proyeksi),
+        '🎯 Target 100%':addTglCapai(obj)
+      });
     }));
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'SLS');
   }
   if(type==='detail'&&CUR_PPL){
     const p=STATE.PPL[CUR_PPL];
-    const rows=p.sls.map((s,i)=>({No:i+1,regionCode:s.id,Desa:s.nmdesa,Target:s.target,Selesai:s.selesai,Open:s.open,Ditolak:s.ditolak,'Progres Kini (%)':s.pct_now,'Proyeksi 25 Ags (%)':fr(s.proyeksi),Status:getStatus(s.proyeksi)}));
+    const rows=p.sls.map((s,i)=>{
+      const obj = {pct_now:s.pct_now, proyeksi:s.proyeksi};
+      return {
+        No:i+1,
+        regionCode:s.id,
+        Desa:s.nmdesa,
+        Target:s.target,
+        Selesai:s.selesai,
+        Open:s.open,
+        Ditolak:s.ditolak,
+        'Progres Kini (%)':s.pct_now.toFixed(2),
+        'Proyeksi 25 Ags 2026 (%)':fr2(s.proyeksi),
+        Status:getStatus(s.proyeksi),
+        '🎯 Target 100%':addTglCapai(obj)
+      };
+    });
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),`SLS_${p.nama.slice(0,18)}`);
   }
   XLSX.writeFile(wb,`SE2026_${type}_${upd}.xlsx`);
@@ -1458,11 +1653,23 @@ function exportXL(type){
 function exportCSV(type){
   let hdr,rows;
   if(type==='kec'){
-    hdr=['Kecamatan','PML','PPL','Total SLS','Target','Perolehan','Progres Kini (%)','Proyeksi 25 Ags (%)','Status'];
-    rows=Object.values(STATE.KEC).map(k=>[k.nama,k.jumlah_pml,k.jumlah_ppl,k.jumlah_sls,k.target,k.selesai,k.pct_now,fr(k.proyeksi),k.status]);
+    hdr=['Kecamatan','PML','PPL','Total SLS','Target','Perolehan','Progres Kini (%)','Proyeksi 25 Ags 2026 (%)','Status','🎯 Target 100%'];
+    rows=Object.values(STATE.KEC).map(k=>{
+      const tgl = hitungTanggalCapai100(k.proyeksi, k.pct_now, STATE.LAJU);
+      const tglStr = k.proyeksi >= 100 ? 
+        formatTanggal(tgl.tanggal) + ' (Tercapai!)' : 
+        formatTanggal(tgl.tanggal) + (tgl.tanggal > DEADLINE ? ' (Melewati Deadline)' : ` (${tgl.hari_tersisa} hari lagi)`);
+      return [k.nama,k.jumlah_pml,k.jumlah_ppl,k.jumlah_sls,k.target,k.selesai,k.pct_now.toFixed(2),fr2(k.proyeksi),k.status,tglStr];
+    });
   }else{
-    hdr=['Nama PPL','Email','PML','Kecamatan','Desa','Jml SLS','Target','Perolehan','Open','Progres Kini (%)','Proyeksi 25 Ags (%)','Status'];
-    rows=Object.values(STATE.PPL).map(p=>[p.nama,p.email,STATE.PML[p.pml_id]?.nama||'',STATE.KEC[p.kec_id]?.nama||'',p.desa,p.sls.length,p.target,p.selesai,p.open,p.pct_now,fr(p.proyeksi),p.status]);
+    hdr=['Nama PPL','Email','PML','Kecamatan','Desa','Jml SLS','Target','Perolehan','Open','Progres Kini (%)','Proyeksi 25 Ags 2026 (%)','Status','🎯 Target 100%'];
+    rows=Object.values(STATE.PPL).map(p=>{
+      const tgl = hitungTanggalCapai100(p.proyeksi, p.pct_now, STATE.LAJU);
+      const tglStr = p.proyeksi >= 100 ? 
+        formatTanggal(tgl.tanggal) + ' (Tercapai!)' : 
+        formatTanggal(tgl.tanggal) + (tgl.tanggal > DEADLINE ? ' (Melewati Deadline)' : ` (${tgl.hari_tersisa} hari lagi)`);
+      return [p.nama,p.email,STATE.PML[p.pml_id]?.nama||'',STATE.KEC[p.kec_id]?.nama||'',p.desa,p.sls.length,p.target,p.selesai,p.open,p.pct_now.toFixed(2),fr2(p.proyeksi),p.status,tglStr];
+    });
   }
   const csv=[hdr,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
   const a=document.createElement('a');
