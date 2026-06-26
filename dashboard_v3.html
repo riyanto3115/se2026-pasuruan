@@ -24,9 +24,9 @@
   --fnt:'Plus Jakarta Sans',sans-serif;--mono:'DM Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--tx);font-family:var(--fnt);font-size:13px;min-height:100vh;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:var(--fnt);font-size:13px;min-height:100vh;overflow:hidden;height:100vh}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:4px}
-.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:50px 1fr;height:100vh}
+.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:50px 1fr;height:100vh;overflow:hidden}
 header{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 1rem;gap:10px;z-index:200}
 .sidebar{background:var(--s1);border-right:1px solid var(--bdr);overflow-y:auto;display:flex;flex-direction:column}
 .content{overflow-y:auto;padding:1rem;background:var(--bg)}
@@ -700,6 +700,17 @@ function buildState(){
     k.target+=pm2.target; k.selesai+=pm2.selesai; k.open+=pm2.open;
   });
 
+  // Hitung jumlah_ppl aktual per kecamatan
+  Object.values(KEC).forEach(k=>{
+    k.jumlah_pml=k.pml_ids.length;
+    // jumlah_ppl = total PPL di bawah semua PML di kecamatan ini
+    let totalPpl=0;
+    k.pml_ids.forEach(mid=>{
+      const pm2=PML[mid];if(pm2)totalPpl+=pm2.ppl_ids.length;
+    });
+    k.jumlah_ppl=totalPpl;
+  });
+
   Object.values(PPL).forEach(p=>{
     p.pct_now=p.target>0?p.selesai/p.target*100:0;
     const proyeksiRaw = p.pct_now + LAJU * SISA;
@@ -732,6 +743,15 @@ function buildState(){
       pml.max_ppl = 0;
       pml.min_ppl = 0;
     }
+  });
+
+  // Hitung pct_now, proyeksi, status untuk KEC
+  Object.values(KEC).forEach(k=>{
+    k.pct_now=k.target>0?k.selesai/k.target*100:0;
+    const proyeksiRaw=k.pct_now+LAJU*SISA;
+    k.proyeksi=Math.min(proyeksiRaw,100);
+    k.proyeksi_raw=proyeksiRaw;
+    k.status=getStatus(k.proyeksi);
   });
 
   const tSel=Object.values(PPL).reduce((a,p)=>a+p.selesai,0);
@@ -1246,6 +1266,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('#np')&&!e.target.clo
 // LAPORAN PIMPINAN
 // ============================================================
 function openLaporan(){
+  if(!STATE.KEC){toast('Data belum dimuat. Mohon tunggu…');return;}
   const {KEC,PML,PPL,tSel,tTgt,tPctNow,tProy,tStat,SISA,LAJU}=STATE;
   const m=ST.meta;
   const upd=PY.tanggal_update;
@@ -1851,6 +1872,9 @@ function exportCSV(type){
 const PANES=['rekap','pml','ppl','eval','peta','notif'];
 function switchTab(id,btn){
   PANES.forEach(p=>{$(`pane-${p}`).classList.toggle('on',p===id);$(`tb-${p}`).classList.toggle('on',p===id)});
+  // Sync sidebar nav
+  document.querySelectorAll('.nav[id^="si-"]').forEach(n=>n.classList.remove('on'));
+  const sideNav=$(`si-${id}`);if(sideNav)sideNav.classList.add('on');
   if(id==='peta'){renderPeta();setTimeout(renderHeatmap,120)}
   if(id==='notif')renderNotifPane();
 }
