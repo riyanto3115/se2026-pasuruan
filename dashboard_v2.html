@@ -1746,9 +1746,40 @@ function openLaporan(){
     <!-- REKOMENDASI -->
     ${section('VIII. REKOMENDASI','📌',`
       <ol style="font-size:12px;line-height:2;padding-left:18px;color:#2a3a5a">
-        ${pmlKategori.variatifRendah.length?`<li>🔄 ${pmlKategori.variatifRendah.map(p=>`<strong style="color:#2a5aa0">${STATE.KEC[p.kec_id]?.nama||'—'}</strong> (${p.nama})`).join(', ')} — <strong>Identifikasi PPL berprestasi di wilayah ini untuk dijadikan contoh bagi rekan yang tertinggal.</strong> Rata-rata tim cukup rendah namun sebaran tinggi menandakan potensi belum merata.</li>`:''}
-        ${pmlKategori.variatifBagus.length?`<li>⚡ ${pmlKategori.variatifBagus.length?pmlKategori.variatifBagus.map(p=>`<strong style="color:#cc6600">${STATE.KEC[p.kec_id]?.nama||'—'}</strong> (${p.nama})`).join(', '):''} — <strong>Berikan perhatian khusus pada PPL yang tertinggal agar kesenjangan kinerja dalam tim tidak semakin melebar.</strong> Rata-rata tinggi namun sebaran lebar menunjukkan tidak semua PPL terbawa optimal.</li>`:''}
-        ${pmlKategori.merataBagus.length?`<li>✅ ${pmlKategori.merataBagus.map(p=>`<strong style="color:#1a7a4a">${STATE.KEC[p.kec_id]?.nama||'—'}</strong> (${p.nama})`).join(', ')} — <strong>Pertahankan pola kepemimpinan yang ada dan jadikan referensi metode pembinaan bagi PML lain.</strong> Seluruh PPL berkinerja tinggi dan merata.</li>`:''}
+        ${(()=>{
+          if(!pmlKategori.variatifRendah.length) return '';
+          // Kelompokkan per kecamatan
+          const byKec={};
+          pmlKategori.variatifRendah.forEach(p=>{
+            const kn=STATE.KEC[p.kec_id]?.nama||'—';
+            if(!byKec[kn]) byKec[kn]=[];
+            byKec[kn].push(p.nama);
+          });
+          const txt=Object.entries(byKec).map(([kn,pmls])=>`<strong style="color:#2a5aa0">${kn}</strong> (${pmls.join(', ')})`).join('; ');
+          return`<li>🔄 ${txt} — <strong>Identifikasi PPL berprestasi di wilayah ini untuk dijadikan contoh bagi rekan yang tertinggal.</strong> Rata-rata tim cukup rendah namun sebaran tinggi menandakan potensi belum merata.</li>`;
+        })()}
+        ${(()=>{
+          if(!pmlKategori.variatifBagus.length) return '';
+          const byKec={};
+          pmlKategori.variatifBagus.forEach(p=>{
+            const kn=STATE.KEC[p.kec_id]?.nama||'—';
+            if(!byKec[kn]) byKec[kn]=[];
+            byKec[kn].push(p.nama);
+          });
+          const txt=Object.entries(byKec).map(([kn,pmls])=>`<strong style="color:#cc6600">${kn}</strong> (${pmls.join(', ')})`).join('; ');
+          return`<li>⚡ ${txt} — <strong>Berikan perhatian khusus pada PPL yang tertinggal agar kesenjangan kinerja dalam tim tidak semakin melebar.</strong> Rata-rata tinggi namun sebaran lebar menunjukkan tidak semua PPL terbawa optimal.</li>`;
+        })()}
+        ${(()=>{
+          if(!pmlKategori.merataBagus.length) return '';
+          const byKec={};
+          pmlKategori.merataBagus.forEach(p=>{
+            const kn=STATE.KEC[p.kec_id]?.nama||'—';
+            if(!byKec[kn]) byKec[kn]=[];
+            byKec[kn].push(p.nama);
+          });
+          const txt=Object.entries(byKec).map(([kn,pmls])=>`<strong style="color:#1a7a4a">${kn}</strong> (${pmls.join(', ')})`).join('; ');
+          return`<li>✅ ${txt} — <strong>Pertahankan pola kepemimpinan yang ada dan jadikan referensi metode pembinaan bagi PML lain.</strong> Seluruh PPL berkinerja tinggi dan merata.</li>`;
+        })()}
         <li>Dengan laju saat ini <strong>${LAJU}%/hari</strong> dan sisa <strong>${SISA} hari</strong>, proyeksi global mencapai <strong>${fr2(tProy)}%</strong>. ${tProy>=100?'Pertahankan kinerja untuk memastikan seluruh target terpenuhi.':'Diperlukan peningkatan laju agar target 100% terpenuhi sebelum deadline.'}</li>
         <li>Jadwalkan rapat evaluasi mingguan antara PML dan PPL untuk memantau perkembangan dan menyelesaikan kendala teknis di lapangan.</li>
         <li>🎯 Target 100% global diperkirakan tercapai pada <strong style="color:#1a6a7a">${formatTanggal(capaiGlobal.tanggal)}</strong> ${capaiGlobal.sudah_capai?'✅ sudah tercapai!':`(${capaiGlobal.hari_dibutuhkan} hari lagi)`}</li>
