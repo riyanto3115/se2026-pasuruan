@@ -24,9 +24,9 @@
   --fnt:'Plus Jakarta Sans',sans-serif;--mono:'DM Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--tx);font-family:var(--fnt);font-size:13px;min-height:100vh;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:var(--fnt);font-size:13px;min-height:100vh;overflow:hidden;height:100vh}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:4px}
-.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:50px 1fr;height:100vh}
+.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:50px 1fr;height:calc(100vh - 20px);overflow:hidden}
 header{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 1rem;gap:10px;z-index:200}
 .sidebar{background:var(--s1);border-right:1px solid var(--bdr);overflow-y:auto;display:flex;flex-direction:column}
 .content{overflow-y:auto;padding:1rem;background:var(--bg)}
@@ -260,10 +260,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="10" height="10"><circle cx="6.5" cy="6.5" r="5"/><path d="M4.5 6.5h4M6.5 4.5v4"/></svg>
         <span>Versi <span style="color:var(--bl);font-family:var(--mono)">2.0</span></span>
       </div>
-      <div style="display:flex;align-items:center;gap:4px;color:var(--tx3);margin-top:2px">
-        <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="10" height="10"><path d="M6.5 1L8.2 4.5l3.8.55-2.75 2.68.65 3.77L6.5 9.75l-3.4 1.75.65-3.77L1 5.05 4.8 4.5z"/></svg>
-        <span>By <span style="color:var(--tx2);font-weight:600">Rinuja Studio</span></span>
-      </div>
+
       <div style="display:flex;align-items:center;gap:4px;color:var(--tx3);margin-top:2px">
         <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="10" height="10"><rect x="1.5" y="1.5" width="10" height="10" rx="2"/><path d="M1.5 5h10"/><path d="M5 1.5v3.5"/><path d="M8 1.5v3.5"/></svg>
         <span>© 2026 — Hak cipta dilindungi</span>
@@ -364,7 +361,7 @@ select{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r6);
         <select id="pmlsf" onchange="renderPml()"><option value="">Semua status</option><option>Aman</option><option>Waspada</option><option>Terlambat</option><option>Bahaya</option></select>
       </div>
       <div class="tscroll"><table><thead><tr>
-        <th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Rata-rata PPL</th><th>Std Dev PPL</th><th>Max PPL</th><th>Min PPL</th><th>Status</th><th>Target 100%</th><th></th>
+        <th>#</th><th>PML</th><th>Kecamatan</th><th>Jml PPL</th><th>Target</th><th>Perolehan</th><th>Progres kini</th><th>Rata-rata PPL</th><th>Std Dev PPL</th><th>Max PPL</th><th>Min PPL</th><th title="0.30×Rata + 0.35×(100−σ) + 0.25×Min + 0.10×Max">⭐ Skor Kepemimpinan</th><th>Status</th><th>Target 100%</th><th></th>
       </tr></thead><tbody id="pml-tb"></tbody></table></div>
     </div>
   </div>
@@ -618,15 +615,16 @@ function step(s){$('lstep').textContent=s}
 
 function fmtUpd(s,jam){
   if(!s)return'—';
+  const BULAN_ID_L=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
   const jamStr=jam?(jam.replace('.',':')):'00:00';
   const d=new Date(s.includes('T')?s:s+'T'+jamStr+':00');
   if(isNaN(d))return s;
-  const dd=String(d.getDate()).padStart(2,'0');
-  const mm=String(d.getMonth()+1).padStart(2,'0');
-  const yyyy=d.getFullYear();
+  const tgl=`${d.getDate()} ${BULAN_ID_L[d.getMonth()]} ${d.getFullYear()}`;
   const hh=String(d.getHours()).padStart(2,'0');
   const mi=String(d.getMinutes()).padStart(2,'0');
-  return`${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+  // Jika jam tersedia (bukan 00:00), tampilkan jam dengan format hh.mm
+  const hasJam=jam&&jam!=='00.00'&&jam!=='00:00';
+  return hasJam?`${tgl} ${hh}.${mi}`:tgl;
 }
 
 // ============================================================
@@ -659,12 +657,11 @@ async function boot(){
 // BUILD STATE
 // ============================================================
 function buildState(){
-  // Hitung sisa hari otomatis: deadline - tanggal_update
-  const _deadline = new Date(PY.deadline || '2026-08-25');
-  const _update   = new Date(PY.tanggal_update);
-  const SISA = PY.sisa_hari != null
-    ? PY.sisa_hari
-    : Math.max(0, Math.round((_deadline - _update) / (1000*60*60*24)));
+  // Hitung SISA dari dashboard: 25 Agustus 2026 - tanggal_update
+  const _deadline=new Date(2026,7,25); // 25 Agustus 2026
+  const _tglUpd=new Date(PY.tanggal_update); // format: YYYY-MM-DD
+  _tglUpd.setHours(0,0,0,0); _deadline.setHours(0,0,0,0);
+  const SISA=Math.max(0,Math.round((_deadline-_tglUpd)/(1000*60*60*24)));
   const LAJU=PY.laju_per_hari||1.5;
 
   const pm={};
@@ -705,16 +702,15 @@ function buildState(){
     k.target+=pm2.target; k.selesai+=pm2.selesai; k.open+=pm2.open;
   });
 
-  // HITUNG pct_now, proyeksi, status, jumlah_ppl untuk tiap KEC
+  // Hitung jumlah_ppl aktual per kecamatan
   Object.values(KEC).forEach(k=>{
-    k.jumlah_ppl=k.pml_ids.reduce((sum,pmlId)=>{
-      return sum+(PML[pmlId]?.ppl_ids?.length||0);
-    },0);
-    k.pct_now=k.target>0?k.selesai/k.target*100:0;
-    const proyeksiRaw=k.pct_now+LAJU*SISA;
-    k.proyeksi=Math.min(proyeksiRaw,100);
-    k.proyeksi_raw=proyeksiRaw;
-    k.status=getStatus(k.proyeksi);
+    k.jumlah_pml=k.pml_ids.length;
+    // jumlah_ppl = total PPL di bawah semua PML di kecamatan ini
+    let totalPpl=0;
+    k.pml_ids.forEach(mid=>{
+      const pm2=PML[mid];if(pm2)totalPpl+=pm2.ppl_ids.length;
+    });
+    k.jumlah_ppl=totalPpl;
   });
 
   Object.values(PPL).forEach(p=>{
@@ -749,6 +745,33 @@ function buildState(){
       pml.max_ppl = 0;
       pml.min_ppl = 0;
     }
+
+    // ============================================================
+    // SKOR PRESTASI KEPEMIMPINAN PML
+    // Formula: 0.30×rata + 0.35×(100−σ) + 0.25×min + 0.10×max
+    // Dasar teori: Team Equity Leadership & Situational Leadership
+    // ============================================================
+    pml.skor_kepemimpinan = (
+      0.30 * pml.rata_rata_ppl +
+      0.35 * (100 - pml.std_dev_ppl) +
+      0.25 * pml.min_ppl +
+      0.10 * pml.max_ppl
+    );
+    pml.skor_rincian = {
+      komponen_rata: 0.30 * pml.rata_rata_ppl,
+      komponen_stddev: 0.35 * (100 - pml.std_dev_ppl),
+      komponen_min: 0.25 * pml.min_ppl,
+      komponen_max: 0.10 * pml.max_ppl
+    };
+  });
+
+  // Hitung pct_now, proyeksi, status untuk KEC
+  Object.values(KEC).forEach(k=>{
+    k.pct_now=k.target>0?k.selesai/k.target*100:0;
+    const proyeksiRaw=k.pct_now+LAJU*SISA;
+    k.proyeksi=Math.min(proyeksiRaw,100);
+    k.proyeksi_raw=proyeksiRaw;
+    k.status=getStatus(k.proyeksi);
   });
 
   const tSel=Object.values(PPL).reduce((a,p)=>a+p.selesai,0);
@@ -900,10 +923,18 @@ function renderPml(){
   const sf=$('pmlsf')?.value||'';
   d=d.filter(p=>p.nama.toLowerCase().includes(q)&&(kf===''||STATE.KEC[p.kec_id]?.nama===kf)&&(sf===''||p.status===sf));
   
-  // Urutkan berdasarkan rata-rata PPL tertinggi
-  d.sort((a,b) => b.rata_rata_ppl - a.rata_rata_ppl);
-  
-  $('pml-tb').innerHTML=d.map(p=>`<tr>
+  // Urutkan berdasarkan skor kepemimpinan tertinggi
+  d.sort((a,b) => b.skor_kepemimpinan - a.skor_kepemimpinan);
+
+  const skorColor=s=>s>=75?'var(--gr)':s>=60?'var(--am)':s>=45?'var(--or)':'var(--rd)';
+  const skorLabel=s=>s>=75?'Unggul':s>=60?'Baik':s>=45?'Cukup':'Perlu Perhatian';
+
+  $('pml-tb').innerHTML=d.map((p,i)=>{
+    const sk=p.skor_kepemimpinan;
+    const sc=skorColor(sk);
+    const sl=skorLabel(sk);
+    return`<tr>
+    <td style="font-family:var(--mono);color:var(--tx3);text-align:center">${i+1}</td>
     <td><div class="fr"><div class="av ${avC(p.nama)}">${ini(p.nama)}</div>${p.nama}</div></td>
     <td>${STATE.KEC[p.kec_id]?.nama||'—'}</td>
     <td style="font-family:var(--mono);text-align:center">${p.ppl_ids.length}</td>
@@ -914,10 +945,16 @@ function renderPml(){
     <td style="font-family:var(--mono);color:${p.std_dev_ppl > 10 ? 'var(--am)' : 'var(--gr)'}">${fr2(p.std_dev_ppl)}</td>
     <td style="font-family:var(--mono);color:var(--gr)">${fr2(p.max_ppl)}%</td>
     <td style="font-family:var(--mono);color:var(--rd)">${fr2(p.min_ppl)}%</td>
+    <td>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:1px">
+        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:${sc}">${fr2(sk)}</span>
+        <span style="font-size:9px;color:${sc};font-weight:600">${sl}</span>
+      </div>
+    </td>
     <td>${pill(p.status)}</td>
     <td>${renderTanggalCapai(p.pct_now, STATE.LAJU)}</td>
     <td><button class="btn btn-bl" style="font-size:10px" onclick="drillPML('${p.id}')">PPL →</button></td>
-  </tr>`).join('');
+  </tr>`}).join('');
 }
 function drillPML(id){$('pplpf').value=STATE.PML[id]?.nama||'';switchTab('ppl',$('tb-ppl'));renderPpl()}
 
@@ -1263,11 +1300,13 @@ document.addEventListener('click',e=>{if(!e.target.closest('#np')&&!e.target.clo
 // LAPORAN PIMPINAN
 // ============================================================
 function openLaporan(){
+  if(!STATE.KEC){toast('Data belum dimuat. Mohon tunggu…');return;}
   const {KEC,PML,PPL,tSel,tTgt,tPctNow,tProy,tStat,SISA,LAJU}=STATE;
   const m=ST.meta;
   const upd=PY.tanggal_update;
 
-  const updFmt=PY.label_update||fmtUpd(upd,PY.jam_update);
+  // updFmt untuk LAPORAN: tanggal panjang + jam "26 Juni 2026 20.20"
+  const updFmt=fmtUpd(PY.tanggal_update,PY.jam_update);
 
   const now=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
@@ -1281,25 +1320,12 @@ function openLaporan(){
   const pplTerlambat=Object.values(PPL).filter(p=>p.status==='Terlambat'&&p.target>0).sort((a,b)=>a.proyeksi-b.proyeksi);
 
   // ============================================================
-  // PML — SCORING KOMPOSIT 4 METRIK (ternormalisasi min-max)
-  // Rata-rata PPL 40% + Min PPL 25% + Std Dev (invers) 20% + Max PPL 15%
+  // PML BERDASARKAN METRIK STATISTIK (Rata-rata PPL)
   // ============================================================
   const pmlList = Object.values(PML);
-  const _pmlValid = pmlList.filter(p => p.ppl_ids.length > 0);
-  const _mm = arr => { const mn=Math.min(...arr), mx=Math.max(...arr); return{mn,mx,rng:mx-mn||1}; };
-  const mmAvg=_mm(_pmlValid.map(p=>p.rata_rata_ppl));
-  const mmStd=_mm(_pmlValid.map(p=>p.std_dev_ppl));
-  const mmMax=_mm(_pmlValid.map(p=>p.max_ppl));
-  const mmMin=_mm(_pmlValid.map(p=>p.min_ppl));
-  _pmlValid.forEach(p=>{
-    const sAvg = ((p.rata_rata_ppl - mmAvg.mn)/mmAvg.rng)*100;
-    const sStd = (1-(p.std_dev_ppl  - mmStd.mn)/mmStd.rng)*100;
-    const sMax = ((p.max_ppl        - mmMax.mn)/mmMax.rng)*100;
-    const sMin = ((p.min_ppl        - mmMin.mn)/mmMin.rng)*100;
-    p._score = sAvg*0.40 + sMin*0.25 + sStd*0.20 + sMax*0.15;
-  });
-  const pmlTerbaik  = [..._pmlValid].sort((a,b)=>b._score-a._score).slice(0,5);
-  const pmlTerendah = [..._pmlValid].sort((a,b)=>a._score-b._score).slice(0,5);
+  // Urutkan berdasarkan Skor Kepemimpinan (formula tertimbang)
+  const pmlTerbaik = [...pmlList].filter(p=>p.ppl_ids.length>0).sort((a,b) => b.skor_kepemimpinan - a.skor_kepemimpinan).slice(0, 5);
+  const pmlTerendah = [...pmlList].filter(p=>p.ppl_ids.length>0).sort((a,b) => a.skor_kepemimpinan - b.skor_kepemimpinan).slice(0, 5);
 
   // Kategorisasi PML berdasarkan rata-rata dan standar deviasi
   const pmlKategori = {
@@ -1316,8 +1342,7 @@ function openLaporan(){
   const meanStdDev = allStdDev.length > 0 ? allStdDev.reduce((a,b) => a+b, 0) / allStdDev.length : 0;
 
   pmlList.forEach(p => {
-    if (p.ppl_ids.length < 1) return; // skip PML tanpa PPL
-    // PML dengan 1 PPL tetap dianalisis (std_dev=0 = merata sempurna)
+    if (p.ppl_count < 2) return; // minimal 2 PPL untuk analisis
     
     const isHighAvg = p.rata_rata_ppl >= meanRataRata;
     const isLowStd = p.std_dev_ppl <= meanStdDev;
@@ -1370,7 +1395,11 @@ function openLaporan(){
 
   const statPill=(s)=>`<span style="display:inline-block;padding:1px 6px;border-radius:99px;font-size:9.5px;font-weight:700;background:${statBg[s]};color:${statColor[s]};border:1px solid ${statColor[s]}40">${s}</span>`;
 
-  const top10ppl=Object.values(PPL).filter(p=>p.target>0).sort((a,b)=>b.pct_now-a.pct_now).slice(0,10);
+  // Exclude PPL anomali data (nama mengandung kata yang ditandai tidak valid)
+  const PPL_ANOMALI=['mahmudah'];
+  const top10ppl=Object.values(PPL)
+    .filter(p=>p.target>0 && !PPL_ANOMALI.some(x=>p.nama.toLowerCase().includes(x)))
+    .sort((a,b)=>b.pct_now-a.pct_now).slice(0,10);
   const rankIcon=i=>['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]||String(i+1);
 
   const kecByPct=Object.values(KEC).sort((a,b)=>b.pct_now-a.pct_now);
@@ -1471,6 +1500,53 @@ function openLaporan(){
           <div><div style="font-size:12px;font-weight:700;color:${x.c}">${x.l}</div><div style="font-size:11px;color:#4a6080">${x.sub}</div></div>
         </div>`).join('')}
       </div>
+
+    <!-- RINGKASAN SKOR KEPEMIMPINAN PML DI BAGIAN I -->
+    ${(()=>{
+      const skorColor=s=>s>=75?'#00c47a':s>=60?'#d4900a':s>=45?'#cc6600':'#cc2040';
+      const skorLabel=s=>s>=75?'Unggul':s>=60?'Baik':s>=45?'Cukup':'Perlu Perhatian';
+      const allSkor=Object.values(PML).filter(p=>p.ppl_ids.length>0).map(p=>p.skor_kepemimpinan);
+      const rataGlobal=allSkor.length?allSkor.reduce((a,b)=>a+b,0)/allSkor.length:0;
+      const unggul=allSkor.filter(s=>s>=75).length;
+      const baik=allSkor.filter(s=>s>=60&&s<75).length;
+      const cukup=allSkor.filter(s=>s>=45&&s<60).length;
+      const perlu=allSkor.filter(s=>s<45).length;
+      const top1=pmlTerbaik[0];
+      const bot1=pmlTerendah[0];
+      return `<div style="background:#f5f7fc;border:1px solid #c0d0e8;border-radius:8px;padding:12px 16px;margin-top:14px">
+        <div style="font-size:11px;font-weight:700;color:#1a3a6a;margin-bottom:8px">⭐ Skor Kepemimpinan PML — Ringkasan Eksekutif</div>
+        <div style="font-size:10px;color:#4a6080;margin-bottom:10px">
+          Formula: <strong>0.30×Rata-rata PPL + 0.35×(100−σ) + 0.25×Min PPL + 0.10×Max PPL</strong>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px">
+          ${[
+            {l:'Rata-rata Skor',v:fr2(rataGlobal),c:skorColor(rataGlobal),bg:'#e8f0fb'},
+            {l:'🏅 Unggul (≥75)',v:unggul,c:'#1a7a4a',bg:'#e6faf2'},
+            {l:'👍 Baik (60–74)',v:baik,c:'#d4900a',bg:'#fff8e6'},
+            {l:'🔶 Cukup (45–59)',v:cukup,c:'#cc6600',bg:'#fff3e6'},
+            {l:'🔴 Perlu Perhatian',v:perlu,c:'#cc2040',bg:'#ffe6eb'},
+          ].map(x=>`<div style="background:${x.bg};border-radius:6px;padding:8px 10px;text-align:center">
+            <div style="font-size:10px;color:#4a6080;margin-bottom:3px">${x.l}</div>
+            <div style="font-size:18px;font-weight:800;color:${x.c};font-family:monospace">${x.v}</div>
+          </div>`).join('')}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11px">
+          ${top1?`<div style="background:#e6faf2;border:1px solid #00c47a40;border-radius:6px;padding:8px 12px">
+            <div style="font-size:10px;color:#1a7a4a;font-weight:700;margin-bottom:2px">🥇 Skor Tertinggi</div>
+            <div style="font-weight:700;color:#1a2a4a">${top1.nama}</div>
+            <div style="color:#4a6080;font-size:10px">${STATE.KEC[top1.kec_id]?.nama||'—'} · ${top1.ppl_ids.length} PPL</div>
+            <div style="font-size:14px;font-weight:800;color:#00c47a;font-family:monospace;margin-top:4px">${fr2(top1.skor_kepemimpinan)} <span style="font-size:10px">${skorLabel(top1.skor_kepemimpinan)}</span></div>
+          </div>`:''}
+          ${bot1?`<div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px">
+            <div style="font-size:10px;color:#cc2040;font-weight:700;margin-bottom:2px">⚠️ Skor Terendah</div>
+            <div style="font-weight:700;color:#1a2a4a">${bot1.nama}</div>
+            <div style="color:#4a6080;font-size:10px">${STATE.KEC[bot1.kec_id]?.nama||'—'} · ${bot1.ppl_ids.length} PPL</div>
+            <div style="font-size:14px;font-weight:800;color:#cc2040;font-family:monospace;margin-top:4px">${fr2(bot1.skor_kepemimpinan)} <span style="font-size:10px">${skorLabel(bot1.skor_kepemimpinan)}</span></div>
+          </div>`:''}
+        </div>
+        <div style="font-size:10px;color:#778899;margin-top:8px">Detail Top 5 & Bottom 5 lihat Bagian III dan IV.</div>
+      </div>`;
+    })()}
     `,'#1a3a6a')}
 
     <!-- STATUS KECAMATAN -->
@@ -1509,104 +1585,86 @@ function openLaporan(){
     `,'#1a5a2a')}
 
     <!-- ========================================================== -->
-    <!-- III & IV — PML TERBAIK & TERBAWAH (SCORING KOMPOSIT 4 METRIK) -->
+    <!-- PML TERBAIK & TERENDAH BERDASARKAN SKOR KEPEMIMPINAN -->
     <!-- ========================================================== -->
+    ${(()=>{
+      const skorColor=s=>s>=75?'#00c47a':s>=60?'#d4900a':s>=45?'#cc6600':'#cc2040';
+      const skorLabel=s=>s>=75?'Unggul':s>=60?'Baik':s>=45?'Cukup':'Perlu Perhatian';
+      const formulaNote='Formula: <strong>0.30</strong>×Rata-rata + <strong>0.35</strong>×(100−σ) + <strong>0.25</strong>×Min + <strong>0.10</strong>×Max';
+      const skorBar=(sk,color)=>`<div style="display:inline-flex;align-items:center;gap:5px;min-width:90px">
+        <div style="flex:1;height:5px;background:#e0e8f0;border-radius:2px;min-width:40px;overflow:hidden">
+          <div style="width:${Math.min(sk,100)}%;height:100%;background:${color};border-radius:2px"></div>
+        </div>
+        <span style="font-size:11px;font-weight:800;color:${color};min-width:32px;text-align:right">${fr2(sk)}</span>
+      </div>`;
+      const komponenBreakdown=(p)=>{
+        const r=p.skor_rincian||{};
+        return`<div style="font-size:9px;color:#778899;line-height:1.6;margin-top:2px">
+          Rata: <span style="color:#2a5aa0">${fr2(r.komponen_rata||0)}</span>
+          | σ: <span style="color:#1a6a2a">${fr2(r.komponen_stddev||0)}</span>
+          | Min: <span style="color:#804020">${fr2(r.komponen_min||0)}</span>
+          | Max: <span style="color:#4a6080">${fr2(r.komponen_max||0)}</span>
+        </div>`;
+      };
+      return `
+      <div style="background:#f5f7fc;border:1px solid #dce4ee;border-radius:8px;padding:8px 14px;margin-bottom:14px;font-size:11px;color:#4a6080;line-height:1.8">
+        <strong>⭐ Skor Kepemimpinan PML</strong> — ${formulaNote}<br>
+        <span style="font-size:10px">Bobot mencerminkan teori kepemimpinan situasional: kemerataan tim (σ diinversi) adalah indikator terkuat, diikuti pembinaan staf terlemah (Min), pencapaian kolektif (Rata-rata), dan apresiasi superstar (Max).</span>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+          <span style="background:#e8f0fb;padding:2px 8px;border-radius:99px;font-size:10px;color:#1a3a6a">🟣 Rata-rata ×30%</span>
+          <span style="background:#e6faf2;padding:2px 8px;border-radius:99px;font-size:10px;color:#1a6a2a">🟢 (100−σ) ×35%</span>
+          <span style="background:#fff8e6;padding:2px 8px;border-radius:99px;font-size:10px;color:#804020">🟡 Min PPL ×25%</span>
+          <span style="background:#f0ebfb;padding:2px 8px;border-radius:99px;font-size:10px;color:#4a2a8a">🔵 Max PPL ×10%</span>
+          <span style="background:#e6faf2;padding:2px 8px;border-radius:99px;font-size:10px;color:#1a7a4a">✅ Unggul ≥75</span>
+          <span style="background:#fff8e6;padding:2px 8px;border-radius:99px;font-size:10px;color:#d4900a">🟡 Baik 60–74</span>
+          <span style="background:#fff3e6;padding:2px 8px;border-radius:99px;font-size:10px;color:#cc6600">🟠 Cukup 45–59</span>
+          <span style="background:#ffe6eb;padding:2px 8px;border-radius:99px;font-size:10px;color:#cc2040">🔴 Perlu Perhatian &lt;45</span>
+        </div>
+      </div>
+      ${section('III. SKOR KEPEMIMPINAN TERTINGGI (TOP 5)','🏆',`
+        ${pmlTerbaik.length ? tbl(['#','Nama PML & Komponen Skor','Kecamatan','PPL','Rata','σ','Min','Max','⭐ Skor'],
+          pmlTerbaik.map((p,i)=>{
+            const sk=p.skor_kepemimpinan;
+            const sc=skorColor(sk);
+            return[
+              `<span style="font-size:${i<3?'16':'12'}px">${rankIconMedal(i)}</span>`,
+              `<div><strong>${p.nama}</strong>${komponenBreakdown(p)}</div>`,
+              STATE.KEC[p.kec_id]?.nama||'—',
+              p.ppl_ids.length,
+              `<span style="color:#2a5aa0;font-weight:600">${fr2(p.rata_rata_ppl)}%</span>`,
+              `<span style="color:${p.std_dev_ppl<=10?'#1a7a4a':'#cc6600'}">${fr2(p.std_dev_ppl)}</span>`,
+              `<span style="color:#804020;font-weight:600">${fr2(p.min_ppl)}%</span>`,
+              `${fr2(p.max_ppl)}%`,
+              `<div>${skorBar(sk,sc)}<div style="font-size:9px;font-weight:700;color:${sc};text-align:right">${skorLabel(sk)}</div></div>`
+            ];
+          })
+        ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
+      `,'#1a6a2a')}
 
-    <!-- Kotak penjelasan metodologi -->
-    <div style="background:#f0f6ff;border:1px solid #b0cce8;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:11px;color:#2a3a5a;line-height:1.85">
-      <strong style="font-size:12px;color:#1a3a6a">📐 Metodologi Pemeringkatan PML (Scoring Komposit 4 Metrik)</strong><br>
-      Setiap PML dinilai dari empat indikator perolehan PPL-nya, masing-masing ternormalisasi 0–100 (min-max), lalu digabung dengan bobot:<br>
-      <span style="display:inline-flex;gap:14px;flex-wrap:wrap;margin-top:4px">
-        <span>📊 <strong>Rata-rata %</strong> — 40%</span>
-        <span>⬇️ <strong>Min % PPL</strong> — 25%</span>
-        <span>📉 <strong>Std Dev (invers)</strong> — 20%</span>
-        <span>⬆️ <strong>Max % PPL</strong> — 15%</span>
-      </span><br>
-      <span style="color:#4a6080">Skor komposit tinggi = rata-rata tinggi, PPL paling rendah tidak terlalu jauh tertinggal, penyebaran merata, dan PPL terbaik juga unggul.</span>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;page-break-inside:auto">
-      <div>
-        ${section('III. PML KINERJA TERBAIK (TOP 5)','🏆',`
-          <div style="font-size:10px;color:#1a6a2a;margin-bottom:8px;background:#e6faf2;border-radius:5px;padding:5px 8px">
-            ✅ Rata-rata tinggi · PPL terendah tidak tertinggal jauh · Persebaran merata · PPL tertinggi unggul
-          </div>
-          ${pmlTerbaik.length ? tbl(
-            ['#','Nama PML','Kecamatan','Jml PPL','Rata-rata %','Std Dev','Min %','Max %','Skor'],
-            pmlTerbaik.map((p,i)=>{
-              const stdOk = p.std_dev_ppl <= (mmStd.mn + mmStd.rng*0.4);
-              return [
-                `<span style="font-size:\${i<3?'15':'12'}px">\${rankIconMedal(i)}</span>`,
-                `<strong>\${p.nama}</strong><div style="font-size:9px;color:#778899">\${p.email||''}</div>`,
-                STATE.KEC[p.kec_id]?.nama||'—',
-                p.ppl_ids.length,
-                `<strong style="color:#1a7a4a">\${fr2(p.rata_rata_ppl)}%</strong>`,
-                `<span style="color:\${stdOk?'#1a7a4a':'#cc6600'};font-weight:700">\${fr2(p.std_dev_ppl)}\${stdOk?' ✅':' ⚠️'}</span>`,
-                `<span style="color:#1a6a7a">\${fr2(p.min_ppl)}%</span>`,
-                `<span style="color:#1a7a4a">\${fr2(p.max_ppl)}%</span>`,
-                `<strong style="color:#1a3a6a;font-family:monospace">\${fr2(p._score)}</strong>`
-              ];
-            })
-          ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
-        `,'#1a6a2a')}
-      </div>
-      <div>
-        ${section('IV. PML KINERJA TERBAWAH (BOTTOM 5)','📉',`
-          <div style="font-size:10px;color:#cc2040;margin-bottom:8px;background:#ffe6eb;border-radius:5px;padding:5px 8px">
-            ⚠️ Rata-rata rendah · PPL terendah sangat tertinggal · Persebaran tidak merata · Perlu intervensi
-          </div>
-          ${pmlTerendah.length ? tbl(
-            ['#','Nama PML','Kecamatan','Jml PPL','Rata-rata %','Std Dev','Min %','Max %','Skor'],
-            pmlTerendah.map((p,i)=>{
-              const stdBuruk = p.std_dev_ppl > (mmStd.mn + mmStd.rng*0.6);
-              return [
-                `<span style="color:#cc2040;font-weight:700">\${i+1}</span>`,
-                `<strong style="color:#cc2040">\${p.nama}</strong><div style="font-size:9px;color:#778899">\${p.email||''}</div>`,
-                STATE.KEC[p.kec_id]?.nama||'—',
-                p.ppl_ids.length,
-                `<strong style="color:#cc6600">\${fr2(p.rata_rata_ppl)}%</strong>`,
-                `<span style="color:\${stdBuruk?'#cc2040':'#cc6600'};font-weight:700">\${fr2(p.std_dev_ppl)}\${stdBuruk?' 🔴':' 🟡'}</span>`,
-                `<span style="color:#cc2040;font-weight:700">\${fr2(p.min_ppl)}%</span>`,
-                `<span style="color:#cc6600">\${fr2(p.max_ppl)}%</span>`,
-                `<strong style="color:#cc2040;font-family:monospace">\${fr2(p._score)}</strong>`
-              ];
-            })
-          ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
-        `,'#aa4020')}
-      </div>
-    </div>
-
-    <!-- ========================================================== -->
-    <!-- KATEGORISASI PML BERDASARKAN METRIK -->
-    <!-- ========================================================== -->
-    ${section('V. ANALISIS KINERJA PML BERDASARKAN METRIK PPL','📊',`
-      <div style="font-size:12px;color:#4a6080;margin-bottom:12px;line-height:1.8">
-        <strong>Keterangan:</strong><br>
-        • <strong style="color:#1a7a4a">Rata-rata tinggi & Std Dev rendah</strong> → Kinerja PPL merata dan bagus<br>
-        • <strong style="color:#cc6600">Rata-rata tinggi tapi Std Dev tinggi</strong> → Ada PPL sangat bagus tapi ada juga yang tertinggal<br>
-        • <strong style="color:#cc2040">Rata-rata rendah & Std Dev rendah</strong> → Semua PPL-nya sama-sama rendah (perlu perhatian)<br>
-        • <strong style="color:#2a5aa0">Rata-rata rendah tapi Std Dev tinggi</strong> → Ada PPL bagus tapi banyak yang tertinggal
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        ${[
-          {key:'merataBagus',label:'✅ Rata-rata Tinggi & Std Dev Rendah',color:'#1a7a4a',bg:'#e6faf2'},
-          {key:'variatifBagus',label:'⚡ Rata-rata Tinggi & Std Dev Tinggi',color:'#cc6600',bg:'#fff8e6'},
-          {key:'merataRendah',label:'⚠️ Rata-rata Rendah & Std Dev Rendah',color:'#cc2040',bg:'#ffe6eb'},
-          {key:'variatifRendah',label:'🔄 Rata-rata Rendah & Std Dev Tinggi',color:'#2a5aa0',bg:'#e8f0fb'}
-        ].map(kat=>{
-          const items = pmlKategori[kat.key] || [];
-          return `<div style="border:1px solid ${kat.color}40;border-radius:8px;padding:10px 12px;background:${kat.bg};margin-bottom:8px">
-            <div style="font-weight:700;color:${kat.color};font-size:11px;margin-bottom:4px">${kat.label} (${items.length} PML)</div>
-            ${items.length ? items.map(p => 
-              `<span style="display:inline-block;background:${kat.color}20;color:${kat.color};padding:1px 8px;border-radius:99px;font-size:10px;margin:2px 3px;border:1px solid ${kat.color}30">${p.nama} (${fr2(p.rata_rata_ppl)}%)</span>`
-            ).join('') : '<span style="font-size:10px;color:#778899">Tidak ada PML dalam kategori ini</span>'}
-          </div>`;
-        }).join('')}
-      </div>
-    `,'#1a3a6a')}
+      ${section('IV. SKOR KEPEMIMPINAN TERENDAH (BOTTOM 5)','📉',`
+        ${pmlTerendah.length ? tbl(['#','Nama PML & Komponen Skor','Kecamatan','PPL','Rata','σ','Min','Max','⭐ Skor'],
+          pmlTerendah.map((p,i)=>{
+            const sk=p.skor_kepemimpinan;
+            const sc=skorColor(sk);
+            return[
+              `<span style="color:#778899;font-weight:700">${i+1}</span>`,
+              `<div><strong style="color:#cc2040">${p.nama}</strong>${komponenBreakdown(p)}</div>`,
+              STATE.KEC[p.kec_id]?.nama||'—',
+              p.ppl_ids.length,
+              `<span style="color:#2a5aa0;font-weight:600">${fr2(p.rata_rata_ppl)}%</span>`,
+              `<span style="color:${p.std_dev_ppl<=10?'#1a7a4a':'#cc6600'}">${fr2(p.std_dev_ppl)}</span>`,
+              `<span style="color:#804020;font-weight:600">${fr2(p.min_ppl)}%</span>`,
+              `${fr2(p.max_ppl)}%`,
+              `<div>${skorBar(sk,sc)}<div style="font-size:9px;font-weight:700;color:${sc};text-align:right">${skorLabel(sk)}</div></div>`
+            ];
+          })
+        ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
+      `,'#aa4020')}
+      `;
+    })()}
 
     <!-- PERHATIAN KHUSUS -->
-    ${(bahaya.length+terlambat.length>0)?section('VI. KECAMATAN PERLU PERHATIAN KHUSUS','⚠️',`
+    ${(bahaya.length+terlambat.length>0)?section('V. KECAMATAN PERLU PERHATIAN KHUSUS','⚠️',`
       ${bahaya.length?`
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${bahaya.length} Kecamatan BAHAYA</strong> — Proyeksi perolehan &lt;80%. Diperlukan intervensi segera.
@@ -1638,7 +1696,7 @@ function openLaporan(){
     `,'#aa2020'):''}
 
     <!-- PPL BERMASALAH -->
-    ${section('VII. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
+    ${section('VI. PETUGAS LAPANGAN (PPL) PERLU PERHATIAN','👤',`
       ${pplBahaya.length?`
         <div style="background:#ffe6eb;border:1px solid #cc204040;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#cc2040">
           <strong>🔴 ${pplBahaya.length} PPL Proyeksi BAHAYA (&lt;80%)</strong> — Ditampilkan semua ${pplBahaya.length}/${pplBahaya.length} PPL
@@ -1677,7 +1735,7 @@ function openLaporan(){
     `,'#804020')}
 
     <!-- TOP 10 PPL PERFORMER -->
-    ${section('VIII. PPL TERBAIK (TOP 10)','🏆',`
+    ${section('VII. PPL TERBAIK (TOP 10)','🏆',`
       ${tbl(['#','Nama PPL','Kecamatan','Target','Perolehan','Progres','Proyeksi','🎯 Target 100%'],
         top10ppl.map((p,i)=>[
           `<span style="font-size:${i<3?'16':'12'}px">${rankIcon(i)}</span>`,
@@ -1693,15 +1751,42 @@ function openLaporan(){
     `,'#806000')}
 
     <!-- REKOMENDASI -->
-    ${section('IX. REKOMENDASI','📌',`
+    ${section('VIII. REKOMENDASI','📌',`
       <ol style="font-size:12px;line-height:2;padding-left:18px;color:#2a3a5a">
-        ${bahaya.length?`<li>Lakukan koordinasi intensif dengan PML di <strong style="color:#cc2040">${bahaya.map(k=>k.nama).join(', ')}</strong> yang berstatus BAHAYA untuk mengejar ketertinggalan secara mendesak.</li>`:''}
-        ${terlambat.length?`<li>Tingkatkan pengawasan dan pendampingan pada PPL di wilayah <strong style="color:#cc6600">${terlambat.map(k=>k.nama).join(', ')}</strong> agar laju harian meningkat.</li>`:''}
-        ${pplBahaya.length?`<li>Sebanyak <strong>${pplBahaya.length} PPL</strong> berisiko tidak mencapai target. Pimpinan perlu segera mengevaluasi kendala di lapangan dan mempertimbangkan redistribusi beban kerja bila memungkinkan.</li>`:''}
-        ${pmlKategori.merataRendah.length?`<li>⚠️ <strong>${pmlKategori.merataRendah.length} PML</strong> memiliki rata-rata rendah dan standar deviasi rendah: <strong style="color:#cc2040">${pmlKategori.merataRendah.map(p=>p.nama).join(', ')}</strong>. Seluruh PPL di bawah koordinasi mereka berkinerja rendah. Diperlukan intervensi menyeluruh.</li>`:''}
-        ${pmlKategori.variatifRendah.length?`<li>🔄 <strong>${pmlKategori.variatifRendah.length} PML</strong> memiliki rata-rata rendah tapi standar deviasi tinggi: <strong style="color:#2a5aa0">${pmlKategori.variatifRendah.map(p=>p.nama).join(', ')}</strong>. Ada PPL berkinerja baik namun banyak yang tertinggal. Identifikasi PPL berprestasi untuk menjadi contoh.</li>`:''}
-        ${pmlKategori.variatifBagus.length?`<li>⚡ <strong>${pmlKategori.variatifBagus.length} PML</strong> memiliki rata-rata tinggi tapi standar deviasi tinggi: <strong style="color:#cc6600">${pmlKategori.variatifBagus.map(p=>p.nama).join(', ')}</strong>. Perhatikan PPL yang tertinggal agar tidak semakin jauh.</li>`:''}
-        ${pmlKategori.merataBagus.length?`<li>✅ <strong>${pmlKategori.merataBagus.length} PML</strong> memiliki rata-rata tinggi dan standar deviasi rendah: <strong style="color:#1a7a4a">${pmlKategori.merataBagus.map(p=>p.nama).join(', ')}</strong>. Pertahankan kinerja dan jadikan role model.</li>`:''}
+        ${(()=>{
+          if(!pmlKategori.variatifRendah.length) return '';
+          // Kelompokkan per kecamatan
+          const byKec={};
+          pmlKategori.variatifRendah.forEach(p=>{
+            const kn=STATE.KEC[p.kec_id]?.nama||'—';
+            if(!byKec[kn]) byKec[kn]=[];
+            byKec[kn].push(p.nama);
+          });
+          const txt=Object.entries(byKec).map(([kn,pmls])=>`<strong style="color:#2a5aa0">${kn}</strong> (${pmls.join(', ')})`).join('; ');
+          return`<li>🔄 ${txt} — <strong>Identifikasi PPL berprestasi di wilayah ini untuk dijadikan contoh bagi rekan yang tertinggal.</strong> Rata-rata tim cukup rendah namun sebaran tinggi menandakan potensi belum merata.</li>`;
+        })()}
+        ${(()=>{
+          if(!pmlKategori.variatifBagus.length) return '';
+          const byKec={};
+          pmlKategori.variatifBagus.forEach(p=>{
+            const kn=STATE.KEC[p.kec_id]?.nama||'—';
+            if(!byKec[kn]) byKec[kn]=[];
+            byKec[kn].push(p.nama);
+          });
+          const txt=Object.entries(byKec).map(([kn,pmls])=>`<strong style="color:#cc6600">${kn}</strong> (${pmls.join(', ')})`).join('; ');
+          return`<li>⚡ ${txt} — <strong>Berikan perhatian khusus pada PPL yang tertinggal agar kesenjangan kinerja dalam tim tidak semakin melebar.</strong> Rata-rata tinggi namun sebaran lebar menunjukkan tidak semua PPL terbawa optimal.</li>`;
+        })()}
+        ${(()=>{
+          if(!pmlKategori.merataBagus.length) return '';
+          const byKec={};
+          pmlKategori.merataBagus.forEach(p=>{
+            const kn=STATE.KEC[p.kec_id]?.nama||'—';
+            if(!byKec[kn]) byKec[kn]=[];
+            byKec[kn].push(p.nama);
+          });
+          const txt=Object.entries(byKec).map(([kn,pmls])=>`<strong style="color:#1a7a4a">${kn}</strong> (${pmls.join(', ')})`).join('; ');
+          return`<li>✅ ${txt} — <strong>Pertahankan pola kepemimpinan yang ada dan jadikan referensi metode pembinaan bagi PML lain.</strong> Seluruh PPL berkinerja tinggi dan merata.</li>`;
+        })()}
         <li>Dengan laju saat ini <strong>${LAJU}%/hari</strong> dan sisa <strong>${SISA} hari</strong>, proyeksi global mencapai <strong>${fr2(tProy)}%</strong>. ${tProy>=100?'Pertahankan kinerja untuk memastikan seluruh target terpenuhi.':'Diperlukan peningkatan laju agar target 100% terpenuhi sebelum deadline.'}</li>
         <li>Jadwalkan rapat evaluasi mingguan antara PML dan PPL untuk memantau perkembangan dan menyelesaikan kendala teknis di lapangan.</li>
         <li>🎯 Target 100% global diperkirakan tercapai pada <strong style="color:#1a6a7a">${formatTanggal(capaiGlobal.tanggal)}</strong> ${capaiGlobal.sudah_capai?'✅ sudah tercapai!':`(${capaiGlobal.hari_dibutuhkan} hari lagi)`}</li>
@@ -1709,24 +1794,14 @@ function openLaporan(){
     `,'#3a2a7a')}
 
     <!-- FOOTER -->
-    <div style="margin-top:24px;padding-top:12px;border-top:1px solid #dce4ee;display:flex;justify-content:space-between;align-items:flex-end;font-size:10px;color:#778899">
-      <div>
-        <div>Laporan dibuat otomatis dari Dashboard SE2026</div>
-        <div>BPS Kabupaten Pasuruan — Sensus Ekonomi 2026</div>
+    <div style="margin-top:24px;padding-top:12px;border-top:1px solid #dce4ee;font-size:10px;color:#778899;text-align:center">
+      <div style="margin-bottom:4px">Laporan dibuat otomatis dari Dashboard SE2026 &nbsp;·&nbsp; BPS Kabupaten Pasuruan — Sensus Ekonomi 2026</div>
+      <div>Data terakhir: <strong>${updFmt}</strong> &nbsp;·&nbsp; Dicetak: ${now}</div>
+      <div style="margin-top:20px;font-size:11px;color:#4a6080">Mengetahui,</div>
+      <div style="margin-top:56px;padding-top:5px;border-top:1px solid #1a2a4a;display:inline-block;min-width:220px;text-align:center">
+        <div style="font-weight:700;font-size:12px;color:#1a2a4a">Bagas Susilo, SST., M.Si.</div>
+        <div style="font-size:10px;color:#4a6080;margin-top:2px">Kepala BPS Kabupaten Pasuruan</div>
       </div>
-      <div style="text-align:right">
-        <div>Data terakhir: <strong>${updFmt}</strong></div>
-        <div>Dicetak: ${now}</div>
-        <div style="margin-top:8px;font-size:11px;color:#4a6080">Mengetahui,</div>
-        <div style="margin-top:48px;padding-top:5px;min-width:220px;text-align:center">
-          <div style="font-weight:700;font-size:12px;color:#1a2a4a">Bagas Susilo, SST., M.Si.</div>
-          <div style="font-size:10px;color:#4a6080;margin-top:2px">Kepala BPS Kabupaten Pasuruan</div>
-        </div>
-      </div>
-    </div>
-    <!-- BY RINUJA STUDIO -->
-    <div style="margin-top:32px;padding-top:8px;border-top:1px solid #eef2f7;text-align:center;font-size:9px;color:#b0bec5;letter-spacing:0.8px">
-      By Rinuja Studio
     </div>
 
   </div>`;
@@ -1740,17 +1815,12 @@ $('lap-modal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)close
 function printLaporan(){
   const content=document.getElementById('lap-content');
   if(!content)return;
-  // Nama file PDF otomatis: Laporan Pimpinan [tanggal update].pdf
-  const _tglUpd = PY.tanggal_update || '';
-  const _tglParts = _tglUpd.split('-');
-  const bulanNama = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  const _tglLabel = _tglParts.length===3
-    ? `${parseInt(_tglParts[2])} ${bulanNama[parseInt(_tglParts[1])]} ${_tglParts[0]}`
-    : _tglUpd;
-  const pdfTitle = `Laporan Pimpinan ${_tglLabel}`;
+  // Nama file otomatis: Laporan SE2026 Kab Pasuruan [tanggal upload data]
+  const _tglLabel=PY.tanggal_update||'';
+  const _judulPdf=`Laporan SE2026 Kab Pasuruan ${_tglLabel}`;
   const w=window.open('','_blank','width=900,height=700');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <title>${pdfTitle}</title>
+    <title>${_judulPdf}</title>
     <style>
       *{box-sizing:border-box;margin:0;padding:0}
       body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:#fff;color:#1a2a4a;padding:10mm 12mm;font-size:11px;line-height:1.45}
@@ -1771,7 +1841,12 @@ function printLaporan(){
     </style>
   </head><body>${content.outerHTML}</body></html>`);
   w.document.close();
-  setTimeout(()=>{w.focus();w.document.title=pdfTitle;w.print();},600);
+  setTimeout(()=>{
+    w.focus();
+    // Set title agar nama file PDF = judul laporan
+    w.document.title=_judulPdf;
+    w.print();
+  },600);
 }
 
 // ============================================================
@@ -1816,6 +1891,7 @@ function exportXL(type){
       'Std Dev PPL':fr2(p.std_dev_ppl),
       'Max PPL (%)':fr2(p.max_ppl),
       'Min PPL (%)':fr2(p.min_ppl),
+      '⭐ Skor Kepemimpinan':fr2(p.skor_kepemimpinan),
       Status:p.status,
       '🎯 Target 100%':addTglCapai(p.pct_now)
     }));
@@ -1894,13 +1970,13 @@ function exportCSV(type){
       return [k.nama,k.jumlah_ppl,k.target,k.selesai,k.pct_now.toFixed(2),fr2(k.proyeksi),k.status,tglStr];
     });
   }else if(type==='pml'){
-    hdr=['Nama PML','Email','Kecamatan','Jml PPL','Target','Perolehan','Progres Kini (%)','Proyeksi 25 Ags 2026 (%)','Rata-rata PPL (%)','Std Dev PPL','Max PPL (%)','Min PPL (%)','Status','🎯 Target 100%'];
+    hdr=['Nama PML','Email','Kecamatan','Jml PPL','Target','Perolehan','Progres Kini (%)','Proyeksi 25 Ags 2026 (%)','Rata-rata PPL (%)','Std Dev PPL','Max PPL (%)','Min PPL (%)','⭐ Skor Kepemimpinan','Status','🎯 Target 100%'];
     rows=Object.values(STATE.PML).map(p=>{
       const tgl = hitungTanggalCapai100(p.pct_now, STATE.LAJU);
       const tglStr = tgl.sudah_capai || p.pct_now >= 100 ? 
         formatTanggal(new Date()) + ' (Tercapai!)' : 
         formatTanggal(tgl.tanggal) + (tgl.tanggal > DEADLINE ? ' (Melewati Deadline)' : ` (${tgl.hari_dibutuhkan} hari lagi)`);
-      return [p.nama,p.email,STATE.KEC[p.kec_id]?.nama||'',p.ppl_ids.length,p.target,p.selesai,p.pct_now.toFixed(2),fr2(p.proyeksi),fr2(p.rata_rata_ppl),fr2(p.std_dev_ppl),fr2(p.max_ppl),fr2(p.min_ppl),p.status,tglStr];
+      return [p.nama,p.email,STATE.KEC[p.kec_id]?.nama||'',p.ppl_ids.length,p.target,p.selesai,p.pct_now.toFixed(2),fr2(p.proyeksi),fr2(p.rata_rata_ppl),fr2(p.std_dev_ppl),fr2(p.max_ppl),fr2(p.min_ppl),fr2(p.skor_kepemimpinan),p.status,tglStr];
     });
   }else{
     hdr=['Nama PPL','Email','PML','Kecamatan','Desa','Jml SLS','Target','Perolehan','Open','Progres Kini (%)','Proyeksi 25 Ags 2026 (%)','Status','🎯 Target 100%'];
@@ -1925,6 +2001,9 @@ function exportCSV(type){
 const PANES=['rekap','pml','ppl','eval','peta','notif'];
 function switchTab(id,btn){
   PANES.forEach(p=>{$(`pane-${p}`).classList.toggle('on',p===id);$(`tb-${p}`).classList.toggle('on',p===id)});
+  // Sync sidebar nav
+  document.querySelectorAll('.nav[id^="si-"]').forEach(n=>n.classList.remove('on'));
+  const sideNav=$(`si-${id}`);if(sideNav)sideNav.classList.add('on');
   if(id==='peta'){renderPeta();setTimeout(renderHeatmap,120)}
   if(id==='notif')renderNotifPane();
 }
@@ -1939,5 +2018,14 @@ $('exp-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM
 
 boot();
 </script>
+
+<!-- FOOTER RINUJA STUDIO -->
+<div id="app-footer" style="position:fixed;bottom:0;left:0;right:0;height:20px;background:var(--bg);border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:var(--tx3);z-index:50;pointer-events:none">
+  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" width="9" height="9"><path d="M6.5 1L8.2 4.5l3.8.55-2.75 2.68.65 3.77L6.5 9.75l-3.4 1.75.65-3.77L1 5.05 4.8 4.5z"/></svg>
+  <span>By <span style="color:var(--tx2);font-weight:600">Rinuja Studio</span></span>
+  <span style="color:var(--bd)">·</span>
+  <span>© 2026</span>
+</div>
+
 </body>
 </html>
