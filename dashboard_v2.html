@@ -1536,15 +1536,15 @@ function openLaporan(){
             pmlTerbaik.map((p,i)=>{
               const stdOk = p.std_dev_ppl <= (mmStd.mn + mmStd.rng*0.4);
               return [
-                \`<span style="font-size:\${i<3?'15':'12'}px">\${rankIconMedal(i)}</span>\`,
-                \`<strong>\${p.nama}</strong><div style="font-size:9px;color:#778899">\${p.email||''}</div>\`,
+                `<span style="font-size:\${i<3?'15':'12'}px">\${rankIconMedal(i)}</span>`,
+                `<strong>\${p.nama}</strong><div style="font-size:9px;color:#778899">\${p.email||''}</div>`,
                 STATE.KEC[p.kec_id]?.nama||'—',
                 p.ppl_ids.length,
-                \`<strong style="color:#1a7a4a">\${fr2(p.rata_rata_ppl)}%</strong>\`,
-                \`<span style="color:\${stdOk?'#1a7a4a':'#cc6600'};font-weight:700">\${fr2(p.std_dev_ppl)}\${stdOk?' ✅':' ⚠️'}</span>\`,
-                \`<span style="color:#1a6a7a">\${fr2(p.min_ppl)}%</span>\`,
-                \`<span style="color:#1a7a4a">\${fr2(p.max_ppl)}%</span>\`,
-                \`<strong style="color:#1a3a6a;font-family:monospace">\${fr2(p._score)}</strong>\`
+                `<strong style="color:#1a7a4a">\${fr2(p.rata_rata_ppl)}%</strong>`,
+                `<span style="color:\${stdOk?'#1a7a4a':'#cc6600'};font-weight:700">\${fr2(p.std_dev_ppl)}\${stdOk?' ✅':' ⚠️'}</span>`,
+                `<span style="color:#1a6a7a">\${fr2(p.min_ppl)}%</span>`,
+                `<span style="color:#1a7a4a">\${fr2(p.max_ppl)}%</span>`,
+                `<strong style="color:#1a3a6a;font-family:monospace">\${fr2(p._score)}</strong>`
               ];
             })
           ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
@@ -1560,15 +1560,15 @@ function openLaporan(){
             pmlTerendah.map((p,i)=>{
               const stdBuruk = p.std_dev_ppl > (mmStd.mn + mmStd.rng*0.6);
               return [
-                \`<span style="color:#cc2040;font-weight:700">\${i+1}</span>\`,
-                \`<strong style="color:#cc2040">\${p.nama}</strong><div style="font-size:9px;color:#778899">\${p.email||''}</div>\`,
+                `<span style="color:#cc2040;font-weight:700">\${i+1}</span>`,
+                `<strong style="color:#cc2040">\${p.nama}</strong><div style="font-size:9px;color:#778899">\${p.email||''}</div>`,
                 STATE.KEC[p.kec_id]?.nama||'—',
                 p.ppl_ids.length,
-                \`<strong style="color:#cc6600">\${fr2(p.rata_rata_ppl)}%</strong>\`,
-                \`<span style="color:\${stdBuruk?'#cc2040':'#cc6600'};font-weight:700">\${fr2(p.std_dev_ppl)}\${stdBuruk?' 🔴':' 🟡'}</span>\`,
-                \`<span style="color:#cc2040;font-weight:700">\${fr2(p.min_ppl)}%</span>\`,
-                \`<span style="color:#cc6600">\${fr2(p.max_ppl)}%</span>\`,
-                \`<strong style="color:#cc2040;font-family:monospace">\${fr2(p._score)}</strong>\`
+                `<strong style="color:#cc6600">\${fr2(p.rata_rata_ppl)}%</strong>`,
+                `<span style="color:\${stdBuruk?'#cc2040':'#cc6600'};font-weight:700">\${fr2(p.std_dev_ppl)}\${stdBuruk?' 🔴':' 🟡'}</span>`,
+                `<span style="color:#cc2040;font-weight:700">\${fr2(p.min_ppl)}%</span>`,
+                `<span style="color:#cc6600">\${fr2(p.max_ppl)}%</span>`,
+                `<strong style="color:#cc2040;font-family:monospace">\${fr2(p._score)}</strong>`
               ];
             })
           ) : '<div style="color:#778899;font-size:12px">Tidak ada data PML</div>'}
