@@ -679,7 +679,7 @@ function buildState(){
   ST.sls.forEach(s=>{
     const py=pm[s.id];
     const pp=PPL[s.ppl_id]; if(!pp)return;
-    const tgt=py?py.target:0;
+    const tgt=s.target||0;
     const sel=py?py.selesai:0;
     const pctNow=tgt>0?sel/tgt*100:0;
     const proyeksiRaw = pctNow + LAJU * SISA;
